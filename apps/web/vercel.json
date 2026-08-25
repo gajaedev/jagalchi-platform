@@ -1,0 +1,8 @@
+{
+  "buildCommand": "node scripts/verify-prod-env.mjs && pnpm build",
+  "git": {
+    "deploymentEnabled": {
+      "gh-pages": false
+    }
+  }
+}

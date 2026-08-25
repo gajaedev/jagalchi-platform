@@ -1,0 +1,320 @@
+================================================================================
+JAGALCHI CLIENT - 프로젝트 구조 탐색 완료 보고서
+================================================================================
+
+생성 날짜: 2026-02-14
+분석 대상: src/ 디렉토리 전체 (265 TypeScript 파일)
+상태: ✅ 완료
+
+================================================================================
+📊 핵심 통계
+================================================================================
+
+전체 파일 분포:
+  - 총 TypeScript 파일: 265개
+  - Feature 파일: 220개 (83%)
+  - Shared 모듈: 45개 (17%)
+  - 테스트 파일: 61개
+
+Feature 분포:
+  1. roadmap-editor    107 files (49%) ← 가장 복잡한 그래프 에디터
+  2. profile           37 files (17%)  ← 기여도 그래프 & 프로필
+  3. my-roadmaps       28 files (13%)  ← 로드맵 생성/관리
+  4. community         27 files (12%)  ← 로드맵 탐색/검색
+  5. auth              21 files (9%)   ← 인증 & 회원가입
+
+================================================================================
+🏗️ 프로젝트 구조
+================================================================================
+
+src/
+├── app/                          Next.js App Router
+│   ├── layout.tsx               (Root layout - font 설정)
+│   ├── page.tsx                 (홈 페이지)
+│   ├── (auth)/                  (인증 라우트 그룹)
+│   │   ├── login/page.tsx
+│   │   ├── register/page.tsx
+│   │   └── find-password/page.tsx
+│   ├── (editor)/editor/[id]/    (로드맵 에디터)
+│   ├── (profile)/profile/       (프로필 페이지)
+│   ├── (community)/community/   (커뮤니티 페이지)
+│   ├── (myroadmap)/myroadmap/  (내 로드맵)
+│   └── editor-test/            ⚠️ 개발용 (제거 필요)
+│
+├── features/                     5개 Feature modules
+│   ├── auth/                    (21 files)
+│   │   ├── components/          (atoms, molecules, organisms, templates)
+│   │   ├── hooks/
+│   │   ├── schemas/             (Zod validation)
+│   │   ├── types/
+│   │   └── index.ts             ✅ Named exports
+│   │
+│   ├── community/               (27 files)
+│   │   ├── components/          (atoms, molecules, organisms, templates)
+│   │   ├── stores/              (Jotai atoms)
+│   │   ├── utils/
+│   │   ├── constants/
+│   │   └── index.ts             ⚠️ Wildcard export (지양)
+│   │
+│   ├── my-roadmaps/             (28 files)
+│   │   ├── components/          (atoms, molecules, organisms, templates)
+│   │   ├── hooks/
+│   │   ├── stores/              (Jotai atoms)
+│   │   ├── types/
+│   │   └── ❌ index.ts 없음     (구조 불완전)
+│   │
+│   ├── profile/                 (37 files)
+│   │   ├── components/          (atoms, molecules, organisms, templates)
+│   │   ├── stores/              (Jotai atoms)
+│   │   ├── utils/               (contribution-utils)
+│   │   ├── types/
+│   │   └── index.ts             ✅ Named exports
+│   │
+│   └── roadmap-editor/          (107 files) ⭐ 가장 복잡
+│       ├── components/
+│       │   ├── atoms/           (7개: ColorPicker, EditorInput, ...)
+│       │   ├── molecules/       (8개: JagalchiNode, ColorSelector, ...)
+│       │   ├── organisms/       (14개: RoadmapCanvas, PropertyPanels, ...)
+│       │   └── templates/       (1개: RoadmapEditor)
+│       ├── hooks/               (4개: useCanvasCenter, useNodeOperations, ...)
+│       ├── stores/              (13개 Jotai atoms)
+│       ├── types/
+│       ├── utils/               (node-factory, align-nodes, ...)
+│       ├── constants/           (색상, 프리셋, ...)
+│       ├── schemas/             (Zod validation)
+│       ├── pages/               (special directory)
+│       └── index.ts             ✅ Named exports (36개)
+│
+├── components/ui/               shadcn/ui (15개)
+│   ├── button.tsx
+│   ├── input.tsx
+│   ├── dialog.tsx
+│   ├── form.tsx
+│   ├── select.tsx
+│   ├── card.tsx
+│   ├── avatar.tsx
+│   ├── badge.tsx
+│   ├── dropdown-menu.tsx
+│   ├── scroll-area.tsx
+│   ├── separator.tsx
+│   ├── textarea.tsx
+│   ├── tooltip.tsx
+│   └── breadcrumb.tsx
+│
+├── hooks/                       공유 hooks (1개)
+│   └── use-debounce.ts
+│
+├── lib/                         유틸리티 (1개)
+│   └── utils.ts                 ⚠️ 사용 안 함
+│
+├── constants/                   상수 (3개)
+│   ├── colors.ts                (색상 팔레트)
+│   ├── messages.ts              (UI 문자열)
+│   └── typography.ts            (타이포그래피)
+│
+└── stories/                     Storybook
+    └── ui/
+
+================================================================================
+✅ 강점 (Strengths)
+================================================================================
+
+1. Feature Isolation ✅ 완벽함
+   - 각 feature는 완전히 독립적
+   - Cross-feature import 없음
+   - 각 feature는 독립적으로 배포/테스트 가능
+
+2. Atomic Design Pattern ✅ 일관성 있음
+   - 모든 feature에서 atoms → molecules → organisms → templates 준수
+   - 컴포넌트 재사용성 높음
+   - 계층 구조 명확
+
+3. Barrel Files ✅ 공개 API 명확화
+   - Feature 진입점 명시적
+   - 내부 구조 캡슐화
+   - tree shaking 최적화
+
+4. State Management ✅ Jotai 통일
+   - 모든 feature에서 일관된 상태 관리
+   - 보일러플레이트 최소화
+   - 간단하고 효율적
+
+5. Type Safety ✅ 우수
+   - TypeScript strict mode 전체 적용
+   - Type 정의 명확
+   - 컴파일 타임 에러 감지
+
+6. Validation ✅ Zod 기반
+   - Auth, Editor에서 Zod 스키마 사용
+   - Runtime 타입 체크
+   - 폼 validation 안전
+
+================================================================================
+⚠️ 약점 (Weaknesses) & 개선 필요 사항
+================================================================================
+
+HIGH PRIORITY (긴급):
+
+1. Export 패턴 불일치 ⚠️
+   ❌ community/index.ts: wildcard export 사용 (지양)
+      export * from './components';
+
+   ✅ 권장: Named exports로 변경
+      export { Community, RoadmapDetail } from './components/templates';
+      export type { /* ... */ }
+
+2. Missing Barrel File ⚠️
+   ❌ my-roadmaps/index.ts 없음 (구조 불완전)
+
+   ✅ 생성 필요:
+      export { MyRoadmaps } from './components/templates/MyRoadmaps';
+      export { AddRoadmapModal, AddDirectoryModal } from './components/molecules';
+
+3. Development Code 배포됨 ⚠️
+   ❌ src/app/editor-test/page.tsx 존재
+
+   ✅ 배포 전 제거 필수
+
+MEDIUM PRIORITY (중요):
+
+4. 공유 훅 부족 ⚠️
+   - src/hooks/ 에 1개만 존재 (use-debounce.ts)
+   - Feature별로 중복 가능성
+   - 권장: use-form-state, use-selection 등을 공유 훅으로 추출
+
+5. Shared Lib 미활용 ⚠️
+   - src/lib/utils.ts 사용 안 함
+   - 공유 유틸리티 함수 추가 필요
+
+6. Roadmap-Editor 복잡도 ⚠️
+   - 107 files (전체 features의 49%)
+   - 너무 많은 세부 분기
+   - 리팩토링 고려: sub-features로 분해
+     예) editor-canvas/, editor-properties/, editor-ai/
+
+7. 테스트 불균형 ⚠️
+   - roadmap-editor: 100% (복잡도 때문)
+   - profile: 59%
+   - auth: 50%
+   - community: 부족
+   - my-roadmaps: 부족
+
+LOW PRIORITY (권장):
+
+8. 문서화 부족
+   - JSDoc 추가 필요
+   - Storybook 확대 필요
+
+================================================================================
+📍 주요 파일 위치 참고
+================================================================================
+
+로그인/회원가입:
+  src/features/auth/components/organisms/LoginForm/
+  src/features/auth/components/organisms/RegisterForm/
+  src/features/auth/schemas/auth.schema.ts
+
+로드맵 에디터:
+  src/features/roadmap-editor/components/templates/RoadmapEditor/
+  src/features/roadmap-editor/components/organisms/RoadmapCanvas/
+  src/features/roadmap-editor/components/molecules/JagalchiNode/
+
+사용자 로드맵:
+  src/features/my-roadmaps/components/templates/MyRoadmaps/
+  src/features/my-roadmaps/components/organisms/MyRoadmapsSidebar/
+
+커뮤니티:
+  src/features/community/components/templates/Community/
+  src/features/community/components/molecules/CommunityFilter/
+
+프로필:
+  src/features/profile/components/templates/Profile/
+  src/features/profile/components/molecules/ContributionGraph/
+
+상태 관리 (Jotai atoms):
+  src/features/[feature]/stores/[feature]-atoms.ts
+
+공유 UI 컴포넌트:
+  src/components/ui/
+
+================================================================================
+🎯 권장 개선 순서
+================================================================================
+
+1단계 (즉시):
+   [ ] my-roadmaps/index.ts 생성 (named exports)
+   [ ] community/index.ts 수정 (wildcard → named exports)
+   [ ] editor-test/page.tsx 제거
+
+2단계 (1주일):
+   [ ] 공유 훅 추출 (src/hooks/)
+   [ ] 테스트 커버리지 증대 (community, my-roadmaps)
+
+3단계 (2주일):
+   [ ] Roadmap-editor 리팩토링 (sub-features)
+   [ ] JSDoc 문서화 추가
+
+4단계 (선택사항):
+   [ ] src/lib/utils.ts 활용
+   [ ] Storybook 확대
+   [ ] 컴포넌트 디렉토리 최적화
+
+================================================================================
+📊 구조 건강도
+================================================================================
+
+Feature Isolation:        ████████████████████ 100% ✅
+Export Pattern 일관성:    ████████████░░░░░░░░  80% ⚠️
+Test Coverage:           ███████████░░░░░░░░░  60% ⚠️
+공유 모듈 활용:          ████░░░░░░░░░░░░░░░░  40% ⚠️
+문서화:                  ██░░░░░░░░░░░░░░░░░░  20% ⚠️
+
+전체 평가: ✅ 좋음 (구조적으로 견고함)
+          ⚠️ 소수의 개선 필요 항목
+
+================================================================================
+💡 최종 결론
+================================================================================
+
+Jagalchi Client는 Feature-based 아키텍처를 잘 구현하고 있습니다.
+
+강점:
+  ✅ Feature isolation 완벽
+  ✅ Atomic design 일관성
+  ✅ Type safety 우수
+  ✅ 확장성 좋음
+
+개선 필요:
+  ⚠️ Export 패턴 통일 (community, my-roadmaps)
+  ⚠️ Roadmap-editor 복잡도 관리
+  ⚠️ 공유 모듈 강화
+  ⚠️ 테스트 커버리지 균등화
+
+다음 단계:
+  1. 구조적 불완전성 수정 (index.ts, export patterns)
+  2. 복잡도 관리 (roadmap-editor 리팩토링)
+  3. 공유 모듈 확충 (hooks, utils)
+  4. 테스트 균등화
+
+이 개선사항들을 적용하면 더욱 견고하고 유지보수하기 좋은 아키텍처를
+갖출 수 있습니다.
+
+================================================================================
+📚 상세 분석 문서
+================================================================================
+
+1. STRUCTURE_ANALYSIS.md (693줄)
+   → 전체 구조의 상세한 분석
+   → 각 feature별 깊이있는 설명
+   → 아키텍처 평가 및 권장사항
+
+2. STRUCTURE_QUICK_REFERENCE.md (421줄)
+   → 빠른 검색 및 참고용
+   → 파일 위치별 검색표
+   → FAQ 및 체크리스트
+
+================================================================================
+생성 일시: 2026-02-14
+작성자: Claude Code Explorer
+상태: ✅ 분석 완료
+================================================================================

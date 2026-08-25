@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Jagalchi",
+    "slug": "jagalchi",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "scheme": "jagalchi",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jagalchi.app",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "package": "com.jagalchi.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "web": {},
+    "plugins": [
+      "expo-notifications",
+      "expo-web-browser",
+      "expo-iap"
+    ]
+  }
+}

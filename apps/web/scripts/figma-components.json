@@ -1,0 +1,479 @@
+{
+  "timestamp": "2026-02-18T00:00:00.000Z",
+  "fileKey": "L7Ai9cZPKaF09qZfg9xWhH",
+  "components": [
+    {
+      "componentName": "Colors",
+      "frameNodeId": "534:32434",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "534:32434",
+          "storybookName": "Colors"
+        }
+      ]
+    },
+    {
+      "componentName": "Typography",
+      "frameNodeId": "310:257309",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "310:257309",
+          "storybookName": "Typography"
+        }
+      ]
+    },
+    {
+      "componentName": "Note about fonts",
+      "frameNodeId": "842:47953",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "842:47953",
+          "storybookName": "NoteAboutFonts"
+        }
+      ]
+    },
+    {
+      "componentName": "Icons",
+      "frameNodeId": "310:257546",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "310:257546",
+          "storybookName": "Icons"
+        }
+      ]
+    },
+    {
+      "componentName": "Shadows",
+      "frameNodeId": "310:257524",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "310:257524",
+          "storybookName": "Shadows"
+        }
+      ]
+    },
+    {
+      "componentName": "Main Sidebar",
+      "frameNodeId": "4141:515",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4141:515",
+          "storybookName": "MainSidebar"
+        }
+      ]
+    },
+    {
+      "componentName": "Roadmap Card",
+      "frameNodeId": "4071:929",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4071:929",
+          "storybookName": "RoadmapCard"
+        }
+      ]
+    },
+    {
+      "componentName": "Sort",
+      "frameNodeId": "4211:823",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4211:823",
+          "storybookName": "Sort"
+        }
+      ]
+    },
+    {
+      "componentName": "Sort Select Menu",
+      "frameNodeId": "4070:25947",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4070:25947",
+          "storybookName": "SortSelectMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Type Select Menu",
+      "frameNodeId": "4172:909",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4172:909",
+          "storybookName": "TypeSelectMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Filter Select Menu",
+      "frameNodeId": "4172:910",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4172:910",
+          "storybookName": "FilterSelectMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Create Roadmap",
+      "frameNodeId": "4286:1872",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4286:1872",
+          "storybookName": "CreateRoadmap"
+        }
+      ]
+    },
+    {
+      "componentName": "Create Roadmap (add roadmap)",
+      "frameNodeId": "4318:1901",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4318:1901",
+          "storybookName": "CreateRoadmapAdd"
+        }
+      ]
+    },
+    {
+      "componentName": "Create Directory",
+      "frameNodeId": "4259:2172",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4259:2172",
+          "storybookName": "CreateDirectory"
+        }
+      ]
+    },
+    {
+      "componentName": "Create Directory (add directory)",
+      "frameNodeId": "4259:1190",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4259:1190",
+          "storybookName": "CreateDirectoryAdd"
+        }
+      ]
+    },
+    {
+      "componentName": "Move File",
+      "frameNodeId": "4191:2706",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4191:2706",
+          "storybookName": "MoveFile"
+        }
+      ]
+    },
+    {
+      "componentName": "Move File Card",
+      "frameNodeId": "4191:3355",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4191:3355",
+          "storybookName": "MoveFileCard"
+        }
+      ]
+    },
+    {
+      "componentName": "My Roadmaps Filter",
+      "frameNodeId": "4192:1371",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4192:1371",
+          "storybookName": "MyRoadmapsFilter"
+        }
+      ]
+    },
+    {
+      "componentName": "My Roadmaps Header",
+      "frameNodeId": "4134:4076",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4134:4076",
+          "storybookName": "MyRoadmapsHeader"
+        }
+      ]
+    },
+    {
+      "componentName": "File Tree",
+      "frameNodeId": "4134:4052",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4134:4052",
+          "storybookName": "FileTree"
+        }
+      ]
+    },
+    {
+      "componentName": "Community Header",
+      "frameNodeId": "4099:444",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4099:444",
+          "storybookName": "CommunityHeader"
+        }
+      ]
+    },
+    {
+      "componentName": "Community Search",
+      "frameNodeId": "4068:1770",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4068:1770",
+          "storybookName": "CommunitySearch"
+        }
+      ]
+    },
+    {
+      "componentName": "Community Sort Select",
+      "frameNodeId": "4091:15772",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4091:15772",
+          "storybookName": "CommunitySortSelect"
+        }
+      ]
+    },
+    {
+      "componentName": "Community User Contribute",
+      "frameNodeId": "4101:613",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4101:613",
+          "storybookName": "CommunityUserContribute"
+        }
+      ]
+    },
+    {
+      "componentName": "Profile Page",
+      "frameNodeId": "4537:4005",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4537:4005",
+          "storybookName": "ProfilePage"
+        }
+      ]
+    },
+    {
+      "componentName": "Profile Components",
+      "frameNodeId": "4240:14991",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4240:14991",
+          "storybookName": "ProfileComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Profile Streak",
+      "frameNodeId": "4258:25118",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4258:25118",
+          "storybookName": "ProfileStreak"
+        }
+      ]
+    },
+    {
+      "componentName": "Auth Components",
+      "frameNodeId": "4127:32437",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4127:32437",
+          "storybookName": "AuthComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Editor Components",
+      "frameNodeId": "4480:2054",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4480:2054",
+          "storybookName": "EditorComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Roadmap Components",
+      "frameNodeId": "4480:2263",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4480:2263",
+          "storybookName": "RoadmapComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Menus Components",
+      "frameNodeId": "4573:3435",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4573:3435",
+          "storybookName": "MenusComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "AI Components",
+      "frameNodeId": "4630:4016",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4630:4016",
+          "storybookName": "AIComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Editor Pages",
+      "frameNodeId": "5325:9122",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5325:9122",
+          "storybookName": "EditorPages"
+        }
+      ]
+    },
+    {
+      "componentName": "Viewer Roadmap Components",
+      "frameNodeId": "4746:5802",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4746:5802",
+          "storybookName": "ViewerRoadmapComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Viewer Card Components",
+      "frameNodeId": "5225:4541",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5225:4541",
+          "storybookName": "ViewerCardComponents"
+        }
+      ]
+    },
+    {
+      "componentName": "Zoom Button Group",
+      "frameNodeId": "5246:8232",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5246:8232",
+          "storybookName": "ZoomButtonGroup"
+        }
+      ]
+    },
+    {
+      "componentName": "Viewer Sidebar",
+      "frameNodeId": "5181:15375",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5181:15375",
+          "storybookName": "ViewerSidebar"
+        }
+      ]
+    },
+    {
+      "componentName": "Roadmap Examples",
+      "frameNodeId": "4888:451",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4888:451",
+          "storybookName": "RoadmapExamples"
+        }
+      ]
+    },
+    {
+      "componentName": "Roadmap Header",
+      "frameNodeId": "5320:4316",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5320:4316",
+          "storybookName": "RoadmapHeader"
+        }
+      ]
+    },
+    {
+      "componentName": "Header Menu",
+      "frameNodeId": "4530:4530",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "4530:4530",
+          "storybookName": "HeaderMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Header Export Menu",
+      "frameNodeId": "5246:35327",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5246:35327",
+          "storybookName": "HeaderExportMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Header Save As Image Menu",
+      "frameNodeId": "5246:35328",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5246:35328",
+          "storybookName": "HeaderSaveAsImageMenu"
+        }
+      ]
+    },
+    {
+      "componentName": "Viewer Pages",
+      "frameNodeId": "5326:13710",
+      "variants": [
+        {
+          "name": "Default",
+          "nodeId": "5326:13710",
+          "storybookName": "ViewerPages"
+        }
+      ]
+    }
+  ]
+}
