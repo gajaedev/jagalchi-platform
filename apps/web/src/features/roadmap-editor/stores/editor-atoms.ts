@@ -49,7 +49,7 @@ export const edgesAtom = atom(
     set(editorStateHistoryAtom, { ...current, edges: newEdges });
   },
 );
-export const roadmapTitleAtom = atom<string>('Jagalchi Roadmap');
+export const roadmapTitleAtom = atom<string>('새 실행 과제');
 
 // Selection state
 export const selectedNodeIdsAtom = atom<string[]>([]);

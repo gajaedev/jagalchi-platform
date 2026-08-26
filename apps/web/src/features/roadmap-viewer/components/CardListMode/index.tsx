@@ -13,15 +13,20 @@ export function CardListMode() {
   const nodeItems = nodes.filter((n) => n.type === 'jagalchi-node');
 
   if (nodeItems.length === 0) {
-    return <div className="text-muted-foreground p-6 text-center text-sm">노드가 없습니다</div>;
+    return (
+      <div className="text-muted-foreground p-6 text-center text-sm">실행 단계가 없습니다</div>
+    );
   }
 
   return (
-    <div className="grid gap-4 p-6">
+    <div className="grid w-full min-w-0 gap-3 overflow-hidden p-3 sm:gap-4 sm:p-6">
       {nodeItems.map((node, index) => {
         const data = node.data as JagalchiNodeData;
         return (
-          <article key={node.id} className="bg-card flex items-center gap-4 rounded-lg border p-4">
+          <article
+            key={node.id}
+            className="bg-card flex w-full min-w-0 items-center gap-3 overflow-hidden rounded-lg border p-3 sm:gap-4 sm:p-4"
+          >
             <div className="bg-muted text-muted-foreground flex h-10 w-10 shrink-0 items-center justify-center rounded-md border text-sm font-bold">
               {index + 1}
             </div>
@@ -34,7 +39,7 @@ export function CardListMode() {
             <button
               type="button"
               onClick={() => setSelectedNodeId(node.id)}
-              className="bg-background hover:bg-muted inline-flex h-8 shrink-0 items-center rounded-md border px-3 text-xs"
+              className="bg-background hover:bg-muted inline-flex h-8 shrink-0 items-center rounded-md border px-2 text-xs sm:px-3"
             >
               보기
             </button>

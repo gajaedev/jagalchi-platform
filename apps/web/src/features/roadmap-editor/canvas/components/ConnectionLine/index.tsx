@@ -4,6 +4,7 @@ import { memo } from 'react';
 
 import { getSmoothStepPath, Position } from '@xyflow/react';
 
+import { EDITOR_MESSAGES } from '@/constants/messages';
 import { getNodeColors } from '@/features/roadmap-editor/constants/node-colors';
 import { cn } from '@/lib/utils';
 
@@ -63,7 +64,7 @@ export const ConnectionLine = memo(function ConnectionLine({
               colors.text,
             )}
           >
-            <span className="truncate text-base font-medium">New Node</span>
+            <span className="truncate text-base font-medium">{EDITOR_MESSAGES.NEW_NODE_LABEL}</span>
           </div>
         </foreignObject>
       )}

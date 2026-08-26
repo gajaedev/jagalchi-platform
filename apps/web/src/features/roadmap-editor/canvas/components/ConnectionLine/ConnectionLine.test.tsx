@@ -57,9 +57,9 @@ describe('ConnectionLine', () => {
     expect(foreignObject).toHaveAttribute('y', '176'); // toY - 24
   });
 
-  it('renders ghost node with "New Node" text', () => {
+  it('renders a ghost execution step label', () => {
     const { container } = renderLine();
-    expect(container.textContent).toContain('New Node');
+    expect(container.textContent).toContain('새 실행 단계');
   });
 
   it('is a memo component', () => {

@@ -133,7 +133,7 @@ describe('ViewerSidebar', () => {
         <ViewerSidebar isOpen={true} />
       </TestWrapper>,
     );
-    expect(screen.getByText('총 2개 노드')).toBeTruthy();
+    expect(screen.getByText('총 2개 단계')).toBeTruthy();
   });
 
   it('sends string node IDs through the UUID progress contract', async () => {

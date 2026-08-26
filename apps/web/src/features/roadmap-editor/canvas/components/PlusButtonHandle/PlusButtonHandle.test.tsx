@@ -59,7 +59,7 @@ describe('PlusButtonHandle', () => {
   it('aria-label을 가진다', () => {
     const { container } = render(<PlusButtonHandle position="top" onCreateNode={() => {}} />);
     const button = container.querySelector('button');
-    expect(button).toHaveAttribute('aria-label', '위쪽에 노드 추가');
+    expect(button).toHaveAttribute('aria-label', '위쪽에 실행 단계 추가');
   });
 
   it('hover 시 ghost node를 표시한다', async () => {
@@ -74,7 +74,7 @@ describe('PlusButtonHandle', () => {
     // Ghost node가 나타나는지 확인
     const ghostNode = container.querySelector('.pointer-events-none');
     expect(ghostNode).toBeInTheDocument();
-    expect(ghostNode).toHaveTextContent('New Node');
+    expect(ghostNode).toHaveTextContent('새 실행 단계');
   });
 
   it('unhover 시 ghost node를 숨긴다', async () => {

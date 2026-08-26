@@ -40,7 +40,7 @@ describe('EditorHeader', () => {
 
   it('renders title text', () => {
     renderHeader();
-    const title = screen.getByText('Jagalchi Roadmap');
+    const title = screen.getByText('새 실행 과제');
     expect(title).toBeInTheDocument();
   });
 
@@ -48,8 +48,8 @@ describe('EditorHeader', () => {
     renderHeader();
     const header = screen.getByRole('banner');
     expect(header).toHaveClass('absolute');
-    expect(header).toHaveClass('top-4');
-    expect(header).toHaveClass('left-4');
+    expect(header).toHaveClass('top-3');
+    expect(header).toHaveClass('left-3');
     expect(header).toHaveClass('rounded-lg');
     expect(header).toHaveClass('shadow-md');
   });

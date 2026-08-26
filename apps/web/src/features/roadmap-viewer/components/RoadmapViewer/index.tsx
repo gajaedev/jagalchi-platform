@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ReactFlowProvider } from '@xyflow/react';
 import { useAtom, useAtomValue } from 'jotai';
@@ -41,6 +41,13 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
   const [isCoachOpen, setIsCoachOpen] = useState(false);
+  const aiEnabled = process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED === 'true';
+
+  useEffect(() => {
+    if (!window.matchMedia('(max-width: 767px)').matches) return;
+    setLayout('cards');
+    setIsSidebarOpen(false);
+  }, [setIsSidebarOpen, setLayout]);
 
   if (isLoading) {
     return (
@@ -63,18 +70,18 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
       <RoadmapHeader
         roadmapId={roadmapId}
         roadmapTitle={roadmap?.title ?? VIEWER_MESSAGES.DEFAULT_ROADMAP_TITLE}
-        onAiFeedback={() => setIsCoachOpen(true)}
+        onAiFeedback={aiEnabled ? () => setIsCoachOpen(true) : undefined}
       />
 
-      <div className="mx-auto flex w-full max-w-[2011px] gap-4 px-4 py-4">
-        <div className="relative flex-1">
+      <div className="mx-auto flex w-full max-w-[2011px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row">
+        <div className="relative min-w-0 flex-1">
           {/* Toolbar row */}
-          <div className="mb-3 flex items-center gap-2">
+          <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1">
             <HeaderMenu />
             <HeaderExportMenu />
             <HeaderSaveAsImageMenu />
             <ForkTreeDialog roadmapId={roadmapId} />
-            <div className="ml-auto flex items-center gap-1">
+            <div className="ml-auto flex shrink-0 items-center gap-1">
               <Button
                 variant={layout === 'page' ? 'solid' : 'outline'}
                 size="sm"
@@ -117,11 +124,13 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
 
       {layout === 'page' && <ViewerZoomControls />}
 
-      <LearningCoachModal
-        isOpen={isCoachOpen}
-        onClose={() => setIsCoachOpen(false)}
-        roadmapId={roadmapId}
-      />
+      {aiEnabled ? (
+        <LearningCoachModal
+          isOpen={isCoachOpen}
+          onClose={() => setIsCoachOpen(false)}
+          roadmapId={roadmapId}
+        />
+      ) : null}
     </div>
   );
 }

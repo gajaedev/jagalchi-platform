@@ -34,7 +34,7 @@ describe('EditorSidebar', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(/노드를 선택하세요/)).toBeInTheDocument();
+    expect(screen.getByText(/실행 단계를 선택하세요/)).toBeInTheDocument();
   });
 
   it('has correct width class', () => {

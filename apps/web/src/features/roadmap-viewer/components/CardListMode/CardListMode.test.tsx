@@ -72,7 +72,7 @@ describe('CardListMode', () => {
         <CardListMode />
       </TestWrapper>,
     );
-    expect(screen.getByText('노드가 없습니다')).toBeTruthy();
+    expect(screen.getByText('실행 단계가 없습니다')).toBeTruthy();
   });
 
   it('renders a card for each jagalchi-node', () => {

@@ -30,7 +30,7 @@ describe('EditorToolbar', () => {
 
   it('renders node button', () => {
     renderToolbar();
-    const nodeButton = screen.getByLabelText(/노드/);
+    const nodeButton = screen.getByLabelText(/실행 단계 추가/);
     expect(nodeButton).toBeInTheDocument();
   });
 

@@ -27,19 +27,21 @@ describe('RoadmapAiModal', () => {
 
   it('renders generation form when mode is generate', () => {
     renderModal({ mode: 'generate' });
-    expect(screen.getByText('AI 로드맵 생성')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/)).toBeInTheDocument();
+    expect(screen.getByText('AI 실행 과제 생성')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/)).toBeInTheDocument();
   });
 
   it('renders modification form when mode is modify', () => {
     renderModal({ mode: 'modify' });
-    expect(screen.getByText('AI 로드맵 수정')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/)).toBeInTheDocument();
+    expect(screen.getByText('AI 실행 과제 수정')).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/),
+    ).toBeInTheDocument();
   });
 
   it('does not render when isOpen is false', () => {
     renderModal({ isOpen: false });
-    expect(screen.queryByText('AI 로드맵 생성')).not.toBeInTheDocument();
+    expect(screen.queryByText('AI 실행 과제 생성')).not.toBeInTheDocument();
   });
 
   it('calls onClose when cancel button is clicked', async () => {
@@ -56,7 +58,7 @@ describe('RoadmapAiModal', () => {
     const user = userEvent.setup();
     renderModal({ mode: 'generate' });
 
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     await user.type(textarea, 'React 로드맵');
 
     const submitButton = screen.getByText('생성');
@@ -70,7 +72,7 @@ describe('RoadmapAiModal', () => {
     const user = userEvent.setup();
     renderModal({ mode: 'modify' });
 
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     await user.type(textarea, '난이도를 낮춰주세요');
 
     const submitButton = screen.getByText('수정');

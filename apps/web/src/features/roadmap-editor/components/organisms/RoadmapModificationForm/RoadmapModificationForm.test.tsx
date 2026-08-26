@@ -21,7 +21,7 @@ describe('RoadmapModificationForm', () => {
 
   it('renders textarea with placeholder', () => {
     renderForm();
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     expect(textarea).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe('RoadmapModificationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     await user.type(textarea, '난이도를 낮춰주세요');
 
     const submitButton = screen.getByText('수정');
@@ -52,7 +52,7 @@ describe('RoadmapModificationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     await user.type(textarea, '  난이도를 낮춰주세요  ');
 
     const submitButton = screen.getByText('수정');
@@ -79,7 +79,7 @@ describe('RoadmapModificationForm', () => {
   it('disables form inputs when loading', () => {
     renderForm({ isLoading: true });
 
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     const submitButton = screen.getByText('수정');
     const cancelButton = screen.getByText('취소');
 
@@ -92,7 +92,7 @@ describe('RoadmapModificationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/로드맵을 어떻게 수정하고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/실행 과제를 어떻게 수정하고 싶으신가요/);
     await user.type(textarea, '   ');
 
     const submitButton = screen.getByText('수정');

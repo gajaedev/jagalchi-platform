@@ -4,6 +4,7 @@ import { forwardRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 
+import { EDITOR_MESSAGES } from '@/constants/messages';
 import { cn } from '@/lib/utils';
 
 export interface PlusButtonHandleProps {
@@ -36,10 +37,10 @@ export const PlusButtonHandle = forwardRef<HTMLButtonElement, PlusButtonHandlePr
 
     const getPositionLabel = (pos: 'top' | 'right' | 'bottom' | 'left') => {
       const labels = {
-        top: '위쪽에 노드 추가',
-        right: '오른쪽에 노드 추가',
-        bottom: '아래쪽에 노드 추가',
-        left: '왼쪽에 노드 추가',
+        top: '위쪽에 실행 단계 추가',
+        right: '오른쪽에 실행 단계 추가',
+        bottom: '아래쪽에 실행 단계 추가',
+        left: '왼쪽에 실행 단계 추가',
       };
       return labels[pos];
     };
@@ -71,7 +72,9 @@ export const PlusButtonHandle = forwardRef<HTMLButtonElement, PlusButtonHandlePr
               GHOST_POSITION_STYLES[position],
             )}
           >
-            <span className="text-foreground truncate text-base font-medium">New Node</span>
+            <span className="text-foreground truncate text-base font-medium">
+              {EDITOR_MESSAGES.NEW_NODE_LABEL}
+            </span>
           </div>
         )}
       </>

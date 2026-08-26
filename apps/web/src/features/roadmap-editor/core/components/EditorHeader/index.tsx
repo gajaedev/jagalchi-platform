@@ -5,7 +5,7 @@ import { memo } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAtomValue } from 'jotai';
-import { ChevronLeft, Ellipsis, Eye } from 'lucide-react';
+import { ChevronLeft, Eye } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { REALTIME_MESSAGES } from '@/constants/messages';
@@ -35,7 +35,7 @@ export const EditorHeader = memo(function EditorHeader({
   };
 
   return (
-    <header className="border-border bg-card text-foreground absolute top-4 left-4 z-10 flex w-fit flex-col gap-4 rounded-lg border p-2 shadow-md">
+    <header className="border-border bg-card text-foreground absolute top-3 left-3 z-10 flex max-w-[calc(100vw-1.5rem)] flex-col gap-2 rounded-lg border p-2 shadow-md sm:top-4 sm:left-4">
       <div className="flex items-center gap-2">
         <Button
           type="button"
@@ -50,11 +50,11 @@ export const EditorHeader = memo(function EditorHeader({
         </Button>
 
         <span className="text-foreground text-base leading-6 font-semibold whitespace-nowrap">
-          {title || 'Jagalchi Roadmap'}
+          {title || '새 실행 과제'}
         </span>
 
         <span className="text-muted-foreground text-xs leading-4 font-medium tracking-[0.18px]">
-          (수정중)
+          편집 중
         </span>
 
         {isConnected !== undefined && (
@@ -92,27 +92,11 @@ export const EditorHeader = memo(function EditorHeader({
             <Eye className="h-[15px] w-[15px]" />
           </Button>
         ) : null}
-
-        <Button
-          type="button"
-          intent="neutral"
-          variant="ghost"
-          size="xs"
-          className="flex min-h-8 min-w-8 items-center justify-center rounded-lg p-[7px]"
-          aria-label="더보기"
-        >
-          <Ellipsis className="h-[15px] w-[15px]" />
-        </Button>
       </div>
 
-      <Button
-        intent="primary"
-        variant="solid"
-        size="xs"
-        className="h-8 w-full rounded-lg px-3 py-[5.5px] text-sm font-semibold"
-      >
-        Readme 수정
-      </Button>
+      <p className="text-muted-foreground max-w-sm px-2 pb-1 text-xs leading-5">
+        단계마다 완료 조건과 PR·테스트·배포 증거를 연결하세요.
+      </p>
     </header>
   );
 });

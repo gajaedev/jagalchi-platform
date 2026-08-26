@@ -25,7 +25,7 @@ import { RoadmapHeader } from './index';
 describe('RoadmapHeader', () => {
   it('renders the default roadmap title', () => {
     render(<RoadmapHeader />);
-    expect(screen.getByText("Jagalchi's Roadmap")).toBeTruthy();
+    expect(screen.getByText('새 실행 과제')).toBeTruthy();
   });
 
   it('renders a custom roadmap title', () => {
@@ -40,19 +40,12 @@ describe('RoadmapHeader', () => {
 
   it('renders the search input with placeholder', () => {
     render(<RoadmapHeader />);
-    expect(screen.getByPlaceholderText('로드맵 안에서 검색')).toBeTruthy();
+    expect(screen.getByPlaceholderText('실행 단계 검색')).toBeTruthy();
   });
 
-  it('renders the AI feedback button', () => {
+  it('hides the AI feedback button while AI features are disabled', () => {
     render(<RoadmapHeader />);
-    expect(screen.getByText('AI 학습 피드백')).toBeTruthy();
-  });
-
-  it('calls onAiFeedback when AI button is clicked', async () => {
-    const onAiFeedback = vi.fn();
-    render(<RoadmapHeader onAiFeedback={onAiFeedback} />);
-    await userEvent.click(screen.getByText('AI 학습 피드백'));
-    expect(onAiFeedback).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('AI 실행 피드백')).toBeNull();
   });
 
   it('calls router.back when back button is clicked', async () => {

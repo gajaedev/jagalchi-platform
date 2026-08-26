@@ -36,7 +36,7 @@ export function useViewerRoadmapLoader(roadmapId: string) {
           description: detail.description || undefined,
           nodes: detail.graph.nodes,
           edges: detail.graph.edges,
-          author: { id: detail.ownerId, name: '자갈치 학습자' },
+          author: { id: detail.ownerId, name: '자갈치 실행자' },
           isPublic: detail.visibility === 'PUBLIC',
           createdAt: detail.createdAt,
           updatedAt: detail.updatedAt,
@@ -45,7 +45,7 @@ export function useViewerRoadmapLoader(roadmapId: string) {
         return;
       } catch {
         if (cancelled) return;
-        setError('공개 로드맵을 불러오지 못했습니다.');
+        setError('공개 실행 과제를 불러오지 못했습니다.');
         setLoading(false);
       }
     }

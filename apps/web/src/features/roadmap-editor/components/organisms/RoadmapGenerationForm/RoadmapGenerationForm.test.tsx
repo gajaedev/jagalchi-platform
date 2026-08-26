@@ -21,7 +21,7 @@ describe('RoadmapGenerationForm', () => {
 
   it('renders textarea with placeholder', () => {
     renderForm();
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     expect(textarea).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe('RoadmapGenerationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     await user.type(textarea, 'React 로드맵');
 
     const submitButton = screen.getByText('생성');
@@ -52,7 +52,7 @@ describe('RoadmapGenerationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     await user.type(textarea, '  React 로드맵  ');
 
     const submitButton = screen.getByText('생성');
@@ -79,7 +79,7 @@ describe('RoadmapGenerationForm', () => {
   it('disables form inputs when loading', () => {
     renderForm({ isLoading: true });
 
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     const submitButton = screen.getByText('생성');
     const cancelButton = screen.getByText('취소');
 
@@ -92,7 +92,7 @@ describe('RoadmapGenerationForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    const textarea = screen.getByPlaceholderText(/어떤 로드맵을 만들고 싶으신가요/);
+    const textarea = screen.getByPlaceholderText(/어떤 결과물을 만들고 싶으신가요/);
     await user.type(textarea, '   ');
 
     const submitButton = screen.getByText('생성');

@@ -66,7 +66,7 @@ describe('MultiSelectPanel', () => {
 
   it('renders name input with mixed value', () => {
     renderPanel();
-    const nameLabel = screen.getByText(/노드 이름/);
+    const nameLabel = screen.getByText(/단계 이름/);
     expect(nameLabel).toBeInTheDocument();
 
     const mixedElements = screen.getAllByDisplayValue('Mixed');
@@ -77,7 +77,7 @@ describe('MultiSelectPanel', () => {
 
   it('renders description textarea with mixed value', () => {
     renderPanel();
-    const descLabel = screen.getByText(/노드 설명/);
+    const descLabel = screen.getByText(/완료 조건/);
     expect(descLabel).toBeInTheDocument();
 
     const mixedElements = screen.getAllByDisplayValue('Mixed');

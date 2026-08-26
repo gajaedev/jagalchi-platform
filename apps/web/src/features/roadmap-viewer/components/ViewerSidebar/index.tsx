@@ -65,7 +65,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
   const progressPercent = progress?.progressPercentage ?? 0;
 
   return (
-    <aside className="bg-card flex h-full w-[320px] shrink-0 flex-col rounded-xl border">
+    <aside className="bg-card flex max-h-[36rem] w-full shrink-0 flex-col rounded-xl border lg:h-full lg:max-h-none lg:w-[320px]">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-4 py-3">
         <h2 className="text-sm font-semibold">{VIEWER_MESSAGES.SIDEBAR_TITLE}</h2>
@@ -89,7 +89,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
           </div>
           <div className="bg-muted mt-1.5 h-2 rounded-full">
             <div
-              className="h-full rounded-full bg-blue-600 transition-all"
+              className="bg-primary h-full rounded-full transition-all"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -136,7 +136,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                       }
                     >
                       {isCompleted ? (
-                        <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                        <CheckCircle2 className="text-success h-4 w-4" />
                       ) : (
                         <Circle className="text-muted-foreground h-4 w-4" />
                       )}
