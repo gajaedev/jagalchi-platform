@@ -103,6 +103,7 @@ jobs:
           JWT_ACCESS_SECRET: ci-only-access-secret-that-is-at-least-32-characters
           AI_AUTH_JWT_SECRET: ci-only-ai-auth-secret-that-is-at-least-32-characters
           VERIFICATION_CODE_SECRET: ci-only-verification-secret-that-is-at-least-32-characters
+          RATE_LIMIT_HASH_SECRET: ci-only-rate-limit-secret-that-is-at-least-32-characters
           DJANGO_SECRET_KEY: ci-only-django-secret-that-is-at-least-32-characters
           OBJECT_STORAGE_BUCKET: jagalchi-ci
           OBJECT_STORAGE_ACCESS_KEY_ID: ci-only
