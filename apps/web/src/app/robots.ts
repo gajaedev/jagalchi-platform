@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jagalchi.dev';
 const IS_PRODUCTION = process.env.NEXT_PUBLIC_ENV === 'production';
+const PRIVATE_PATHS = ['/api/', '/career', '/editor', '/myroadmap', '/profile'];
 
 export default function robots(): MetadataRoute.Robots {
   if (!IS_PRODUCTION) {
@@ -15,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/editor/', '/myroadmap/', '/profile/'],
+        disallow: PRIVATE_PATHS,
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,

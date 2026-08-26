@@ -4,31 +4,22 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://jagalchi.dev';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
-
-  return [
-    {
-      url: SITE_URL,
-      lastModified: now,
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: `${SITE_URL}/community`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/login`,
-      lastModified: now,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${SITE_URL}/register`,
-      lastModified: now,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
+  const indexableRoutes: Array<{
+    path: string;
+    changeFrequency: 'daily' | 'weekly' | 'yearly';
+    priority: number;
+  }> = [
+    { path: '', changeFrequency: 'weekly', priority: 1 },
+    { path: '/community', changeFrequency: 'daily', priority: 0.9 },
+    { path: '/login', changeFrequency: 'yearly', priority: 0.3 },
+    { path: '/register', changeFrequency: 'yearly', priority: 0.3 },
   ];
+
+  // Random-ID Proof Profiles are intentionally absent: discovery is link-only and noindex.
+  return indexableRoutes.map(({ path, changeFrequency, priority }) => ({
+    url: `${SITE_URL}${path}`,
+    lastModified: now,
+    changeFrequency,
+    priority,
+  }));
 }

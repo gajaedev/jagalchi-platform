@@ -22,6 +22,7 @@ describe('JWT product role mapping', () => {
   it.each([
     ['STUDENT', 'USER', 'READ,WRITE'],
     ['TEACHER', 'ADMIN', 'ALL'],
+    ['REVIEWER', 'ADMIN', 'ALL'],
     ['ADMIN', 'ADMIN', 'ALL'],
     ['USER', 'USER', 'READ,WRITE'],
     ['GUEST', 'GUEST', 'READ'],

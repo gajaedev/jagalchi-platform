@@ -85,6 +85,7 @@ export function normalizeUserRole(role: unknown): string {
     case 'STUDENT':
       return 'USER';
     case 'TEACHER':
+    case 'REVIEWER':
     case 'ADMIN':
       return 'ADMIN';
     case 'USER':

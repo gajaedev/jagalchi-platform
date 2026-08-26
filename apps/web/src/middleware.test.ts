@@ -15,6 +15,8 @@ function makeRequest(pathname: string, hasSession = false) {
 describe('proxy', () => {
   describe('보호된 라우트 (PROTECTED_ROUTES)', () => {
     const protectedPaths = [
+      '/career',
+      '/career/proof-profile',
       '/myroadmap',
       '/myroadmap/123',
       '/profile',
@@ -73,8 +75,19 @@ describe('proxy', () => {
   });
 
   describe('퍼블릭 경로 (PROTECTED/AUTH 둘 다 아닌 경로)', () => {
-    it('세션 없이 공개 경로 접근 시 그대로 통과한다', () => {
-      const req = makeRequest('/community');
+    it.each(['/community', '/proof/random-public-id'])(
+      '세션 없이 공개 경로 %s 접근 시 그대로 통과한다',
+      (pathname) => {
+        const req = makeRequest(pathname);
+        const res = proxy(req);
+
+        expect(res.status).not.toBe(307);
+        expect(res.headers.get('location')).toBeNull();
+      },
+    );
+
+    it('보호 경로와 접두사만 같은 경로는 보호하지 않는다', () => {
+      const req = makeRequest('/career-guide');
       const res = proxy(req);
 
       expect(res.status).not.toBe(307);
