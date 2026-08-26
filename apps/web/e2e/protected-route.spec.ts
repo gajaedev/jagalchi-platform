@@ -7,7 +7,7 @@ import { loginAsTestUser } from './helpers/auth';
  * redirect query 에 원래 경로를 보존하는지 검증.
  */
 test.describe('Protected routes', () => {
-  const protectedPaths = ['/myroadmap', '/profile', '/editor/new'];
+  const protectedPaths = ['/career', '/myroadmap', '/profile', '/editor/new'];
 
   for (const target of protectedPaths) {
     test(`비인증 상태로 ${target} 접근 시 /login 으로 리다이렉트하고 redirect 쿼리를 보존한다`, async ({
@@ -34,7 +34,9 @@ test.describe('Protected routes', () => {
 
     // 2. 보호 라우트 진입 확인
     await page.goto('/myroadmap');
-    await expect(page.getByRole('heading', { name: '내 로드맵' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: '내 실행 과제' })).toBeVisible({
+      timeout: 30000,
+    });
 
     // 3. 로그아웃
     await page.getByRole('button', { name: '로그아웃' }).click();

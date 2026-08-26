@@ -52,7 +52,17 @@ test.describe('Auth E2E', () => {
       await submitButton.click();
 
       await expect(page).toHaveURL('http://localhost:3100/', { timeout: 10000 });
-      await expect(page.getByRole('heading', { name: '오늘은 여기서 시작해요' })).toBeVisible();
+      await expect(
+        page.getByRole('heading', { name: '목표를 정하고 첫 실행 과제를 시작하세요' }),
+      ).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Career 열기' })).toHaveAttribute(
+        'href',
+        '/career',
+      );
+      await expect(page.getByRole('link', { name: '실행 과제 열기' })).toHaveAttribute(
+        'href',
+        '/myroadmap',
+      );
     });
 
     test('login with invalid credentials shows error message', async ({ page }) => {
