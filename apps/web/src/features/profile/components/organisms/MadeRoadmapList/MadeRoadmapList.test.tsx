@@ -54,9 +54,9 @@ describe('MadeRoadmapList', () => {
         <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
-    expect(screen.getByText('만든 로드맵')).toBeInTheDocument();
+    expect(screen.getByText('만든 실행 과제')).toBeInTheDocument();
     expect(screen.getAllByTestId('roadmap-card').length).toBeGreaterThan(0);
-    expect(screen.queryByText('공개 로드맵 추가')).not.toBeInTheDocument();
+    expect(screen.queryByText('공개 실행 과제 추가')).not.toBeInTheDocument();
   });
 
   it('renders add button in edit mode', () => {
@@ -67,6 +67,6 @@ describe('MadeRoadmapList', () => {
         <MadeRoadmapList userName="홍길동" />
       </Wrapper>,
     );
-    expect(screen.getByText('공개 로드맵 추가')).toBeInTheDocument();
+    expect(screen.getByText('공개 실행 과제 추가')).toBeInTheDocument();
   });
 });

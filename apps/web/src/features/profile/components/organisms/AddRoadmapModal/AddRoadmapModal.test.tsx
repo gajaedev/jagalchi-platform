@@ -35,8 +35,8 @@ describe('AddRoadmapModal', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('로드맵 선택')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('로드맵 검색')).toBeInTheDocument();
+    expect(screen.getByText('실행 과제 선택')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('실행 과제 검색')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '확인' })).toBeInTheDocument();
   });

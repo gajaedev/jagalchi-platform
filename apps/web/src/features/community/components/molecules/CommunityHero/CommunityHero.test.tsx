@@ -46,7 +46,7 @@ describe('CommunityHero', () => {
         <CommunityHero />
       </Wrapper>,
     );
-    expect(screen.getByText('어떤 로드맵을 찾고있나요?')).toBeInTheDocument();
+    expect(screen.getByText('어떤 결과물 과제를 찾고 있나요?')).toBeInTheDocument();
   });
 
   it('updates input value on change', () => {
@@ -55,7 +55,7 @@ describe('CommunityHero', () => {
         <CommunityHero />
       </Wrapper>,
     );
-    const input = screen.getByPlaceholderText('Type a roadmap name to find...') as HTMLInputElement;
+    const input = screen.getByPlaceholderText('예: 로그인 E2E 테스트 과제') as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'React' } });
     expect(input.value).toBe('React');
   });
@@ -66,7 +66,7 @@ describe('CommunityHero', () => {
         <CommunityHero />
       </Wrapper>,
     );
-    const input = screen.getByPlaceholderText('Type a roadmap name to find...');
+    const input = screen.getByPlaceholderText('예: 로그인 E2E 테스트 과제');
     fireEvent.change(input, { target: { value: 'React' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
   });
@@ -77,7 +77,7 @@ describe('CommunityHero', () => {
         <CommunityHero />
       </Wrapper>,
     );
-    const input = screen.getByPlaceholderText('Type a roadmap name to find...');
+    const input = screen.getByPlaceholderText('예: 로그인 E2E 테스트 과제');
     const button = screen.getByRole('button');
 
     fireEvent.change(input, { target: { value: 'Vue' } });

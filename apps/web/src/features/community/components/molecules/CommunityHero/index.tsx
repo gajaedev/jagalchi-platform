@@ -75,11 +75,11 @@ export function CommunityHero() {
               <Search className="text-muted-foreground h-5 w-5 shrink-0" />
               <Input
                 type="text"
-                placeholder="Type a roadmap name to find..."
+                placeholder="예: 로그인 E2E 테스트 과제"
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                aria-label="로드맵 검색"
+                aria-label="실행 과제 검색"
                 className="border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
               />
             </div>

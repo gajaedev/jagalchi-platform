@@ -50,7 +50,7 @@ describe('CommunityFilter', () => {
     );
     expect(screen.getByText('인기')).toBeInTheDocument();
     expect(screen.getByText('최신')).toBeInTheDocument();
-    expect(screen.getByText('저장된 로드맵')).toBeInTheDocument();
+    expect(screen.getByText('저장한 과제')).toBeInTheDocument();
   });
 
   it('highlights the active tab', () => {
