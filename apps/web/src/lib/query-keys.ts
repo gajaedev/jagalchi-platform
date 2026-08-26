@@ -45,6 +45,33 @@ export const queryKeys = {
     settings: () => [...queryKeys.notifications.all, 'settings'] as const,
   },
 
+  career: {
+    all: ['career'] as const,
+    competencies: () => [...queryKeys.career.all, 'competencies'] as const,
+    targets: () => [...queryKeys.career.all, 'targets'] as const,
+    diff: (targetId: string) => [...queryKeys.career.all, 'diff', targetId] as const,
+    evidence: () => [...queryKeys.career.all, 'evidence'] as const,
+    reviews: () => [...queryKeys.career.all, 'reviews'] as const,
+    missions: (targetId: string) => [...queryKeys.career.all, 'proof-missions', targetId] as const,
+    mission: (missionId: string) => [...queryKeys.career.all, 'proof-mission', missionId] as const,
+    verification: (missionId: string) =>
+      [...queryKeys.career.all, 'proof-verification', missionId] as const,
+    proofProfile: () => [...queryKeys.career.all, 'proof-profile'] as const,
+  },
+
+  github: {
+    all: ['career', 'github'] as const,
+    connection: () => [...queryKeys.github.all, 'connection'] as const,
+    repositories: () => [...queryKeys.github.all, 'repositories'] as const,
+    pullRequests: (repositoryId: string) =>
+      [...queryKeys.github.all, 'pull-requests', repositoryId] as const,
+  },
+
+  proofProfiles: {
+    all: ['proof-profiles'] as const,
+    public: (publicId: string) => [...queryKeys.proofProfiles.all, 'public', publicId] as const,
+  },
+
   ai: {
     all: ['ai'] as const,
     health: () => [...queryKeys.ai.all, 'health'] as const,
