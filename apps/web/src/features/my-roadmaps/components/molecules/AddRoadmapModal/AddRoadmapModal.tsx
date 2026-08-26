@@ -62,7 +62,9 @@ export function AddRoadmapModal({ isOpen, onClose, onConfirm }: AddRoadmapModalP
             <DialogTitle className="text-foreground text-lg font-bold">
               {MY_ROADMAPS_MESSAGES.ADD_ROADMAP_TITLE}
             </DialogTitle>
-            <DialogDescription>새 로드맵의 이름과 저장 위치를 정하세요.</DialogDescription>
+            <DialogDescription>
+              만들 결과물의 이름과 과제를 저장할 위치를 정하세요.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input

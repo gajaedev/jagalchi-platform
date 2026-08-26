@@ -64,7 +64,7 @@ export function RoadmapCard({
         }
       }}
       className={cn(
-        'group bg-muted relative flex h-[200px] w-[304px] cursor-pointer flex-col overflow-hidden shadow-none transition-all',
+        'group bg-muted relative flex h-[200px] w-full min-w-0 cursor-pointer flex-col overflow-hidden shadow-none transition-all',
         'focus-visible:ring-ring/40 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         className,
       )}
@@ -97,7 +97,7 @@ export function RoadmapCard({
           <p className="text-muted-foreground truncate text-xs leading-4">
             {isDirectory
               ? `${fileCount ?? 0}${MY_ROADMAPS_MESSAGES.CARD_FILE_COUNT_SUFFIX}`
-              : `By ${author ?? '홍길동'}`}
+              : `작성자 ${author ?? '알 수 없음'}`}
           </p>
         </div>
         <DropdownMenu>

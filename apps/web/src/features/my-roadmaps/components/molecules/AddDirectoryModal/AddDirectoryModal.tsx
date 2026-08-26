@@ -39,7 +39,7 @@ export function AddDirectoryModal({ isOpen, onClose, onConfirm }: AddDirectoryMo
       <DialogContent className="rounded-2xl p-6 sm:max-w-[400px]" showCloseButton={false}>
         <DialogHeader className="mb-4">
           <DialogTitle className="text-foreground text-lg font-bold">디렉토리 추가</DialogTitle>
-          <DialogDescription>로드맵을 정리할 새 디렉토리 이름을 입력하세요.</DialogDescription>
+          <DialogDescription>실행 과제를 정리할 새 폴더 이름을 입력하세요.</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <Input

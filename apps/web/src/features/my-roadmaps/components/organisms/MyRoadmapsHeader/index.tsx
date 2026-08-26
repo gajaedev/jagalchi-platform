@@ -10,18 +10,18 @@ export function MyRoadmapsHeader({ className, userName = 'User' }: MyRoadmapsHea
   return (
     <div
       className={cn(
-        'flex w-full flex-col items-start justify-center gap-6 px-20 pt-10 pb-6',
+        'flex w-full flex-col items-start justify-center gap-4 px-4 pt-6 pb-3 sm:px-6 lg:px-10 lg:pt-8',
         className,
       )}
     >
       <div className="flex w-full flex-col justify-center">
-        <h2 className="text-foreground text-3xl leading-none font-bold tracking-tight">
+        <h1 className="text-foreground text-2xl leading-none font-extrabold tracking-tight sm:text-3xl">
           {MY_ROADMAPS_MESSAGES.HEADER_TITLE}
-        </h2>
+        </h1>
       </div>
-      <div className="border-border flex w-full items-center border-l-2 px-6 py-0">
+      <div className="border-primary flex w-full items-center border-l-2 px-4 py-0">
         <p className="text-foreground flex-1 overflow-hidden text-sm font-medium tracking-[0.07px] text-ellipsis">
-          {userName}’s {MY_ROADMAPS_MESSAGES.HEADER_ROADMAP_SUFFIX}
+          {userName}님의 {MY_ROADMAPS_MESSAGES.HEADER_ROADMAP_SUFFIX}
         </p>
       </div>
     </div>

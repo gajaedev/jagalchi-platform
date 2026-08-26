@@ -19,7 +19,7 @@ describe('RoadmapCard', () => {
   it('renders roadmap type with author correctly', () => {
     render(<RoadmapCard title="Roadmap Name" type="Roadmap" author="홍길동" />);
     expect(screen.getByText('Roadmap Name')).toBeInTheDocument();
-    expect(screen.getByText('By 홍길동')).toBeInTheDocument();
+    expect(screen.getByText('작성자 홍길동')).toBeInTheDocument();
   });
 
   it('shows context menu with all items for roadmap type', async () => {

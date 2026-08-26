@@ -38,7 +38,7 @@ describe('MyRoadmapsGrid', () => {
   it('renders empty state correctly', () => {
     render(<MyRoadmapsGrid roadmaps={[]} />, { wrapper });
     expect(screen.queryByText('Roadmap 1')).toBeNull();
-    expect(screen.getByText('로드맵이 없습니다')).toBeInTheDocument();
+    expect(screen.getByText('아직 실행 과제가 없습니다')).toBeInTheDocument();
   });
 
   it('opens roadmap when a card is clicked', async () => {

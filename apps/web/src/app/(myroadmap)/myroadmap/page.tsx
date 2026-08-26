@@ -151,7 +151,7 @@ export default function MyRoadmapsPage() {
     >
       <div className="flex h-full flex-col">
         <MyRoadmapsHeader userName={currentUserName ?? undefined} />
-        <div className="flex-1 px-20 pb-20">
+        <div className="flex-1 px-4 pb-8 sm:px-6 lg:px-10 lg:pb-10">
           <MyRoadmapsToolbar />
           <div className="mt-6">
             <MyRoadmapsGrid emptyMessage={emptyMessage} roadmaps={filteredRoadmaps} />

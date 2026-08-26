@@ -90,7 +90,7 @@ export function MyRoadmapsGrid({
           <p className="text-foreground text-sm font-medium">{emptyMessage}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-x-14 gap-y-14 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {roadmaps.map((roadmap) => (
             <RoadmapCard
               key={roadmap.id}
@@ -143,7 +143,7 @@ export function MyRoadmapsGrid({
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
             <DialogTitle>{MY_ROADMAPS_MESSAGES.RENAME_TITLE}</DialogTitle>
-            <DialogDescription>로드맵의 새 이름을 입력하세요.</DialogDescription>
+            <DialogDescription>실행 과제의 새 이름을 입력하세요.</DialogDescription>
           </DialogHeader>
           <Input
             value={renameInput}

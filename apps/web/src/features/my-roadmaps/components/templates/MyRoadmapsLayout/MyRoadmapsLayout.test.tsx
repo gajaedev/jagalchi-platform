@@ -31,6 +31,6 @@ describe('MyRoadmapsLayout', () => {
         <div>child</div>
       </MyRoadmapsLayout>,
     );
-    expect(screen.getByText('내 로드맵')).toBeInTheDocument();
+    expect(screen.getByText('내 실행 과제')).toBeInTheDocument();
   });
 });

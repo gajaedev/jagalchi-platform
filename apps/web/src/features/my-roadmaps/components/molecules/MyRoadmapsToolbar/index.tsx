@@ -56,7 +56,7 @@ export function MyRoadmapsToolbar() {
   };
 
   return (
-    <div className="flex w-full items-center justify-between py-6">
+    <div className="flex w-full flex-col gap-3 py-4 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
       {breadcrumbPath.length === 0 ? (
         <div className="flex h-9 items-center px-3">
           <span className="text-sm font-semibold">{MY_ROADMAPS_MESSAGES.ALL_ROADMAPS}</span>
@@ -97,13 +97,13 @@ export function MyRoadmapsToolbar() {
           })}
         </div>
       )}
-      <div className="flex items-center gap-[10px]">
-        <div className="relative">
+      <div className="flex w-full items-center gap-2 lg:w-auto">
+        <div className="relative min-w-0 flex-1 lg:flex-none">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
             type="search"
             placeholder={MY_ROADMAPS_MESSAGES.SEARCH_PLACEHOLDER}
-            className="bg-background h-9 w-[240px] pl-9 text-xs"
+            className="bg-background h-10 w-full pl-9 text-xs lg:w-[240px]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -113,8 +113,8 @@ export function MyRoadmapsToolbar() {
             variant="outline"
             intent="neutral"
             size="icon-sm"
-            aria-label="Filter"
-            className={cn('border-border h-9 w-9 transition-colors', isFilterOpen && 'bg-muted')}
+            aria-label="실행 과제 필터"
+            className={cn('border-border h-10 w-10 transition-colors', isFilterOpen && 'bg-muted')}
             onClick={() => setIsFilterOpen(!isFilterOpen)}
           >
             <ListFilter className="text-muted-foreground h-4 w-4" />
@@ -124,8 +124,13 @@ export function MyRoadmapsToolbar() {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button intent="primary" variant="solid" size="sm" className="rounded-md px-4 text-sm">
-              New
+            <Button
+              intent="primary"
+              variant="solid"
+              size="sm"
+              className="h-10 shrink-0 rounded-md px-4 text-sm"
+            >
+              새 과제
               <Plus className="ml-1.5 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

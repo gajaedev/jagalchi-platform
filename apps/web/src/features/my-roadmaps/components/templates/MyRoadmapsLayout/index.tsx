@@ -1,3 +1,5 @@
+import { AppShell } from '@/components/app-shell/app-shell';
+
 import { MyRoadmapsSidebar } from '../../organisms/MyRoadmapsSidebar';
 
 interface MyRoadmapsLayoutProps {
@@ -16,14 +18,17 @@ export function MyRoadmapsLayout({
   userName,
 }: MyRoadmapsLayoutProps) {
   return (
-    <div className="flex min-h-screen">
-      <MyRoadmapsSidebar
-        onLogout={onLogout}
-        onProfileClick={onProfileClick}
-        userEmail={userEmail ?? undefined}
-        userName={userName ?? undefined}
-      />
-      <div className="flex flex-1 flex-col">{children}</div>
-    </div>
+    <AppShell activeTab="roadmaps">
+      <div className="border-border bg-card flex min-h-[calc(100dvh-10rem)] overflow-hidden rounded-2xl border">
+        <MyRoadmapsSidebar
+          className="hidden min-h-0 lg:flex"
+          onLogout={onLogout}
+          onProfileClick={onProfileClick}
+          userEmail={userEmail ?? undefined}
+          userName={userName ?? undefined}
+        />
+        <div className="min-w-0 flex-1">{children}</div>
+      </div>
+    </AppShell>
   );
 }

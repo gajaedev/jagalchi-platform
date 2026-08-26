@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 
 import { useAtom } from 'jotai';
 import {
-  BookOpen,
   ChevronDown,
   Clock,
   Files,
@@ -57,10 +56,7 @@ interface SidebarItem {
 }
 
 const SIDEBAR_GROUPS: SidebarItem[][] = [
-  [
-    { icon: Clock, label: MY_ROADMAPS_MESSAGES.SIDEBAR_RECENT, id: 'recent' },
-    { icon: BookOpen, label: MY_ROADMAPS_MESSAGES.SIDEBAR_COMMUNITY, id: 'community' },
-  ],
+  [{ icon: Clock, label: MY_ROADMAPS_MESSAGES.SIDEBAR_RECENT, id: 'recent' }],
   [
     { icon: Files, label: MY_ROADMAPS_MESSAGES.SIDEBAR_MY_ROADMAP, id: 'my-roadmap' },
     { icon: Users, label: MY_ROADMAPS_MESSAGES.SIDEBAR_SHARED, id: 'shared' },
@@ -228,7 +224,7 @@ export function MyRoadmapsSidebar({
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
           <Input
-            placeholder="Search"
+            placeholder="과제·폴더 검색"
             className="bg-background h-9 pl-10 text-sm shadow-xs"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}

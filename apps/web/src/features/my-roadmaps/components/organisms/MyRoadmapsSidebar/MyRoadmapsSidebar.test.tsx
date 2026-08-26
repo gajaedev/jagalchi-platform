@@ -26,10 +26,9 @@ function SearchQueryProbe() {
 describe('MyRoadmapsSidebar', () => {
   it('renders all sidebar categories', () => {
     renderWithProvider(<MyRoadmapsSidebar />);
-    expect(screen.getByText('최근')).toBeInTheDocument();
-    expect(screen.getByText('커뮤니티')).toBeInTheDocument();
-    expect(screen.getByText('내 로드맵')).toBeInTheDocument();
-    expect(screen.getByText('공유된 로드맵')).toBeInTheDocument();
+    expect(screen.getByText('최근 실행')).toBeInTheDocument();
+    expect(screen.getByText('내 실행 과제')).toBeInTheDocument();
+    expect(screen.getByText('공유받은 과제')).toBeInTheDocument();
     expect(screen.getByText('즐겨찾기')).toBeInTheDocument();
   });
 
@@ -37,11 +36,11 @@ describe('MyRoadmapsSidebar', () => {
     const user = userEvent.setup();
     renderWithProvider(<MyRoadmapsSidebar />);
 
-    const recentButton = screen.getByText('최근').closest('button')!;
+    const recentButton = screen.getByText('최근 실행').closest('button')!;
     await user.click(recentButton);
     expect(recentButton).toHaveClass('bg-accent');
 
-    const myRoadmapButton = screen.getByText('내 로드맵').closest('button')!;
+    const myRoadmapButton = screen.getByText('내 실행 과제').closest('button')!;
     expect(myRoadmapButton).not.toHaveClass('bg-accent');
   });
 
@@ -54,7 +53,7 @@ describe('MyRoadmapsSidebar', () => {
       </>,
     );
 
-    await user.type(screen.getByPlaceholderText('Search'), '프론트엔드');
+    await user.type(screen.getByPlaceholderText('과제·폴더 검색'), '프론트엔드');
 
     expect(screen.getByTestId('search-query')).toHaveTextContent('프론트엔드');
   });
