@@ -27,7 +27,7 @@ test.describe('Community E2E', () => {
     test('filter and sort controls are visible', async ({ page }) => {
       await expect(page.getByRole('button', { name: '인기' })).toBeVisible();
       await expect(page.getByRole('button', { name: '최신' })).toBeVisible();
-      await expect(page.getByRole('button', { name: '저장된 로드맵' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '저장한 과제' })).toBeVisible();
       await expect(page.getByRole('button', { name: '정렬 옵션' })).toBeVisible();
     });
 
@@ -41,8 +41,8 @@ test.describe('Community E2E', () => {
 
     test('searches latest roadmaps and forks a result', async ({ page }) => {
       await page.getByRole('button', { name: '최신' }).click();
-      await page.getByLabel('로드맵 검색').fill('백엔드');
-      await page.getByLabel('로드맵 검색').press('Enter');
+      await page.getByLabel('실행 과제 검색').fill('백엔드');
+      await page.getByLabel('실행 과제 검색').press('Enter');
 
       await expect(page.getByRole('link', { name: /백엔드 개발자 로드맵/ })).toBeVisible({
         timeout: 10000,
@@ -54,7 +54,7 @@ test.describe('Community E2E', () => {
         timeout: 30000,
       });
 
-      await page.getByRole('button', { name: '포크', exact: true }).click();
+      await page.getByRole('button', { name: '내 과제로 복사', exact: true }).click();
       await expect(page).toHaveURL(/\/editor\/[0-9a-f-]{36}$/, { timeout: 30000 });
     });
   });
@@ -70,12 +70,12 @@ test.describe('Community E2E', () => {
 
     test('renders roadmap title and viewer actions', async ({ page }) => {
       await expect(page.getByText('프론트엔드 개발자 로드맵', { exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: '포크', exact: true })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'AI 학습 피드백' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '내 과제로 복사', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'AI 실행 피드백' })).toHaveCount(0);
     });
 
     test('fork action opens an editable copy', async ({ page }) => {
-      await page.getByRole('button', { name: '포크', exact: true }).click();
+      await page.getByRole('button', { name: '내 과제로 복사', exact: true }).click();
       await expect(page).toHaveURL(/\/editor\/[0-9a-f-]{36}$/, { timeout: 30000 });
       await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
     });
@@ -93,16 +93,18 @@ test.describe('Community E2E', () => {
       await expect(page.locator('a[href^="/community/"]').first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('저장된 로드맵 tab shows empty state', async ({ page }) => {
+    test('저장한 과제 tab shows empty state', async ({ page }) => {
       await page.goto('/community');
       await expect(page.locator('a[href^="/community/"]').first()).toBeVisible({ timeout: 30000 });
-      await page.getByRole('button', { name: '저장된 로드맵' }).click();
-      await expect(page.getByText('저장된 로드맵이 없습니다.')).toBeVisible();
+      await page.getByRole('button', { name: '저장한 과제' }).click();
+      await expect(page.getByText('저장된 실행 과제가 없습니다.')).toBeVisible();
     });
 
     test('missing public roadmap shows an error', async ({ page }) => {
       await page.goto(`/viewer/${MISSING_ROADMAP_ID}`);
-      await expect(page.getByText('로드맵을 찾을 수 없습니다')).toBeVisible({ timeout: 30000 });
+      await expect(page.getByText('실행 과제를 찾을 수 없습니다')).toBeVisible({
+        timeout: 30000,
+      });
     });
   });
 });

@@ -49,11 +49,13 @@ test.describe('Editor E2E', () => {
 
   test('node edits are auto-saved and visible in viewer', async ({ page }) => {
     await page.goto('/myroadmap');
-    await expect(page.getByRole('heading', { name: '내 로드맵' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: '내 실행 과제' })).toBeVisible({
+      timeout: 30000,
+    });
 
-    await page.getByRole('button', { name: /New/ }).click();
-    await page.getByRole('menuitem', { name: '로드맵' }).click();
-    await page.getByPlaceholder('로드맵 이름을 입력하세요').fill('E2E 저장 검증 로드맵');
+    await page.getByRole('button', { name: '새 과제' }).click();
+    await page.getByRole('menuitem', { name: '실행 과제' }).click();
+    await page.getByPlaceholder('만들 결과물을 입력하세요').fill('E2E 저장 검증 실행 과제');
     await page.getByRole('button', { name: '확인' }).click();
 
     await expect(page).toHaveURL(/\/editor\/[0-9a-f-]{36}/, { timeout: 10000 });
@@ -75,7 +77,7 @@ test.describe('Editor E2E', () => {
     }
     await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
 
-    const nameInput = page.getByLabel('노드 이름');
+    const nameInput = page.getByLabel('단계 이름');
     await expect(nameInput).toBeVisible({ timeout: 10000 });
     const persistedEdit = page.waitForResponse(
       async (response) => {
@@ -100,7 +102,7 @@ test.describe('Editor E2E', () => {
     );
     await nameInput.fill('수정된 E2E 노드');
 
-    const descriptionInput = page.getByLabel('노드 설명');
+    const descriptionInput = page.getByLabel('완료 조건');
     await descriptionInput.fill('뷰어 저장 확인용 설명');
 
     await expect(

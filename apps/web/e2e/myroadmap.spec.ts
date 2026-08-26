@@ -6,40 +6,41 @@ test.describe('My Roadmaps E2E', () => {
   test.beforeEach(async ({ page }) => {
     await loginAsTestUser(page);
     await page.goto('/myroadmap');
-    await expect(page.getByRole('heading', { name: '내 로드맵' })).toBeVisible({ timeout: 30000 });
+    await expect(page.getByRole('heading', { name: '내 실행 과제' })).toBeVisible({
+      timeout: 30000,
+    });
   });
 
   test.describe('Page Layout', () => {
     test('renders header with title', async ({ page }) => {
-      const heading = page.getByRole('heading', { name: '내 로드맵' });
+      const heading = page.getByRole('heading', { name: '내 실행 과제' });
       await expect(heading).toBeVisible();
     });
 
     test('renders sidebar with navigation items', async ({ page }) => {
-      await expect(page.getByRole('button', { name: '최근' })).toBeVisible();
-      await expect(page.getByRole('button', { name: '커뮤니티' })).toBeVisible();
-      await expect(page.getByRole('button', { name: '내 로드맵' })).toBeVisible();
-      await expect(page.getByRole('button', { name: '공유된 로드맵' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '최근 실행' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '내 실행 과제' })).toBeVisible();
+      await expect(page.getByRole('button', { name: '공유받은 과제' })).toBeVisible();
       await expect(page.getByRole('button', { name: '즐겨찾기' })).toBeVisible();
     });
 
     test('renders toolbar with search, filter, and new button', async ({ page }) => {
-      await expect(page.getByPlaceholder('로드맵 검색')).toBeVisible();
-      await expect(page.getByLabel('Filter')).toBeVisible();
-      await expect(page.getByRole('button', { name: /New/ })).toBeVisible();
+      await expect(page.getByPlaceholder('실행 과제 검색')).toBeVisible();
+      await expect(page.getByLabel('실행 과제 필터')).toBeVisible();
+      await expect(page.getByRole('button', { name: '새 과제' })).toBeVisible();
     });
 
     test('renders sidebar profile info', async ({ page }) => {
       await expect(page.getByRole('button', { name: '프로필 보기' })).toBeVisible();
-      await expect(page.getByPlaceholder('Search')).toBeVisible();
+      await expect(page.getByPlaceholder('과제·폴더 검색')).toBeVisible();
     });
   });
 
   test.describe('Sidebar Navigation', () => {
     test('clicking sidebar category updates active state', async ({ page }) => {
-      const communityButton = page.getByRole('button', { name: '커뮤니티' });
-      await communityButton.click();
-      await expect(communityButton).toHaveAttribute('aria-pressed', 'true');
+      const sharedButton = page.getByRole('button', { name: '공유받은 과제' });
+      await sharedButton.click();
+      await expect(sharedButton).toHaveAttribute('aria-pressed', 'true');
     });
 
     test('logout button is visible and clickable', async ({ page }) => {
@@ -54,36 +55,36 @@ test.describe('My Roadmaps E2E', () => {
   });
 
   test.describe('Toolbar', () => {
-    test('shows "내 전체 로드맵" as default breadcrumb', async ({ page }) => {
-      await expect(page.getByText('내 전체 로드맵')).toBeVisible();
+    test('shows all execution tasks as default breadcrumb', async ({ page }) => {
+      await expect(page.getByText('전체 실행 과제')).toBeVisible();
     });
 
     test('New dropdown shows roadmap and directory options', async ({ page }) => {
-      await page.getByRole('button', { name: /New/ }).click();
-      await expect(page.getByRole('menuitem', { name: '로드맵' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: '디렉토리' })).toBeVisible();
+      await page.getByRole('button', { name: '새 과제' }).click();
+      await expect(page.getByRole('menuitem', { name: '실행 과제' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: '과제 폴더' })).toBeVisible();
     });
 
     test('clicking "로드맵" opens AddRoadmapModal', async ({ page }) => {
-      await page.getByRole('button', { name: /New/ }).click();
-      await page.getByRole('menuitem', { name: '로드맵' }).click();
-      await expect(page.getByText('로드맵 추가')).toBeVisible({ timeout: 5000 });
-      await expect(page.getByPlaceholder('로드맵 이름을 입력하세요')).toBeVisible();
+      await page.getByRole('button', { name: '새 과제' }).click();
+      await page.getByRole('menuitem', { name: '실행 과제' }).click();
+      await expect(page.getByText('실행 과제 추가')).toBeVisible({ timeout: 5000 });
+      await expect(page.getByPlaceholder('만들 결과물을 입력하세요')).toBeVisible();
     });
 
     test('creating a roadmap opens the editor canvas', async ({ page }) => {
-      await page.getByRole('button', { name: /New/ }).click();
-      await page.getByRole('menuitem', { name: '로드맵' }).click();
-      await page.getByPlaceholder('로드맵 이름을 입력하세요').fill('E2E 생성 로드맵');
+      await page.getByRole('button', { name: '새 과제' }).click();
+      await page.getByRole('menuitem', { name: '실행 과제' }).click();
+      await page.getByPlaceholder('만들 결과물을 입력하세요').fill('E2E 생성 실행 과제');
       await page.getByRole('button', { name: '확인' }).click();
 
       await expect(page).toHaveURL(/\/editor\/[0-9a-f-]{36}/, { timeout: 10000 });
-      await expect(page.getByText('E2E 생성 로드맵')).toBeVisible({ timeout: 10000 });
+      await expect(page.getByText('E2E 생성 실행 과제')).toBeVisible({ timeout: 10000 });
       await expect(page.locator('.react-flow')).toBeVisible({ timeout: 30000 });
     });
 
     test('search filters matching roadmaps', async ({ page }) => {
-      await page.getByPlaceholder('로드맵 검색').fill('프론트엔드');
+      await page.getByPlaceholder('실행 과제 검색').fill('프론트엔드');
 
       await expect(page.getByRole('article', { name: '프론트엔드 개발자 로드맵' })).toBeVisible({
         timeout: 10000,
@@ -161,7 +162,7 @@ test.describe('My Roadmaps E2E', () => {
 
   test.describe('Edge Cases', () => {
     test('search with no results shows empty grid', async ({ page }) => {
-      const searchInput = page.getByPlaceholder('로드맵 검색');
+      const searchInput = page.getByPlaceholder('실행 과제 검색');
       await searchInput.fill('존재하지않는로드맵이름xyz');
 
       const cards = page.locator('[role="article"]');
@@ -201,16 +202,15 @@ test.describe('My Roadmaps E2E', () => {
     });
 
     test('sidebar category switching resets active state', async ({ page }) => {
-      const recentButton = page.getByRole('button', { name: '최근' });
-      const communityButton = page.getByRole('button', { name: '커뮤니티' });
+      const recentButton = page.getByRole('button', { name: '최근 실행' });
+      const sharedButton = page.getByRole('button', { name: '공유받은 과제' });
 
-      await communityButton.click();
-      await expect(communityButton).toHaveAttribute('aria-pressed', 'true');
+      await sharedButton.click();
+      await expect(sharedButton).toHaveAttribute('aria-pressed', 'true');
 
       await recentButton.click();
       await expect(recentButton).toHaveAttribute('aria-pressed', 'true');
-      // Community should no longer be active
-      await expect(communityButton).toHaveAttribute('aria-pressed', 'false');
+      await expect(sharedButton).toHaveAttribute('aria-pressed', 'false');
     });
 
     test('logout redirects to login page', async ({ page }) => {
