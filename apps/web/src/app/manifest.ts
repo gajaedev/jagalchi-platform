@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: '자갈치 — 개발자 학습 로드맵 플랫폼',
+    name: '자갈치 — 증거로 준비하는 개발자 커리어',
     short_name: '자갈치',
-    description: '개발자의 학습 경로를 노드 기반 에디터로 생성하고, 포크·공유하는 플랫폼.',
+    description: '목표 직무의 요구 역량과 실제 결과물을 연결해 부족한 커리어 증거를 확인합니다.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

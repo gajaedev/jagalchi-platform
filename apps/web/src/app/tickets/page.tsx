@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import {
   ArrowDownLeft,
@@ -89,6 +90,10 @@ function formatLedgerAmount(amount: number): string {
 }
 
 export default function TicketsPage() {
+  if (process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== 'true') {
+    redirect('/career');
+  }
+
   return (
     <AppShell activeTab="my">
       <div className="mx-auto w-full max-w-5xl">

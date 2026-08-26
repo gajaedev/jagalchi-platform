@@ -23,26 +23,26 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: '자갈치 — 개발자 학습 로드맵 플랫폼',
+    default: '자갈치 — 증거로 준비하는 개발자 커리어',
     template: '%s | 자갈치',
   },
   description:
-    '개발자의 학습 경로를 노드 기반 에디터로 생성하고, 포크·공유하는 플랫폼. 제작자의 경력으로 로드맵을 신뢰하고, 학습 기록이 자산으로 쌓입니다.',
+    '목표 직무의 요구 역량과 GitHub·배포·기술 문서를 연결해 부족한 커리어 증거를 확인하고 검증합니다.',
   icons: {
     icon: '/jagalchi.svg',
   },
   manifest: '/manifest.webmanifest',
   openGraph: {
-    title: '자갈치 — 개발자 학습 로드맵 플랫폼',
-    description: '개발자의 학습 경로를 노드 기반 에디터로 생성하고, 포크·공유하는 플랫폼.',
+    title: '자갈치 — 증거로 준비하는 개발자 커리어',
+    description: '채용공고의 요구 역량과 실제 결과물 사이의 차이를 확인하고 검증합니다.',
     siteName: '자갈치',
     locale: 'ko_KR',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: '자갈치 — 개발자 학습 로드맵 플랫폼',
-    description: '개발자의 학습 경로를 노드 기반 에디터로 생성하고, 포크·공유하는 플랫폼.',
+    title: '자갈치 — 증거로 준비하는 개발자 커리어',
+    description: '채용공고의 요구 역량과 실제 결과물 사이의 차이를 확인하고 검증합니다.',
   },
   robots: {
     index: true,

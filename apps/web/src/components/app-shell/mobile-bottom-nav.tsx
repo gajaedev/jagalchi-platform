@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
-import { Bell, CirclePlus, House, Search, UserRound, type LucideIcon } from 'lucide-react';
+import { Bell, House, Route, Target, UserRound, type LucideIcon } from 'lucide-react';
 
-export type AppTab = 'home' | 'explore' | 'create' | 'activity' | 'my';
+export type AppTab = 'home' | 'career' | 'roadmaps' | 'explore' | 'create' | 'activity' | 'my';
 
 export interface MobileBottomNavProps {
   activeTab: AppTab;
@@ -15,8 +15,8 @@ const navItems: ReadonlyArray<{
   icon: LucideIcon;
 }> = [
   { id: 'home', label: '홈', href: '/', icon: House },
-  { id: 'explore', label: '탐색', href: '/explore', icon: Search },
-  { id: 'create', label: '만들기', href: '/create', icon: CirclePlus },
+  { id: 'career', label: '커리어', href: '/career', icon: Target },
+  { id: 'roadmaps', label: '실행', href: '/myroadmap', icon: Route },
   { id: 'activity', label: '활동', href: '/activity', icon: Bell },
   { id: 'my', label: '마이', href: '/profile', icon: UserRound },
 ];

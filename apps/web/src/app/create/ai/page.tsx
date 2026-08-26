@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import { ArrowLeft } from 'lucide-react';
 
@@ -8,11 +9,15 @@ import { AiRoadmapCreator } from '@/features/tickets/components/ai-roadmap-creat
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'AI 로드맵 만들기',
-  description: '학습 목표를 바탕으로 AI가 맞춤 로드맵을 설계합니다.',
+  title: 'AI 실행 과제 만들기',
+  description: '만들 결과물과 완료 조건을 바탕으로 AI가 실행 과제를 구성합니다.',
 };
 
 export default function AiRoadmapCreatePage() {
+  if (process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED !== 'true') {
+    redirect('/create');
+  }
+
   return (
     <AppShell activeTab="create">
       <div className="mx-auto w-full max-w-3xl">

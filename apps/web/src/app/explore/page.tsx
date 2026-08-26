@@ -10,11 +10,11 @@ import { ExploreResults } from '@/features/explore/components/explore-results';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: '탐색',
-  description: '직무, 기술, 목표에 맞는 인기 학습 로드맵을 찾아보세요.',
+  title: '과제 템플릿',
+  description: '지원에 필요한 결과물을 만드는 실전 과제 템플릿을 찾아보세요.',
 };
 
-const topics = ['전체', '프론트엔드', '백엔드', '모바일', 'AI', '데이터', 'DevOps'];
+const topics = ['전체', '테스트', '성능', '접근성', 'API', '아키텍처', '배포'];
 
 export default function ExplorePage() {
   return (
@@ -23,15 +23,15 @@ export default function ExplorePage() {
         <header className="bg-primary/10 rounded-2xl px-5 py-7 sm:px-8 sm:py-9">
           <p className="text-primary text-sm font-bold">로그인 없이 누구나 둘러볼 수 있어요</p>
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
-            배우고 싶은 기술을 찾아보세요
+            지원에 쓸 결과물 과제를 찾아보세요
           </h1>
           <p className="text-muted-foreground mt-2 max-w-2xl text-sm leading-6">
-            직무, 기술, 목표로 검색하면 지금 시작하기 좋은 로드맵을 추천해드려요.
+            PR·테스트·배포처럼 완료 조건이 분명한 과제를 내 프로젝트에 적용하세요.
           </p>
 
           <form action="/explore" className="mt-5 flex max-w-3xl gap-2" role="search">
             <label htmlFor="roadmap-search" className="sr-only">
-              로드맵, 기술 또는 직무 검색
+              실전 과제 또는 증거 유형 검색
             </label>
             <div className="relative min-w-0 flex-1">
               <Search
@@ -42,7 +42,7 @@ export default function ExplorePage() {
                 id="roadmap-search"
                 name="q"
                 type="search"
-                placeholder="예: Expo로 앱 출시하기"
+                placeholder="예: 로그인 E2E 테스트 추가"
                 className="border-border bg-background placeholder:text-muted-foreground focus-visible:ring-ring h-12 w-full rounded-xl border pr-4 pl-11 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               />
             </div>
@@ -56,7 +56,7 @@ export default function ExplorePage() {
           </form>
         </header>
 
-        <nav aria-label="로드맵 주제" className="mt-6 overflow-x-auto pb-1">
+        <nav aria-label="과제 주제" className="mt-6 overflow-x-auto pb-1">
           <ul className="flex min-w-max gap-2">
             {topics.map((topic, index) => (
               <li key={topic}>
@@ -79,12 +79,12 @@ export default function ExplorePage() {
         <section aria-labelledby="results-heading" className="mt-8">
           <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-primary text-xs font-bold">에디터 추천</p>
+              <p className="text-primary text-xs font-bold">바로 실행할 수 있어요</p>
               <h2
                 id="results-heading"
                 className="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl"
               >
-                지금 인기 있는 로드맵
+                증거를 만드는 과제 템플릿
               </h2>
             </div>
 
@@ -124,7 +124,7 @@ export default function ExplorePage() {
             </div>
           </div>
 
-          <Suspense fallback={<p className="text-muted-foreground text-sm">로드맵 준비 중…</p>}>
+          <Suspense fallback={<p className="text-muted-foreground text-sm">과제 준비 중…</p>}>
             <ExploreResults />
           </Suspense>
         </section>
@@ -136,10 +136,10 @@ export default function ExplorePage() {
           <div>
             <p className="text-primary text-xs font-bold">커뮤니티</p>
             <h2 id="community-heading" className="mt-2 text-lg font-extrabold sm:text-xl">
-              혼자 막히지 않도록 함께 질문해요
+              완료 사례와 보완 피드백을 확인하세요
             </h2>
             <p className="text-muted-foreground mt-1 text-sm leading-6">
-              로그인하지 않아도 학습자들의 질문과 앱 출시 이야기를 먼저 둘러볼 수 있어요.
+              다른 개발자가 어떤 PR과 배포 결과로 과제를 끝냈는지 둘러볼 수 있어요.
             </p>
           </div>
           <Link

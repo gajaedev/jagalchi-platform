@@ -2,19 +2,17 @@
 
 import Link from 'next/link';
 
-import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import { Bell, Search, Ticket, UserRound } from 'lucide-react';
+import { Bell, Search, UserRound } from 'lucide-react';
 
-import { getTicketBalance } from '@/api/tickets';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { isAuthenticatedAtom } from '@/lib/auth-atoms';
 
 const headerLinks = [
   { label: '홈', href: '/' },
-  { label: '탐색', href: '/explore' },
-  { label: '커뮤니티', href: '/community' },
-  { label: '내 로드맵', href: '/myroadmap' },
+  { label: '목표 공고', href: '/career' },
+  { label: '실행 과제', href: '/myroadmap' },
+  { label: '과제 템플릿', href: '/explore' },
 ] as const;
 
 const focusRing =
@@ -22,12 +20,6 @@ const focusRing =
 
 export function ProductHeader() {
   const isAuthenticated = useAtomValue(isAuthenticatedAtom);
-  const balanceQuery = useQuery({
-    queryKey: ['tickets', 'balance'],
-    queryFn: getTicketBalance,
-    enabled: isAuthenticated,
-    staleTime: 30_000,
-  });
 
   return (
     <header className="border-border bg-surface h-16 border-b md:h-[72px]">
@@ -56,25 +48,15 @@ export function ProductHeader() {
         </nav>
 
         <Link
-          aria-label="로드맵 검색"
+          aria-label="실전 과제 검색"
           className={`min-h-touch border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground ml-auto hidden min-w-0 flex-1 items-center gap-2 rounded-md border px-3 text-[13px] transition-colors md:flex lg:max-w-xs ${focusRing}`}
           href="/explore"
         >
           <Search aria-hidden="true" className="size-[18px] shrink-0" />
-          <span className="truncate">관심 있는 로드맵 검색</span>
+          <span className="truncate">필요한 증거 과제 검색</span>
         </Link>
 
         <span aria-hidden="true" className="ml-auto md:hidden" />
-        {isAuthenticated && balanceQuery.data ? (
-          <Link
-            href="/tickets"
-            aria-label={`AI 티켓 ${balanceQuery.data.balance}장 확인`}
-            className={`bg-ticket-subtle text-ticket inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold transition-colors hover:opacity-80 ${focusRing}`}
-          >
-            <Ticket aria-hidden="true" className="size-4" />
-            {new Intl.NumberFormat('ko-KR').format(balanceQuery.data.balance)}장
-          </Link>
-        ) : null}
         <ThemeToggle />
 
         <Link

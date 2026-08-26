@@ -20,7 +20,7 @@ export function CurrentLessonCard({ roadmap, title, meta, href }: CurrentLessonC
           <span className="bg-primary-foreground/15 flex size-7 items-center justify-center rounded-full">
             <Play aria-hidden="true" className="size-3.5 fill-current" />
           </span>
-          이어서 학습하기
+          이어서 실행하기
         </div>
 
         <p className="text-primary-foreground/75 mt-7 text-sm font-semibold">{roadmap}</p>
@@ -31,7 +31,7 @@ export function CurrentLessonCard({ roadmap, title, meta, href }: CurrentLessonC
 
         <Button asChild intent="inverse" size="lg" className="mt-8 w-fit">
           <Link href={href}>
-            학습 이어가기
+            과제 이어가기
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </Button>
