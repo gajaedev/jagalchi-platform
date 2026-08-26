@@ -136,14 +136,12 @@ export interface CareerTarget {
 
 export interface CareerEvidence {
   id: string;
-  userId: string;
   title: string;
   url: string;
   kind: CareerEvidenceKind;
   description: string;
   competencySlugs: string[];
   status: CareerEvidenceStatus;
-  reviewerId: string | null;
   reviewNote: string | null;
   reviewedAt: string | null;
   createdAt: string;

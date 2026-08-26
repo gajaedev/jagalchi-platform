@@ -69,7 +69,11 @@ const competencies: CareerCompetency[] = [
 }));
 
 const targets: CareerTarget[] = [];
-const evidence: CareerEvidence[] = [];
+type StoredCareerEvidence = CareerEvidence & {
+  userId: string;
+  reviewerId: string | null;
+};
+const evidence: StoredCareerEvidence[] = [];
 const missions: ProofMission[] = [];
 const verificationRuns: ProofVerificationRun[] = [];
 const reviews: ProofReview[] = [];
@@ -157,7 +161,23 @@ function reviewerProofMission(mission: ProofMission): ProofReviewQueueItem {
   };
 }
 
-function reviewerCareerEvidence(item: CareerEvidence): CareerReviewQueueItem {
+function ownerCareerEvidence(item: StoredCareerEvidence): CareerEvidence {
+  return {
+    id: item.id,
+    title: item.title,
+    url: item.url,
+    kind: item.kind,
+    description: item.description,
+    competencySlugs: item.competencySlugs,
+    status: item.status,
+    reviewNote: item.reviewNote,
+    reviewedAt: item.reviewedAt,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+  };
+}
+
+function reviewerCareerEvidence(item: StoredCareerEvidence): CareerReviewQueueItem {
   return {
     id: item.id,
     title: item.title,
@@ -396,14 +416,14 @@ export const careerHandlers = [
     });
   }),
 
-  http.get('/api/career/evidence', () => HttpResponse.json(evidence)),
+  http.get('/api/career/evidence', () => HttpResponse.json(evidence.map(ownerCareerEvidence))),
 
   http.post<Record<string, never>, CreateCareerEvidenceInput>(
     '/api/career/evidence',
     async ({ request }) => {
       const input = await request.json();
       const createdAt = now();
-      const item: CareerEvidence = {
+      const item: StoredCareerEvidence = {
         id: `evidence-${++evidenceSequence}`,
         userId: 'user-1',
         title: input.title,
@@ -419,7 +439,7 @@ export const careerHandlers = [
         updatedAt: createdAt,
       };
       evidence.unshift(item);
-      return HttpResponse.json(item, { status: 201 });
+      return HttpResponse.json(ownerCareerEvidence(item), { status: 201 });
     },
   ),
 
