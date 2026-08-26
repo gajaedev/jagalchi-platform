@@ -37,6 +37,12 @@ export interface GithubInstallationClaim {
   stateExpiresAt: string;
 }
 
+export interface GithubInstallationClaimResult {
+  installationId: string;
+  repositoryCount: number;
+  returnPath: string;
+}
+
 export interface GithubPullRequest {
   repositoryId: string;
   pullNumber: number;
@@ -55,6 +61,12 @@ export const startGithubInstallationClaim = (returnTo?: string) =>
     '/github/installation-claims',
     returnTo ? { returnTo } : {},
   );
+
+export const completeGithubInstallationClaim = (state: string, installationId: string) =>
+  apiClient.post<GithubInstallationClaimResult>('/github/installation-claims', {
+    state,
+    installationId,
+  });
 
 export const listGithubRepositories = () =>
   apiClient.get<GithubRepository[]>('/github/repositories');

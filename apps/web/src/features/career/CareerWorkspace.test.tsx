@@ -1,6 +1,7 @@
-import type { PropsWithChildren } from 'react';
+import { StrictMode, type PropsWithChildren } from 'react';
 
-import { render, screen, within } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, render, renderHook, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -16,11 +17,13 @@ const submitMission = vi.fn();
 const createTarget = vi.fn();
 const createEvidence = vi.fn();
 const startGithubClaim = vi.fn();
+const completeGithubClaim = vi.fn();
 const updateOwnerProofProfile = vi.fn();
 const publishOwnerProof = vi.fn();
 const renewOwnerProof = vi.fn();
 const unpublishOwnerProof = vi.fn();
 const refetchOwnerProofProfile = vi.fn();
+const completeGithubInstallationClaimApi = vi.hoisted(() => vi.fn());
 
 let missions: ProofMission[] = [];
 let diffStatus: CareerDiff['competencies'][number]['status'] = 'MISSING';
@@ -154,6 +157,11 @@ vi.mock('@/components/app-shell/app-shell', () => ({
   AppShell: ({ children }: PropsWithChildren) => <main>{children}</main>,
 }));
 
+vi.mock('@/api/github', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/api/github')>()),
+  completeGithubInstallationClaim: completeGithubInstallationClaimApi,
+}));
+
 vi.mock('./use-career', () => ({
   useCareerCompetencies: () =>
     queryResult([
@@ -224,6 +232,7 @@ vi.mock('./use-github', () => ({
       },
     ]),
   useStartGithubInstallationClaim: () => mutationResult(startGithubClaim),
+  useCompleteGithubInstallationClaim: () => mutationResult(completeGithubClaim),
 }));
 
 describe('CareerWorkspace proof mission vertical', () => {
@@ -244,8 +253,137 @@ describe('CareerWorkspace proof mission vertical', () => {
       refetch: refetchOwnerProofProfile,
     };
     vi.clearAllMocks();
+    window.history.replaceState({}, '', '/career');
     createMission.mockResolvedValue(mission);
     bindMission.mockResolvedValue(mission);
+    completeGithubClaim.mockResolvedValue({
+      installationId: 'installation-local-1',
+      repositoryCount: 2,
+      returnPath: '/career?mission=react',
+    });
+  });
+
+  it('completes a valid GitHub callback once and replaces the URL with the safe return path', async () => {
+    window.history.replaceState(
+      {},
+      '',
+      '/career?state=opaque-state&installation_id=90071992547409931234567890',
+    );
+
+    render(
+      <StrictMode>
+        <CareerWorkspace />
+      </StrictMode>,
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent('GitHub App 연결이 완료되었습니다');
+    expect(completeGithubClaim).toHaveBeenCalledTimes(1);
+    expect(completeGithubClaim).toHaveBeenCalledWith({
+      state: 'opaque-state',
+      installationId: '90071992547409931234567890',
+    });
+    expect(`${window.location.pathname}${window.location.search}`).toBe('/career?mission=react');
+  });
+
+  it('refreshes setup, repositories, and pull queries after callback completion', async () => {
+    const { useCompleteGithubInstallationClaim } =
+      await vi.importActual<typeof import('./use-github')>('./use-github');
+    const claim = {
+      installationId: 'installation-local-1',
+      repositoryCount: 2,
+      returnPath: '/career',
+    };
+    completeGithubInstallationClaimApi.mockResolvedValue(claim);
+    const queryClient = new QueryClient();
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries');
+    const wrapper = ({ children }: PropsWithChildren) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    );
+    const { result } = renderHook(() => useCompleteGithubInstallationClaim(), { wrapper });
+
+    await act(async () => {
+      await result.current.mutateAsync({
+        state: 'opaque-state',
+        installationId: '90071992547409931234567890',
+      });
+    });
+
+    expect(completeGithubInstallationClaimApi).toHaveBeenCalledWith(
+      'opaque-state',
+      '90071992547409931234567890',
+    );
+    expect(invalidateQueries).toHaveBeenCalledTimes(3);
+    expect(invalidateQueries).toHaveBeenNthCalledWith(1, {
+      queryKey: ['career', 'github', 'setup'],
+    });
+    expect(invalidateQueries).toHaveBeenNthCalledWith(2, {
+      queryKey: ['career', 'github', 'repositories'],
+    });
+    expect(invalidateQueries).toHaveBeenNthCalledWith(3, {
+      queryKey: ['career', 'github', 'pulls'],
+    });
+  });
+
+  it('rejects and cleans a partial GitHub callback without completing it', async () => {
+    window.history.replaceState({}, '', '/career?state=opaque-state&mission=react');
+
+    render(<CareerWorkspace />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'GitHub App 연결 응답이 올바르지 않습니다',
+    );
+    expect(completeGithubClaim).not.toHaveBeenCalled();
+    expect(`${window.location.pathname}${window.location.search}`).toBe('/career?mission=react');
+  });
+
+  it('rejects and cleans a non-decimal installation ID without completing it', async () => {
+    window.history.replaceState(
+      {},
+      '',
+      '/career?state=opaque-state&installation_id=12x34&mission=react',
+    );
+
+    render(<CareerWorkspace />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'GitHub App 연결 응답이 올바르지 않습니다',
+    );
+    expect(completeGithubClaim).not.toHaveBeenCalled();
+    expect(`${window.location.pathname}${window.location.search}`).toBe('/career?mission=react');
+  });
+
+  it('cleans callback operands after completion rejection while preserving unrelated query and hash', async () => {
+    completeGithubClaim.mockRejectedValue(new Error('claim rejected'));
+    window.history.replaceState(
+      {},
+      '',
+      '/career?mission=react&state=opaque-state&view=proof&installation_id=12345#verification',
+    );
+
+    render(<CareerWorkspace />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'GitHub에서 현재 상태를 확인하지 못했습니다',
+    );
+    expect(completeGithubClaim).toHaveBeenCalledWith({
+      state: 'opaque-state',
+      installationId: '12345',
+    });
+    expect(`${window.location.pathname}${window.location.search}${window.location.hash}`).toBe(
+      '/career?mission=react&view=proof#verification',
+    );
+  });
+
+  it('ignores ordinary career query parameters', async () => {
+    window.history.replaceState({}, '', '/career?mission=react&view=proof');
+
+    render(<CareerWorkspace />);
+
+    await waitFor(() => expect(screen.getByText('목표 직무까지 부족한 증거')).toBeInTheDocument());
+    expect(completeGithubClaim).not.toHaveBeenCalled();
+    expect(`${window.location.pathname}${window.location.search}`).toBe(
+      '/career?mission=react&view=proof',
+    );
   });
 
   it('does not render editable profile fields while the owner profile is loading', () => {

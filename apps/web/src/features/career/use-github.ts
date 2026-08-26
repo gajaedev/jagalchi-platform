@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  completeGithubInstallationClaim,
   getGithubSetup,
   listGithubPullRequests,
   listGithubRepositories,
@@ -75,6 +76,21 @@ export function useGithubPullRequests(repositoryId: string | null, enabled = tru
 export function useStartGithubInstallationClaim() {
   return useMutation({
     mutationFn: (returnTo?: string) => startGithubInstallationClaim(returnTo),
+  });
+}
+
+export function useCompleteGithubInstallationClaim() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ state, installationId }: { state: string; installationId: string }) =>
+      completeGithubInstallationClaim(state, installationId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: githubKeys.setup() }),
+        queryClient.invalidateQueries({ queryKey: githubKeys.repositories() }),
+        queryClient.invalidateQueries({ queryKey: githubKeys.pullsRoot() }),
+      ]);
+    },
   });
 }
 

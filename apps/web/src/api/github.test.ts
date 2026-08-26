@@ -6,6 +6,7 @@ vi.mock('./client', () => ({
 
 import { apiClient } from './client';
 import {
+  completeGithubInstallationClaim,
   getGithubSetup,
   listGithubPullRequests,
   listGithubRepositories,
@@ -32,6 +33,14 @@ describe('GitHub App API', () => {
     startGithubInstallationClaim('/career?proof=mission-1');
     expect(apiClient.post).toHaveBeenCalledWith('/github/installation-claims', {
       returnTo: '/career?proof=mission-1',
+    });
+  });
+
+  it('completes a claim with exactly the callback state and decimal installation ID', () => {
+    completeGithubInstallationClaim('opaque-state', '90071992547409931234567890');
+    expect(apiClient.post).toHaveBeenCalledWith('/github/installation-claims', {
+      state: 'opaque-state',
+      installationId: '90071992547409931234567890',
     });
   });
 

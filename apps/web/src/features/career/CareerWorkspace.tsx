@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Link from 'next/link';
 
@@ -47,6 +47,7 @@ import {
 } from './use-career';
 import {
   getGithubConnectionIssue,
+  useCompleteGithubInstallationClaim,
   useGithubRepositories,
   useGithubSetup,
   useStartGithubInstallationClaim,
@@ -168,6 +169,10 @@ function verificationErrorMessage(error: unknown): string {
 
 export function CareerWorkspace() {
   const [renderedAt] = useState(Date.now);
+  const [githubCallbackStatus, setGithubCallbackStatus] = useState<
+    { state: 'pending' | 'success' | 'error'; message: string } | undefined
+  >();
+  const githubCallbackHandled = useRef(false);
   const competenciesQuery = useCareerCompetencies();
   const targetsQuery = useCareerTargets();
   const evidenceQuery = useCareerEvidence();
@@ -201,6 +206,62 @@ export function CareerWorkspace() {
     Boolean(selectedMission && githubSetupQuery.data?.installation?.status === 'ACTIVE'),
   );
   const startGithubClaim = useStartGithubInstallationClaim();
+  const completeGithubClaim = useCompleteGithubInstallationClaim();
+
+  useEffect(() => {
+    if (githubCallbackHandled.current) return;
+
+    const callbackUrl = new URL(window.location.href);
+    const hasState = callbackUrl.searchParams.has('state');
+    const hasInstallationId = callbackUrl.searchParams.has('installation_id');
+    if (!hasState && !hasInstallationId) return;
+
+    githubCallbackHandled.current = true;
+    const cleanCallbackOperands = () => {
+      callbackUrl.searchParams.delete('state');
+      callbackUrl.searchParams.delete('installation_id');
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${callbackUrl.pathname}${callbackUrl.search}${callbackUrl.hash}`,
+      );
+    };
+    const state = callbackUrl.searchParams.get('state') ?? '';
+    const installationId = callbackUrl.searchParams.get('installation_id') ?? '';
+    if (!hasState || !hasInstallationId || state.length === 0 || !/^[0-9]+$/.test(installationId)) {
+      cleanCallbackOperands();
+      queueMicrotask(() => {
+        setGithubCallbackStatus({
+          state: 'error',
+          message: 'GitHub App 연결 응답이 올바르지 않습니다. 다시 연결해주세요.',
+        });
+      });
+      return;
+    }
+
+    queueMicrotask(() => {
+      setGithubCallbackStatus({
+        state: 'pending',
+        message: 'GitHub App 연결을 완료하는 중입니다.',
+      });
+    });
+    void completeGithubClaim
+      .mutateAsync({ state, installationId })
+      .then((result) => {
+        window.history.replaceState(window.history.state, '', result.returnPath);
+        setGithubCallbackStatus({
+          state: 'success',
+          message: `GitHub App 연결이 완료되었습니다. 저장소 ${result.repositoryCount}개를 확인했습니다.`,
+        });
+      })
+      .catch((error: unknown) => {
+        cleanCallbackOperands();
+        setGithubCallbackStatus({
+          state: 'error',
+          message: githubErrorMessage(error),
+        });
+      });
+  }, [completeGithubClaim]);
 
   const ownerProofProfile =
     ownerProofProfileQuery.data === null
@@ -417,6 +478,19 @@ export function CareerWorkspace() {
 
   return (
     <AppShell activeTab="career">
+      {githubCallbackStatus ? (
+        <div
+          className={cn(
+            'mb-5 rounded-2xl border p-4 text-sm font-bold',
+            githubCallbackStatus.state === 'error'
+              ? 'border-error/30 bg-error-subtle text-error'
+              : 'border-border bg-card',
+          )}
+          role={githubCallbackStatus.state === 'error' ? 'alert' : 'status'}
+        >
+          {githubCallbackStatus.message}
+        </div>
+      ) : null}
       {isInitialLoading ? (
         <div className="flex min-h-[50vh] items-center justify-center">
           <p className="text-muted-foreground text-sm">Career Diff를 불러오는 중입니다.</p>
