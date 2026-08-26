@@ -8,13 +8,22 @@ services:
     ports:
       - "8080:8080"
     environment:
+      NODE_ENV: development
       PORT: 8080
       DATABASE_URL: postgresql://jagalchi:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@api-db:5432/jagalchi
       DATABASE_SSL: "false"
       DATABASE_SYNCHRONIZE: "false"
+      DATABASE_POOL_MAX: "5"
+      DATABASE_CONNECTION_TIMEOUT_MS: "5000"
+      DATABASE_QUERY_TIMEOUT_MS: "10000"
+      DATABASE_STATEMENT_TIMEOUT_MS: "10000"
+      TRUST_PROXY_HOPS: "0"
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET is required}
       AI_AUTH_JWT_SECRET: ${AI_AUTH_JWT_SECRET:?AI_AUTH_JWT_SECRET is required}
       VERIFICATION_CODE_SECRET: ${VERIFICATION_CODE_SECRET:?VERIFICATION_CODE_SECRET is required}
+      RATE_LIMIT_HASH_SECRET: ${RATE_LIMIT_HASH_SECRET:?RATE_LIMIT_HASH_SECRET is required}
+      AI_FEATURES_ENABLED: "true"
+      UPLOADS_ENABLED: "true"
       AI_SERVICE_URL: http://ai:8000
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:8080}
