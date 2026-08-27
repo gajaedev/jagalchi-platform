@@ -7,9 +7,28 @@ import { useRouter } from 'next/navigation';
 
 import { useSetAtom } from 'jotai';
 
-import { exchangeOAuthCode } from '@/api/auth';
+import { exchangeOAuthCode, type OAuthExchangeResponse } from '@/api/auth';
+import { capture } from '@/lib/analytics/client';
 
 import { loginAtom } from '../../../stores/auth.atoms';
+
+const exchangeByCode = new Map<string, Promise<OAuthExchangeResponse>>();
+
+function exchangeOnce(code: string): Promise<OAuthExchangeResponse> {
+  const existing = exchangeByCode.get(code);
+  if (existing) return existing;
+
+  const request = exchangeOAuthCode(code).then((result) => {
+    capture('oauth_completed', {});
+    return result;
+  });
+  exchangeByCode.set(code, request);
+  const clear = () => {
+    if (exchangeByCode.get(code) === request) exchangeByCode.delete(code);
+  };
+  void request.then(clear, clear);
+  return request;
+}
 
 export function OAuthCallback({ code }: { code: string | null }) {
   const router = useRouter();
@@ -18,8 +37,10 @@ export function OAuthCallback({ code }: { code: string | null }) {
 
   useEffect(() => {
     if (!code) return;
+    window.history.replaceState(window.history.state, '', window.location.pathname);
+
     let active = true;
-    void exchangeOAuthCode(code)
+    void exchangeOnce(code)
       .then((result) => {
         if (!active) return;
         setLogin(result.accessToken);

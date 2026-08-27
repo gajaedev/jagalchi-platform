@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+import { apiClient, refreshAccessToken, type RefreshResult } from './client';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
@@ -46,6 +46,8 @@ interface SignUpResponse {
 interface RefreshTokenResponse {
   accessToken: string;
 }
+
+type RefreshTokenResult = RefreshTokenResponse | { status: 'session-ending' };
 
 interface VerifyEmailResponse {
   registrationProof: string;
@@ -95,7 +97,15 @@ export const resetPassword = (data: ChangePasswordRequest) =>
   apiClient.patch<void>('/users/auth/password-reset', data);
 
 /** PATCH /users/auth/refresh — 토큰 갱신 (httpOnly 쿠키 기반) */
-export const refreshToken = () => apiClient.patch<RefreshTokenResponse>('/users/auth/refresh');
+export const refreshToken = (): Promise<RefreshTokenResult> =>
+  refreshAccessToken().then((result: RefreshResult) => {
+    if (result?.status === 'refreshed') return { accessToken: result.accessToken };
+    if (result?.status === 'session-ending') return result;
+    throw new Error('인증이 만료되었습니다');
+  });
+
+/** POST /users/auth/logout — 서버 세션 종료 */
+export const logout = () => apiClient.post<void>('/users/auth/logout');
 
 /** DELETE /users — 계정 삭제 */
 export const deleteAccount = () => apiClient.delete<void>('/users');

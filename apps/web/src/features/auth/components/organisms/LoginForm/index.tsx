@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { AUTH_MESSAGES } from '@/constants/messages';
+import { capture } from '@/lib/analytics/client';
 
 import { useLogin } from '../../../hooks/use-login';
 import { loginSchema, type LoginSchema } from '../../../schemas/auth.schema';
@@ -51,6 +52,7 @@ export function LoginForm() {
   const onSubmit = (data: LoginSchema) => {
     loginMutation.mutate(data, {
       onSuccess: (response) => {
+        capture('login_completed', { method: 'email' });
         setLogin(response.accessToken);
         router.push('/');
       },

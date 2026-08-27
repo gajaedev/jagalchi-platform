@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/verify-prod-env.mjs",
     "build": "next build",
     "build:prod": "node scripts/verify-prod-env.mjs --production && next build",
     "build:analyze": "ANALYZE=true next build",
@@ -53,6 +54,7 @@
     "next": "^16.2.4",
     "next-seo": "^7.2.0",
     "next-themes": "^0.4.6",
+    "posthog-js": "1.421.1",
     "radix-ui": "^1.4.3",
     "react": "19.2.5",
     "react-colorful": "^5.6.1",

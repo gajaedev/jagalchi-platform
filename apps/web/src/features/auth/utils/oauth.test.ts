@@ -1,12 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-const { exchangeOAuthCode } = vi.hoisted(() => ({
+const { capture, exchangeOAuthCode } = vi.hoisted(() => ({
+  capture: vi.fn(),
   exchangeOAuthCode: vi.fn().mockResolvedValue({ accessToken: 'access-token' }),
 }));
 
 vi.mock('@/api/auth', () => ({
   exchangeOAuthCode,
 }));
+vi.mock('@/lib/analytics/client', () => ({ capture }));
 
 import { beginOAuth } from './oauth';
 
@@ -43,5 +45,6 @@ describe('native OAuth bridge', () => {
 
     await expect(pending).resolves.toBe('access-token');
     expect(exchangeOAuthCode).toHaveBeenCalledWith('one-time-code');
+    expect(capture).toHaveBeenCalledWith('oauth_completed', {});
   });
 });

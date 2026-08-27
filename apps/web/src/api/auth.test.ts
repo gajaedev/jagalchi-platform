@@ -7,9 +7,10 @@ vi.mock('./client', () => ({
     delete: vi.fn(),
     get: vi.fn(),
   },
+  refreshAccessToken: vi.fn(),
 }));
 
-import { apiClient } from './client';
+import { apiClient, refreshAccessToken as refreshAccessTokenClient } from './client';
 import {
   login,
   signUp,
@@ -19,6 +20,7 @@ import {
   verifyPasswordResetCode,
   resetPassword,
   refreshToken,
+  logout,
   deleteAccount,
   getGoogleOAuthUrl,
   getGithubOAuthUrl,
@@ -95,9 +97,19 @@ describe('auth API', () => {
     });
   });
 
-  it('refreshToken calls PATCH /users/auth/refresh', () => {
-    refreshToken();
-    expect(apiClient.patch).toHaveBeenCalledWith('/users/auth/refresh');
+  it('refreshToken uses the shared refresh coordinator', async () => {
+    vi.mocked(refreshAccessTokenClient).mockResolvedValue({
+      status: 'refreshed',
+      accessToken: 'refreshed-token',
+    });
+
+    await expect(refreshToken()).resolves.toEqual({ accessToken: 'refreshed-token' });
+    expect(refreshAccessTokenClient).toHaveBeenCalledTimes(1);
+  });
+
+  it('logout calls POST /users/auth/logout', () => {
+    logout();
+    expect(apiClient.post).toHaveBeenCalledWith('/users/auth/logout');
   });
 
   it('deleteAccount calls DELETE /users', () => {

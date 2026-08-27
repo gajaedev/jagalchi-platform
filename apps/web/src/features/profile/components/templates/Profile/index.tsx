@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ArrowLeft, Pencil, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
-import { clearAccessToken } from '@/api/client';
+import { useAuthSession } from '@/components/providers/AuthSessionContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,14 +23,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { AUTH_MESSAGES, PROFILE_MESSAGES } from '@/constants/messages';
 import { useDeleteAccount } from '@/hooks/use-delete-account';
-import {
-  accessTokenAtom,
-  currentUserEmailAtom,
-  currentUserIdAtom,
-  currentUserNameAtom,
-  currentUserPermissionsAtom,
-  currentUserRoleAtom,
-} from '@/lib/auth-atoms';
 
 import { useProfile } from '../../../hooks/use-profile';
 import { useUpdateProfile } from '../../../hooks/use-update-profile';
@@ -57,16 +50,11 @@ export function Profile({ userName = '' }: ProfileProps) {
   const setBio = useSetAtom(profileBioAtom);
   const setLinks = useSetAtom(profileLinksAtom);
   const setImage = useSetAtom(profileImageAtom);
-  const setAccessTokenAtom = useSetAtom(accessTokenAtom);
-  const setCurrentUserName = useSetAtom(currentUserNameAtom);
-  const setCurrentUserEmail = useSetAtom(currentUserEmailAtom);
-  const setCurrentUserId = useSetAtom(currentUserIdAtom);
-  const setCurrentUserRole = useSetAtom(currentUserRoleAtom);
-  const setCurrentUserPermissions = useSetAtom(currentUserPermissionsAtom);
+  const { beginSessionEnding, clearDeletedSession, restoreSessionAfterEnding } = useAuthSession();
   const bio = useAtomValue(profileBioAtom);
   const links = useAtomValue(profileLinksAtom);
   const image = useAtomValue(profileImageAtom);
-  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
+  const { mutateAsync: deleteAccount, isPending: isDeleting } = useDeleteAccount();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const { data, isLoading, isError } = useProfile(userName);
@@ -112,19 +100,16 @@ export function Profile({ userName = '' }: ProfileProps) {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [mode]);
 
-  const handleDeleteAccount = () => {
-    deleteAccount(undefined, {
-      onSuccess: () => {
-        setAccessTokenAtom(null);
-        setCurrentUserName(null);
-        setCurrentUserEmail(null);
-        setCurrentUserId(null);
-        setCurrentUserRole(null);
-        setCurrentUserPermissions(null);
-        clearAccessToken();
-        router.push('/login');
-      },
-    });
+  const handleDeleteAccount = async () => {
+    await beginSessionEnding();
+    try {
+      await deleteAccount();
+      await clearDeletedSession();
+      router.push('/login');
+    } catch {
+      await restoreSessionAfterEnding();
+      toast.error('계정 삭제에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleSaveProfile = async ({ name, email }: { name: string; email: string }) => {

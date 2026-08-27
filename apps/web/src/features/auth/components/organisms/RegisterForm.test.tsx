@@ -1,8 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { RegisterForm } from './RegisterForm';
+
+const capture = vi.hoisted(() => vi.fn());
+const registerMutate = vi.hoisted(() => vi.fn());
+
+vi.mock('@/lib/analytics/client', () => ({ capture }));
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
@@ -10,7 +15,7 @@ vi.mock('next/navigation', () => ({
 
 vi.mock('../../hooks/use-register', () => ({
   useRegister: () => ({
-    mutate: vi.fn(),
+    mutate: registerMutate,
     isPending: false,
     isError: false,
     error: null,
@@ -48,6 +53,10 @@ vi.mock('../../hooks/use-send-verification-code', () => ({
 }));
 
 describe('RegisterForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('초기에 step 1 (이메일/비밀번호/인증번호) 폼을 렌더링한다', () => {
     render(<RegisterForm />);
 
@@ -137,5 +146,55 @@ describe('RegisterForm', () => {
         '사용자 이름을 입력해주세요',
       );
     });
+  });
+
+  it('captures email signup completion once after a successful registration', async () => {
+    registerMutate.mockImplementation((_input: unknown, options: { onSuccess: () => void }) =>
+      options.onSuccess(),
+    );
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+
+    await user.type(screen.getByPlaceholderText('이메일 입력'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('비밀번호 지정'), 'Password1!');
+    await user.click(screen.getByRole('button', { name: '인증번호 전송' }));
+    await user.type(screen.getByPlaceholderText('인증번호 입력'), '123456');
+    await user.click(screen.getByRole('button', { name: '다음' }));
+    await screen.findByPlaceholderText('사용자 이름 입력');
+    await user.type(screen.getByPlaceholderText('사용자 이름 입력'), '홍길동');
+    await user.click(screen.getByRole('button', { name: '확인' }));
+    await screen.findByRole('button', { name: '건너뛰기' });
+    await user.click(screen.getByRole('button', { name: '건너뛰기' }));
+
+    await waitFor(() =>
+      expect(capture).toHaveBeenCalledWith('signup_completed', {
+        method: 'email',
+        links_count_bucket: '0',
+      }),
+    );
+    expect(capture).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not capture signup completion when registration fails', async () => {
+    registerMutate.mockImplementation(
+      (_input: unknown, options: { onError?: (error: Error) => void }) =>
+        options.onError?.(new Error('registration failed')),
+    );
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+
+    await user.type(screen.getByPlaceholderText('이메일 입력'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('비밀번호 지정'), 'Password1!');
+    await user.click(screen.getByRole('button', { name: '인증번호 전송' }));
+    await user.type(screen.getByPlaceholderText('인증번호 입력'), '123456');
+    await user.click(screen.getByRole('button', { name: '다음' }));
+    await screen.findByPlaceholderText('사용자 이름 입력');
+    await user.type(screen.getByPlaceholderText('사용자 이름 입력'), '홍길동');
+    await user.click(screen.getByRole('button', { name: '확인' }));
+    await screen.findByRole('button', { name: '건너뛰기' });
+    await user.click(screen.getByRole('button', { name: '건너뛰기' }));
+
+    expect(capture).toHaveBeenCalledWith('signup_started', { method: 'email' });
+    expect(capture).toHaveBeenCalledTimes(1);
   });
 });

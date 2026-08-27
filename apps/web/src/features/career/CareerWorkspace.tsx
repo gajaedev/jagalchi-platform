@@ -16,6 +16,7 @@ import type { OwnerProofProfile } from '@/api/proof-profile';
 import { AppShell } from '@/components/app-shell/app-shell';
 import { Button } from '@/components/ui/button';
 import { useFeatureFlag } from '@/hooks/use-feature-flag';
+import { capture } from '@/lib/analytics/client';
 import { cn } from '@/lib/utils';
 
 import { CareerEvidenceForm } from './CareerEvidenceForm';
@@ -77,6 +78,22 @@ const STATUS_META: Record<
 };
 
 const STATUS_ORDER: CareerDiffStatus[] = ['MISSING', 'SUBMITTED', 'VERIFIED'];
+
+function getCompetencyCountBucket(count: number): '1' | '2-3' | '4+' | null {
+  if (count === 1) return '1';
+  if (count >= 2 && count <= 3) return '2-3';
+  return count >= 4 ? '4+' : null;
+}
+
+function getRequirementsLengthBucket(
+  length: number,
+): '20-499' | '500-1999' | '2000-4999' | '5000-20000' | null {
+  if (length >= 20 && length <= 499) return '20-499';
+  if (length >= 500 && length <= 1_999) return '500-1999';
+  if (length >= 2_000 && length <= 4_999) return '2000-4999';
+  if (length >= 5_000 && length <= 20_000) return '5000-20000';
+  return null;
+}
 
 export type ProofPublicationCapability =
   'FIRST_PUBLISH' | 'REPUBLISH' | 'RECOVER_INVALIDATED' | 'RENEW_IN_SETTINGS' | null;
@@ -274,6 +291,15 @@ function CareerWorkspaceContent({ proofProfileEnabled }: { proofProfileEnabled: 
 
   const handleTargetCreate = async (input: Parameters<typeof createTarget.mutateAsync>[0]) => {
     const target = await createTarget.mutateAsync(input);
+    const competencyCountBucket = getCompetencyCountBucket(target.competencySlugs.length);
+    const requirementsLengthBucket = getRequirementsLengthBucket(input.requirements.trim().length);
+    if (competencyCountBucket && requirementsLengthBucket) {
+      capture('career_target_created', {
+        competency_count_bucket: competencyCountBucket,
+        has_posting_url: Boolean(input.postingUrl?.trim()),
+        requirements_length_bucket: requirementsLengthBucket,
+      });
+    }
     setSelectedTargetId(target.id);
     setSelectedCompetencySlug(null);
     setShowCriteriaEditor(false);
@@ -779,6 +805,16 @@ function CareerWorkspaceContent({ proofProfileEnabled }: { proofProfileEnabled: 
                     isSubmitting={createEvidence.isPending}
                     onSubmit={async (input) => {
                       await createEvidence.mutateAsync(input);
+                      const competencyCountBucket = getCompetencyCountBucket(
+                        input.competencySlugs.length,
+                      );
+                      if (competencyCountBucket) {
+                        capture('career_evidence_submitted', {
+                          evidence_kind: input.kind,
+                          competency_count_bucket: competencyCountBucket,
+                          has_description: Boolean(input.description?.trim()),
+                        });
+                      }
                     }}
                   />
 

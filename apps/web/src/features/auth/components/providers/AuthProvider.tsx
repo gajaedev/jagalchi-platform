@@ -1,5 +1,7 @@
 'use client';
 
+import { AuthSessionContextProvider } from '@/components/providers/AuthSessionContext';
+
 import { useRefreshToken } from '../../hooks/use-refresh-token';
 
 interface AuthProviderProps {
@@ -11,6 +13,7 @@ interface AuthProviderProps {
  * 마운트 시 silent refresh를 시도하여 새로고침 후에도 인증 상태를 복원.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  useRefreshToken();
-  return <>{children}</>;
+  const session = useRefreshToken();
+
+  return <AuthSessionContextProvider value={session}>{children}</AuthSessionContextProvider>;
 }

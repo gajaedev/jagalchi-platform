@@ -5,6 +5,7 @@ import type { NextConfig } from 'next';
 
 const API_ORIGIN = process.env.API_ORIGIN ?? 'https://api.jagalchi.dev';
 const CDN_ORIGIN = 'https://cdn.jagalchi.dev';
+const APPROVED_ANALYTICS_ORIGINS = new Set(['https://us.i.posthog.com']);
 
 function getOrigin(value: string | undefined): string | undefined {
   if (!value || value.startsWith('/')) return undefined;
@@ -16,6 +17,19 @@ function getOrigin(value: string | undefined): string | undefined {
   }
 }
 
+function getAnalyticsOrigin(): string | undefined {
+  if (process.env.NEXT_PUBLIC_ANALYTICS_ENABLED !== 'true') return undefined;
+
+  const value = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+  if (!value || !APPROVED_ANALYTICS_ORIGINS.has(value)) return undefined;
+
+  const parsed = new URL(value);
+  if (parsed.origin !== value || parsed.pathname !== '/' || parsed.search || parsed.hash) {
+    return undefined;
+  }
+  return parsed.origin;
+}
+
 function toWebSocketOrigin(origin: string): string {
   return origin.replace(/^http:/, 'ws:').replace(/^https:/, 'wss:');
 }
@@ -23,9 +37,17 @@ function toWebSocketOrigin(origin: string): string {
 const PUBLIC_API_ORIGIN = getOrigin(process.env.NEXT_PUBLIC_API_URL);
 const PUBLIC_WS_HTTP_ORIGIN = getOrigin(process.env.NEXT_PUBLIC_WS_URL) ?? API_ORIGIN;
 const PUBLIC_WS_TRANSPORT_ORIGIN = toWebSocketOrigin(PUBLIC_WS_HTTP_ORIGIN);
+const ANALYTICS_ORIGIN = getAnalyticsOrigin();
 const CONNECT_ORIGINS = Array.from(
   new Set(
-    ['self', API_ORIGIN, PUBLIC_API_ORIGIN, PUBLIC_WS_HTTP_ORIGIN, PUBLIC_WS_TRANSPORT_ORIGIN]
+    [
+      'self',
+      API_ORIGIN,
+      PUBLIC_API_ORIGIN,
+      PUBLIC_WS_HTTP_ORIGIN,
+      PUBLIC_WS_TRANSPORT_ORIGIN,
+      ANALYTICS_ORIGIN,
+    ]
       .filter((origin): origin is string => Boolean(origin))
       .map((origin) => (origin === 'self' ? "'self'" : origin)),
   ),
@@ -33,22 +55,15 @@ const CONNECT_ORIGINS = Array.from(
 
 const cspHeader = [
   `default-src 'self'`,
-  // Scripts: self + Next.js inline scripts (unsafe-inline은 nonce 도입 전 임시 허용)
   `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
-  // Styles: self + inline (Tailwind CSS-in-JS, shadcn 인라인)
   `style-src 'self' 'unsafe-inline'`,
-  // Images: self + CDN + OAuth 아바타 출처
   `img-src 'self' data: blob: ${CDN_ORIGIN} https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.r2.dev https://*.s3.amazonaws.com`,
-  // Fonts: self (Next.js google fonts 로컬 다운로드)
   `font-src 'self'`,
-  // API 요청 + WebSocket
   `connect-src ${CONNECT_ORIGINS}`,
-  // Frames: same-origin only (X-Frame-Options SAMEORIGIN과 일치)
   `frame-src 'self'`,
   `object-src 'none'`,
   `base-uri 'self'`,
   `form-action 'self'`,
-  // 위반 리포트 — 운영 중 CSP 위반 수집 (Sentry 연동 후 report-uri 교체 가능)
   process.env.NODE_ENV === 'production' ? `upgrade-insecure-requests` : undefined,
 ]
   .filter((directive): directive is string => Boolean(directive))

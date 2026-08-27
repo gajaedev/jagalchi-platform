@@ -1,62 +1,156 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 
-import { refreshToken } from '@/api/auth';
-import { clearAccessToken } from '@/api/client';
+import { logout, refreshToken } from '@/api/auth';
+import {
+  beginAuthSessionEnding,
+  clearAccessToken,
+  completeAuthSessionEnding,
+  restoreAuthSessionAfterEnding,
+  subscribeToAuthSessionResume,
+} from '@/api/client';
+import { beginIdentityEnding, finishIdentityEnding } from '@/lib/analytics/client';
+import { currentUserIdAtom } from '@/lib/auth-atoms';
 
 import { loginAtom, logoutAtom, isAuthInitializedAtom } from '../stores/auth.atoms';
 
-/** 토큰 갱신 주기 (14분 — 일반적인 15분 만료 기준) */
 const REFRESH_INTERVAL_MS = 14 * 60 * 1000;
 
-/**
- * 앱 마운트 시 silent refresh를 시도하고, 주기적으로 토큰을 갱신하는 훅.
- * 새로고침 후에도 httpOnly 리프레시 쿠키가 남아있으면 자동으로 재인증.
- */
 export function useRefreshToken() {
+  const currentUserId = useAtomValue(currentUserIdAtom);
   const setLogin = useSetAtom(loginAtom);
   const setLogout = useSetAtom(logoutAtom);
   const setInitialized = useSetAtom(isAuthInitializedAtom);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeRefreshRef = useRef<Promise<boolean | null> | null>(null);
+  const generationRef = useRef(0);
+  const isMountedRef = useRef(false);
+  const hasInitializedRef = useRef(false);
+  const logoutPromiseRef = useRef<Promise<void> | null>(null);
 
-  useEffect(() => {
-    let isCancelled = false;
+  const stopRefresh = useCallback(() => {
+    generationRef.current += 1;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
 
-    const tryRefresh = async () => {
+  const clearLocalSession = useCallback(() => {
+    clearAccessToken();
+    if (isMountedRef.current) setLogout();
+  }, [setLogout]);
+
+  const refreshSession = useCallback((): Promise<boolean | null> => {
+    const generation = generationRef.current;
+    const request = (async () => {
       try {
         const response = await refreshToken();
-        if (!isCancelled) {
-          setLogin(response.accessToken);
-        }
+        if (!isMountedRef.current || generation !== generationRef.current) return null;
+
+        if ('status' in response) return null;
+
+        setLogin(response.accessToken);
         return true;
       } catch {
-        if (!isCancelled) {
-          clearAccessToken();
-          setLogout();
-        }
+        if (!isMountedRef.current || generation !== generationRef.current) return null;
+
+        clearLocalSession();
+        stopRefresh();
         return false;
       }
-    };
+    })();
 
-    // 마운트 시 1회 silent refresh
-    tryRefresh().then((isSuccess) => {
-      if (isCancelled) return;
-      setInitialized(true);
-
-      // 성공 시 주기적 갱신 시작
-      if (isSuccess) {
-        intervalRef.current = setInterval(() => {
-          tryRefresh();
-        }, REFRESH_INTERVAL_MS);
-      }
+    activeRefreshRef.current = request;
+    void request.finally(() => {
+      if (activeRefreshRef.current === request) activeRefreshRef.current = null;
     });
+    return request;
+  }, [clearLocalSession, setLogin, stopRefresh]);
+
+  const startRefreshInterval = useCallback(() => {
+    if (intervalRef.current) return;
+    intervalRef.current = setInterval(() => void refreshSession(), REFRESH_INTERVAL_MS);
+  }, [refreshSession]);
+
+  const beginSessionEnding = useCallback(async () => {
+    beginIdentityEnding();
+    stopRefresh();
+    await beginAuthSessionEnding();
+  }, [stopRefresh]);
+
+  const restoreSessionAfterEnding = useCallback(async () => {
+    restoreAuthSessionAfterEnding();
+    await finishIdentityEnding(currentUserId);
+    startRefreshInterval();
+  }, [currentUserId, startRefreshInterval]);
+
+  const logoutSession = useCallback(async () => {
+    if (logoutPromiseRef.current) return logoutPromiseRef.current;
+    const endingUserId = currentUserId;
+
+    const request = (async () => {
+      await beginSessionEnding();
+      try {
+        await logout();
+        clearLocalSession();
+        await finishIdentityEnding(null);
+        completeAuthSessionEnding();
+      } catch (error) {
+        await finishIdentityEnding(endingUserId);
+        restoreAuthSessionAfterEnding();
+        if (isMountedRef.current) {
+          startRefreshInterval();
+        }
+        throw error;
+      } finally {
+        logoutPromiseRef.current = null;
+      }
+    })();
+
+    logoutPromiseRef.current = request;
+    return request;
+  }, [beginSessionEnding, clearLocalSession, currentUserId, startRefreshInterval]);
+
+  const clearDeletedSession = useCallback(async () => {
+    clearLocalSession();
+    await finishIdentityEnding(null);
+    completeAuthSessionEnding();
+  }, [clearLocalSession]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    const handleRefreshResult = (isSuccess: boolean | null) => {
+      if (!isMountedRef.current || isSuccess === null) return;
+      if (!hasInitializedRef.current) {
+        hasInitializedRef.current = true;
+        setInitialized(true);
+      }
+      if (isSuccess) startRefreshInterval();
+    };
+    const resumeRefresh = () => {
+      void refreshSession().then(handleRefreshResult);
+    };
+    const unsubscribe = subscribeToAuthSessionResume(resumeRefresh);
+    resumeRefresh();
 
     return () => {
-      isCancelled = true;
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      unsubscribe();
+      isMountedRef.current = false;
+      stopRefresh();
     };
-  }, [setLogin, setLogout, setInitialized]);
+  }, [refreshSession, setInitialized, startRefreshInterval, stopRefresh]);
+
+  useEffect(() => {
+    if (!currentUserId || !hasInitializedRef.current) return;
+    startRefreshInterval();
+  }, [currentUserId, startRefreshInterval]);
+
+  return {
+    beginSessionEnding,
+    clearDeletedSession,
+    logoutSession,
+    restoreSessionAfterEnding,
+  };
 }

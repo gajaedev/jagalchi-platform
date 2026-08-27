@@ -1,4 +1,5 @@
 import { exchangeOAuthCode } from '@/api/auth';
+import { capture } from '@/lib/analytics/client';
 import { hasNativeBridge, requestNative } from '@/lib/native-bridge';
 
 type NativeOAuthResult = {
@@ -28,5 +29,6 @@ export async function beginOAuth(authorizationUrl: string): Promise<string | nul
   const code = callbackUrl.searchParams.get('code');
   if (!code) throw new Error('OAuth 완료 코드가 누락되었습니다.');
   const result = await exchangeOAuthCode(code);
+  capture('oauth_completed', {});
   return result.accessToken;
 }

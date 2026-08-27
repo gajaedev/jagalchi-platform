@@ -4,6 +4,7 @@ import { ArrowRight, ListChecks, Target } from 'lucide-react';
 
 import { AppShell } from '@/components/app-shell/app-shell';
 import { HomeAudience } from '@/components/product/home-audience';
+import { RecommendationListTracker } from '@/components/product/recommendation-list-tracker';
 import { RoadmapCard } from '@/components/product/roadmap-card';
 import { Button } from '@/components/ui/button';
 import { isEnabled } from '@/lib/feature-flags';
@@ -78,6 +79,7 @@ function GuestHome() {
             전체보기
           </Link>
         </div>
+        <RecommendationListTracker source="home" resultCount={roadmaps.length} />
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {roadmaps.map((roadmap) => (
             <RoadmapCard
@@ -86,6 +88,7 @@ function GuestHome() {
               author="자갈치 에디터 추천"
               progress={undefined}
               href="/explore"
+              analyticsSource="home"
             />
           ))}
         </div>

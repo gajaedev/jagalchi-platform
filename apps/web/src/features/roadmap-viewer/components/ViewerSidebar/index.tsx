@@ -7,6 +7,7 @@ import { CheckCircle2, Circle, Search, X } from 'lucide-react';
 
 import { VIEWER_MESSAGES } from '@/constants/messages';
 import { useCompleteNode, useRoadmapProgress } from '@/hooks/use-roadmap-progress';
+import { capture } from '@/lib/analytics/client';
 import { isAuthenticatedAtom } from '@/lib/auth-atoms';
 import { sanitizeUrl } from '@/lib/url-validation';
 import type { JagalchiNodeData } from '@/types/roadmap.types';
@@ -55,9 +56,27 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
     (nodeId: string) => {
       if (!roadmapId || !isAuthenticated) return;
       const isCompleted = !completedIds.has(nodeId);
-      completeMutation.mutate({ nodeId, isCompleted });
+      completeMutation.mutate(
+        { nodeId, isCompleted },
+        {
+          onSuccess: () =>
+            capture('learning_node_completion_changed', {
+              action: isCompleted ? 'completed' : 'uncompleted',
+            }),
+        },
+      );
     },
     [roadmapId, isAuthenticated, completedIds, completeMutation],
+  );
+
+  const handleSelectNode = useCallback(
+    (nodeId: string, isCompleted: boolean) => {
+      setSelectedNodeId(nodeId);
+      capture('learning_node_opened', {
+        completion_state: isCompleted ? 'completed' : 'incomplete',
+      });
+    },
+    [setSelectedNodeId],
   );
 
   if (!isOpen) return null;
@@ -144,7 +163,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                   )}
                   <button
                     type="button"
-                    onClick={() => setSelectedNodeId(node.id)}
+                    onClick={() => handleSelectNode(node.id, isCompleted)}
                     className={`flex-1 rounded-md px-3 py-2 text-left text-sm transition-colors ${
                       isSelected
                         ? 'bg-accent text-accent-foreground font-medium'
@@ -187,6 +206,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                         href={sanitizeUrl(url)}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => capture('learning_resource_opened', {})}
                         className="text-primary block truncate text-sm hover:underline"
                       >
                         {url}
