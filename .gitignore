@@ -43,3 +43,6 @@ logs/
 
 # Agent runtime
 .gjc/
+.vercel/
+artifacts/analytics-*
+artifacts/posthog-*

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ReactFlowProvider } from '@xyflow/react';
 import { useAtom, useAtomValue } from 'jotai';
@@ -8,6 +8,7 @@ import { LayoutGrid, Map, PanelRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { VIEWER_MESSAGES } from '@/constants/messages';
+import { capture } from '@/lib/analytics/client';
 
 import { useViewerRoadmapLoader } from '../../hooks/use-viewer-roadmap-loader';
 import {
@@ -41,6 +42,7 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
   const [layout, setLayout] = useAtom(viewerLayoutAtom);
   const [isSidebarOpen, setIsSidebarOpen] = useAtom(viewerSidebarOpenAtom);
   const [isCoachOpen, setIsCoachOpen] = useState(false);
+  const capturedRoadmapId = useRef<string | null>(null);
   const aiEnabled = process.env.NEXT_PUBLIC_AI_FEATURES_ENABLED === 'true';
 
   useEffect(() => {
@@ -48,6 +50,11 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
     setLayout('cards');
     setIsSidebarOpen(false);
   }, [setIsSidebarOpen, setLayout]);
+
+  useEffect(() => {
+    if (!roadmap || capturedRoadmapId.current === roadmapId) return;
+    if (capture('roadmap_viewed', {})) capturedRoadmapId.current = roadmapId;
+  }, [roadmap, roadmapId]);
 
   if (isLoading) {
     return (

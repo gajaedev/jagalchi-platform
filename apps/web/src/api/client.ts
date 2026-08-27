@@ -78,7 +78,38 @@ class ApiClientError extends Error {
 
 let accessToken: string | null = null;
 let isRefreshing = false;
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<RefreshResult> | null = null;
+let refreshEpoch = 0;
+let sessionEnding = false;
+let refreshAbortController: AbortController | null = null;
+const sessionEndingListeners = new Set<() => void>();
+
+export type RefreshResult =
+  | { status: 'refreshed'; accessToken: string }
+  | { status: 'session-ending' }
+  | { status: 'expired' };
+
+export function beginAuthSessionEnding(): Promise<void> {
+  sessionEnding = true;
+  refreshEpoch += 1;
+  refreshAbortController?.abort();
+  return Promise.resolve();
+}
+
+export function restoreAuthSessionAfterEnding(): void {
+  sessionEnding = false;
+  sessionEndingListeners.forEach((listener) => listener());
+}
+
+/** 정상적인 세션 종료 뒤 래치만 해제한다. 새 세션이 생기기 전 refresh는 재시도하지 않는다. */
+export function completeAuthSessionEnding(): void {
+  sessionEnding = false;
+}
+
+export function subscribeToAuthSessionResume(listener: () => void): () => void {
+  sessionEndingListeners.add(listener);
+  return () => sessionEndingListeners.delete(listener);
+}
 
 export function getAccessToken(): string | null {
   return accessToken;
@@ -110,32 +141,51 @@ const isAuthEndpoint = (endpoint: string): boolean =>
   endpoint.includes('/users/verification');
 
 /** 리프레시 토큰으로 새 액세스 토큰 획득 */
-async function tryRefreshToken(): Promise<string | null> {
+export async function refreshAccessToken(): Promise<RefreshResult> {
+  if (sessionEnding) return { status: 'session-ending' };
+
   // 이미 리프레시 중이면 같은 Promise 공유 (중복 요청 방지)
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
 
   isRefreshing = true;
+  const requestEpoch = refreshEpoch;
+  const abortController = new AbortController();
+  refreshAbortController = abortController;
   refreshPromise = (async () => {
     try {
+      const csrfHeader: Record<string, string> = {};
+      const csrf = await getCsrfToken();
+      if (csrf) csrfHeader['X-CSRF-Token'] = csrf;
+      if (sessionEnding || requestEpoch !== refreshEpoch) {
+        return { status: 'session-ending' };
+      }
+
       const url = `${BASE_URL}/users/auth/refresh`;
       const response = await fetch(url, {
         method: 'PATCH',
         credentials: CREDENTIALS, // httpOnly 리프레시 쿠키 자동 전송
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader },
+        signal: abortController.signal,
       });
 
-      if (!response.ok) return null;
+      if (!response.ok) return { status: 'expired' };
 
       const data = (await response.json()) as { accessToken: string };
+      if (sessionEnding || requestEpoch !== refreshEpoch) {
+        return { status: 'session-ending' };
+      }
       setAccessToken(data.accessToken);
-      return data.accessToken;
+      return { status: 'refreshed', accessToken: data.accessToken };
     } catch {
-      return null;
+      return sessionEnding || requestEpoch !== refreshEpoch
+        ? { status: 'session-ending' }
+        : { status: 'expired' };
     } finally {
       isRefreshing = false;
       refreshPromise = null;
+      if (refreshAbortController === abortController) refreshAbortController = null;
     }
   })();
 
@@ -176,16 +226,16 @@ async function request<T>(
   if (!response.ok) {
     // 401 + 비인증 엔드포인트 → refresh 시도 후 재요청
     if (response.status === 401 && !isAuthEndpoint(endpoint)) {
-      const newToken = await tryRefreshToken();
+      const refreshResult = await refreshAccessToken();
 
-      if (newToken) {
+      if (refreshResult.status === 'refreshed') {
         // 새 토큰으로 원래 요청 재시도
         const retryResponse = await fetch(url, {
           ...init,
           credentials: CREDENTIALS,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${newToken}`,
+            Authorization: `Bearer ${refreshResult.accessToken}`,
             ...csrfHeader,
             ...init.headers,
           },
@@ -197,6 +247,14 @@ async function request<T>(
           if (!retryText) return undefined as T;
           return JSON.parse(retryText) as T;
         }
+      }
+
+      if (refreshResult.status === 'session-ending') {
+        throw new ApiClientError({
+          message: '세션 종료 중입니다',
+          status: 401,
+          code: 'SESSION_ENDING',
+        });
       }
 
       // refresh 실패 → 토큰 클리어 (보호 라우트에서만 리다이렉트)

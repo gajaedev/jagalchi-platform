@@ -4,10 +4,12 @@ import { useMemo } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
+import { toast } from 'sonner';
 
+import { useAuthSession } from '@/components/providers/AuthSessionContext';
 import { MY_ROADMAPS_MESSAGES } from '@/constants/messages';
-import { currentUserEmailAtom, currentUserNameAtom, logoutAtom } from '@/features/auth';
+import { currentUserEmailAtom, currentUserNameAtom } from '@/features/auth';
 import { MyRoadmapsToolbar } from '@/features/my-roadmaps/components/molecules/MyRoadmapsToolbar';
 import { MyRoadmapsGrid } from '@/features/my-roadmaps/components/organisms/MyRoadmapsGrid';
 import { MyRoadmapsHeader } from '@/features/my-roadmaps/components/organisms/MyRoadmapsHeader';
@@ -24,7 +26,7 @@ import type { RoadmapSummary } from '@/types/roadmap.types';
 
 export default function MyRoadmapsPage() {
   const router = useRouter();
-  const logout = useSetAtom(logoutAtom);
+  const { logoutSession } = useAuthSession();
   const activeCategory = useAtomValue(sidebarCategoryAtom);
   const sortOrder = useAtomValue(sortOrderAtom);
   const sortBy = useAtomValue(sortByAtom);
@@ -51,9 +53,13 @@ export default function MyRoadmapsPage() {
     }));
   }, [currentUserName, data]);
 
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      await logoutSession();
+      router.push('/login');
+    } catch {
+      toast.error('로그아웃에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const handleProfileClick = () => {

@@ -270,6 +270,12 @@ export const authHandlers = [
     return HttpResponse.json({ accessToken: createMockToken(userId) });
   }),
 
+  // POST /api/users/auth/logout — 서버 세션 폐기 성공
+  http.post('/api/users/auth/logout', () => {
+    lastLoggedInUserId = null;
+    return new HttpResponse(null, { status: 204 });
+  }),
+
   // DELETE /api/users — 계정 삭제
   http.delete('/api/users', ({ request }) => {
     if (!request.headers.get('Authorization')) {

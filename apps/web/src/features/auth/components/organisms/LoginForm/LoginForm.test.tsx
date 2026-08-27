@@ -1,8 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LoginForm } from './index';
+
+const capture = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/analytics/client', () => ({ capture }));
 
 vi.mock('next/link', () => ({
   default: ({ children, href }: { children: React.ReactNode; href: string }) => (
@@ -25,6 +28,10 @@ vi.mock('../../../hooks/use-login', () => ({
 }));
 
 describe('LoginForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('이메일, 비밀번호 필드와 로그인 버튼을 렌더링한다', () => {
     render(<LoginForm />);
 
@@ -92,5 +99,38 @@ describe('LoginForm', () => {
     await waitFor(() => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
+  });
+
+  it('captures email login exactly once after mutation success', async () => {
+    mockMutate.mockImplementation(
+      (_input: unknown, options: { onSuccess: (result: { accessToken: string }) => void }) =>
+        options.onSuccess({ accessToken: 'access-token' }),
+    );
+    const user = userEvent.setup();
+    render(<LoginForm />);
+
+    await user.type(screen.getByPlaceholderText('이메일 입력'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('비밀번호 입력'), 'password123');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    await waitFor(() =>
+      expect(capture).toHaveBeenCalledWith('login_completed', { method: 'email' }),
+    );
+    expect(capture).toHaveBeenCalledOnce();
+  });
+
+  it('does not capture email login when the mutation fails', async () => {
+    mockMutate.mockImplementation((_input: unknown, options: { onError: (error: Error) => void }) =>
+      options.onError(new Error('login failed')),
+    );
+    const user = userEvent.setup();
+    render(<LoginForm />);
+
+    await user.type(screen.getByPlaceholderText('이메일 입력'), 'test@example.com');
+    await user.type(screen.getByPlaceholderText('비밀번호 입력'), 'password123');
+    await user.click(screen.getByRole('button', { name: '로그인' }));
+
+    await waitFor(() => expect(screen.getByText('login failed')).toBeInTheDocument());
+    expect(capture).not.toHaveBeenCalled();
   });
 });

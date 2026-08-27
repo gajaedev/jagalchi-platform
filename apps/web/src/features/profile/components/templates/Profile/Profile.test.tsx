@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { Provider, type WritableAtom } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -55,7 +55,31 @@ vi.mock('../../../hooks/use-update-profile', () => ({
   })),
 }));
 
-import { PROFILE_MESSAGES } from '@/constants/messages';
+const { mockDeleteAccount, mockBeginSessionEnding, mockClearDeletedSession, mockRestoreSession } =
+  vi.hoisted(() => ({
+    mockDeleteAccount: vi.fn(),
+    mockBeginSessionEnding: vi.fn(() => Promise.resolve()),
+    mockClearDeletedSession: vi.fn(() => Promise.resolve()),
+    mockRestoreSession: vi.fn(() => Promise.resolve()),
+  }));
+
+vi.mock('@/hooks/use-delete-account', () => ({
+  useDeleteAccount: () => ({
+    mutateAsync: mockDeleteAccount,
+    isPending: false,
+  }),
+}));
+
+vi.mock('@/components/providers/AuthSessionContext', () => ({
+  useAuthSession: () => ({
+    beginSessionEnding: mockBeginSessionEnding,
+    clearDeletedSession: mockClearDeletedSession,
+    logoutSession: vi.fn(),
+    restoreSessionAfterEnding: mockRestoreSession,
+  }),
+}));
+
+import { AUTH_MESSAGES, PROFILE_MESSAGES } from '@/constants/messages';
 
 import { useProfile } from '../../../hooks/use-profile';
 import { profileModeAtom, profileImageAtom } from '../../../stores/profile-atoms';
@@ -87,6 +111,8 @@ const defaultAtoms: (readonly [WritableAtom<unknown, unknown[], unknown>, unknow
 
 describe('Profile', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    mockDeleteAccount.mockResolvedValue(undefined);
     vi.mocked(useProfile).mockReturnValue({
       data: mockProfileData,
       isLoading: false,
@@ -177,5 +203,45 @@ describe('Profile', () => {
       </TestProvider>,
     );
     expect(screen.getByText(PROFILE_MESSAGES.ERROR)).toBeInTheDocument();
+  });
+
+  it('clears the shared auth session only after account deletion succeeds', async () => {
+    render(
+      <TestProvider initialValues={defaultAtoms}>
+        <Profile userName="John Doe" />
+      </TestProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: AUTH_MESSAGES.DELETE_ACCOUNT }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: AUTH_MESSAGES.DELETE_ACCOUNT }));
+
+    await waitFor(() => {
+      expect(mockBeginSessionEnding).toHaveBeenCalledTimes(1);
+      expect(mockDeleteAccount).toHaveBeenCalledTimes(1);
+      expect(mockClearDeletedSession).toHaveBeenCalledTimes(1);
+      expect(mockRestoreSession).not.toHaveBeenCalled();
+    });
+  });
+
+  it('keeps the shared auth session when account deletion fails', async () => {
+    mockDeleteAccount.mockRejectedValueOnce(new Error('delete failed'));
+
+    render(
+      <TestProvider initialValues={defaultAtoms}>
+        <Profile userName="John Doe" />
+      </TestProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: AUTH_MESSAGES.DELETE_ACCOUNT }));
+    const dialog = await screen.findByRole('alertdialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: AUTH_MESSAGES.DELETE_ACCOUNT }));
+
+    await waitFor(() => {
+      expect(mockBeginSessionEnding).toHaveBeenCalledTimes(1);
+      expect(mockDeleteAccount).toHaveBeenCalledTimes(1);
+      expect(mockRestoreSession).toHaveBeenCalledTimes(1);
+    });
+    expect(mockClearDeletedSession).not.toHaveBeenCalled();
   });
 });

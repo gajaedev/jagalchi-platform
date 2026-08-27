@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
 import { listPublicRoadmaps } from '@/api/roadmap-domain';
+import { RecommendationListTracker } from '@/components/product/recommendation-list-tracker';
 import { RoadmapCard } from '@/components/product/roadmap-card';
 
 export function ExploreResults() {
@@ -41,23 +42,30 @@ export function ExploreResults() {
   const roadmaps = query.data?.items ?? [];
   if (!roadmaps.length) {
     return (
-      <p className="text-muted-foreground rounded-2xl border border-dashed p-8 text-center text-sm">
-        조건에 맞는 공개 로드맵이 없어요.
-      </p>
+      <>
+        <RecommendationListTracker source="explore" resultCount={0} />
+        <p className="text-muted-foreground rounded-2xl border border-dashed p-8 text-center text-sm">
+          조건에 맞는 공개 로드맵이 없어요.
+        </p>
+      </>
     );
   }
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-      {roadmaps.map((roadmap) => (
-        <RoadmapCard
-          key={roadmap.id}
-          title={roadmap.title}
-          description={roadmap.description}
-          author="자갈치 학습자"
-          href={`/viewer/${roadmap.id}`}
-          tags={roadmap.tags}
-        />
-      ))}
-    </div>
+    <>
+      <RecommendationListTracker source="explore" resultCount={roadmaps.length} />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {roadmaps.map((roadmap) => (
+          <RoadmapCard
+            key={roadmap.id}
+            title={roadmap.title}
+            description={roadmap.description}
+            author="자갈치 학습자"
+            href={`/viewer/${roadmap.id}`}
+            tags={roadmap.tags}
+            analyticsSource="explore"
+          />
+        ))}
+      </div>
+    </>
   );
 }

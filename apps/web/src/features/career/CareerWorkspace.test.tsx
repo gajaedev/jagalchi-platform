@@ -10,6 +10,9 @@ import type { OwnerProofProfile } from '@/api/proof-profile';
 
 import { CareerWorkspace } from './CareerWorkspace';
 
+const capture = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/analytics/client', () => ({ capture }));
+
 const createMission = vi.fn();
 const replaceCriteria = vi.fn();
 const bindMission = vi.fn();
@@ -62,6 +65,7 @@ const target = {
   createdAt: '2026-08-25T00:00:00.000Z',
   updatedAt: '2026-08-25T00:00:00.000Z',
 };
+let careerTargets = [target];
 
 const mission: ProofMission = {
   id: 'mission-react',
@@ -186,7 +190,7 @@ vi.mock('./use-career', () => ({
         description: '제품 요구사항에 맞는 React 컴포넌트를 설계합니다.',
       },
     ]),
-  useCareerTargets: () => queryResult([target]),
+  useCareerTargets: () => queryResult(careerTargets),
   useCareerEvidence: () => queryResult([]),
   useCareerDiff: () => {
     const verified = diffStatus === 'VERIFIED' ? 1 : 0;
@@ -252,6 +256,7 @@ vi.mock('./use-github', () => ({
 describe('CareerWorkspace proof mission vertical', () => {
   beforeEach(() => {
     featureFlags.proofProfileEnabled = true;
+    careerTargets = [target];
     missions = [];
     diffStatus = 'MISSING';
     ownerProofProfileQuery = {
@@ -276,6 +281,99 @@ describe('CareerWorkspace proof mission vertical', () => {
       repositoryCount: 2,
       returnPath: '/career?mission=react',
     });
+  });
+
+  it('captures approved target buckets only after a successful target mutation', async () => {
+    careerTargets = [];
+    createTarget.mockResolvedValue(target);
+    const user = userEvent.setup();
+    render(<CareerWorkspace />);
+
+    await user.type(screen.getByLabelText('회사'), '토스');
+    await user.type(screen.getByLabelText('목표 직무'), '프론트엔드 개발자');
+    await user.type(screen.getByLabelText('채용공고 URL'), 'https://jobs.example/frontend');
+    await user.type(screen.getByLabelText('주요 업무와 자격 요건'), 'A'.repeat(500));
+    await user.click(screen.getByLabelText(/React/));
+    await user.click(screen.getByRole('button', { name: 'Career Diff 만들기' }));
+
+    await waitFor(() =>
+      expect(capture).toHaveBeenCalledWith('career_target_created', {
+        competency_count_bucket: '1',
+        has_posting_url: true,
+        requirements_length_bucket: '500-1999',
+      }),
+    );
+  });
+
+  it('captures the target competency bucket from the created target', async () => {
+    careerTargets = [];
+    createTarget.mockResolvedValue({
+      ...target,
+      competencySlugs: ['react', 'typescript'],
+    });
+    const user = userEvent.setup();
+    render(<CareerWorkspace />);
+
+    await user.type(screen.getByLabelText('회사'), '토스');
+    await user.type(screen.getByLabelText('목표 직무'), '프론트엔드 개발자');
+    await user.type(screen.getByLabelText('주요 업무와 자격 요건'), 'A'.repeat(20));
+    await user.click(screen.getByLabelText(/React/));
+    await user.click(screen.getByRole('button', { name: 'Career Diff 만들기' }));
+
+    await waitFor(() =>
+      expect(capture).toHaveBeenCalledWith('career_target_created', {
+        competency_count_bucket: '2-3',
+        has_posting_url: false,
+        requirements_length_bucket: '20-499',
+      }),
+    );
+    expect(capture).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not capture a target event when target creation rejects', async () => {
+    careerTargets = [];
+    createTarget.mockRejectedValue(new Error('target failed'));
+    const user = userEvent.setup();
+    render(<CareerWorkspace />);
+
+    await user.type(screen.getByLabelText('회사'), '토스');
+    await user.type(screen.getByLabelText('목표 직무'), '프론트엔드 개발자');
+    await user.type(screen.getByLabelText('주요 업무와 자격 요건'), 'A'.repeat(20));
+    await user.click(screen.getByLabelText(/React/));
+    await user.click(screen.getByRole('button', { name: 'Career Diff 만들기' }));
+
+    await waitFor(() => expect(screen.getByText('target failed')).toBeInTheDocument());
+    expect(capture).not.toHaveBeenCalled();
+  });
+
+  it('captures evidence buckets after successful submission and never on rejection', async () => {
+    createEvidence.mockResolvedValue({});
+    const user = userEvent.setup();
+    render(<CareerWorkspace />);
+
+    await user.type(screen.getByLabelText('결과물 이름'), 'Evidence');
+    await user.type(screen.getByLabelText('공개 URL'), 'https://github.com/example/repo');
+    await user.type(screen.getByLabelText('내가 해결한 문제'), '  fixed  ');
+    await user.click(screen.getByLabelText(/React/));
+    await user.click(screen.getByRole('button', { name: '검증 요청하기' }));
+
+    await waitFor(() =>
+      expect(capture).toHaveBeenCalledWith('career_evidence_submitted', {
+        evidence_kind: 'GITHUB_PULL_REQUEST',
+        competency_count_bucket: '1',
+        has_description: true,
+      }),
+    );
+
+    capture.mockClear();
+    createEvidence.mockRejectedValueOnce(new Error('evidence failed'));
+    await user.type(screen.getByLabelText('결과물 이름'), 'Evidence');
+    await user.type(screen.getByLabelText('공개 URL'), 'https://github.com/example/repo');
+    await user.click(screen.getByLabelText(/React/));
+    await user.click(screen.getByRole('button', { name: '검증 요청하기' }));
+
+    await waitFor(() => expect(screen.getByText('evidence failed')).toBeInTheDocument());
+    expect(capture).not.toHaveBeenCalled();
   });
 
   it('completes a valid GitHub callback once and replaces the URL with the safe return path', async () => {

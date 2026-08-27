@@ -1,5 +1,7 @@
 'use client';
 
+import { useRef } from 'react';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -26,6 +28,7 @@ import { VerificationCodeInput } from '../../molecules/VerificationCodeInput';
 
 interface RegisterStep1FormProps {
   onSubmit: (data: RegisterStep1Schema) => void;
+  onSignupStart: () => void;
   onGoogleRegister: () => void;
   onGitHubRegister?: () => void;
   onAppleRegister?: () => void;
@@ -36,6 +39,7 @@ interface RegisterStep1FormProps {
 
 export function RegisterStep1Form({
   onSubmit,
+  onSignupStart,
   onGoogleRegister,
   onGitHubRegister,
   onAppleRegister,
@@ -43,6 +47,7 @@ export function RegisterStep1Form({
   verificationError,
   activeOAuthProvider = null,
 }: RegisterStep1FormProps) {
+  const signupStarted = useRef(false);
   const {
     isCodeSent,
     handleSendCode,
@@ -68,6 +73,14 @@ export function RegisterStep1Form({
   };
 
   const isResendDisabled = isCooldownActive || isSendingCode;
+
+  const handleInitialVerificationSend = () => {
+    if (!signupStarted.current) {
+      signupStarted.current = true;
+      onSignupStart();
+    }
+    handleSendCode(form.getValues('email'));
+  };
 
   return (
     <Form {...form}>
@@ -152,7 +165,7 @@ export function RegisterStep1Form({
               className="w-full"
               loading={isSendingCode}
               loadingLabel={AUTH_MESSAGES.VERIFICATION_CODE_SENDING}
-              onClick={() => handleSendCode(form.getValues('email'))}
+              onClick={handleInitialVerificationSend}
             >
               {AUTH_MESSAGES.VERIFICATION_CODE_SEND}
             </Button>

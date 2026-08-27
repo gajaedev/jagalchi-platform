@@ -1,54 +1,117 @@
 #!/usr/bin/env node
-/**
- * 프로덕션 배포 전 환경변수 안전성 검증.
- * Vercel/Netlify 프로덕션 빌드 파이프라인에서 호출하여 실수로 mocking 이 켜지지 않도록 막는다.
- */
+import { createHash } from 'node:crypto';
+
+const APPROVED_ANALYTICS_PROJECTS = {
+  production: { host: 'https://us.i.posthog.com', tokenSha256: null },
+  staging: { host: 'https://us.i.posthog.com', tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60' },
+  preview: { host: 'https://us.i.posthog.com', tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60' },
+  development: null,
+};
+
+const environment = process.env.NEXT_PUBLIC_ENV;
+const enabledValue = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
+const analyticsEnabled = enabledValue === 'true';
 const isProductionCheck =
-  process.argv.includes('--production') || process.env.VERCEL_ENV === 'production';
-
-if (!isProductionCheck) {
-  console.log('[verify-prod-env] skipped outside production deployment');
-  process.exit(0);
-}
-
+  process.argv.includes('--production') ||
+  process.env.VERCEL_ENV === 'production' ||
+  environment === 'production';
 const errors = [];
 
-if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
+if (enabledValue !== undefined && enabledValue !== 'true' && enabledValue !== 'false') {
+  errors.push('NEXT_PUBLIC_ANALYTICS_ENABLED must be exactly "true" or "false".');
+}
+
+if (environment && !(environment in APPROVED_ANALYTICS_PROJECTS)) {
   errors.push(
-    'NEXT_PUBLIC_API_MOCKING must not be "true" in production — MSW should never intercept real users.',
+    'NEXT_PUBLIC_ENV must be one of production, staging, preview, or development.',
   );
 }
 
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  errors.push('NEXT_PUBLIC_API_URL is required in production.');
+if (isProductionCheck && environment !== 'production') {
+  errors.push('NEXT_PUBLIC_ENV must be exactly "production" for a production deployment.');
 }
 
-const apiOrigin = process.env.API_ORIGIN;
-if (!apiOrigin) {
-  errors.push('API_ORIGIN is required in production.');
-} else {
-  try {
-    const parsedApiOrigin = new URL(apiOrigin);
-    if (parsedApiOrigin.protocol !== 'https:') {
-      errors.push('API_ORIGIN must use HTTPS in production.');
-    }
-    if (
-      parsedApiOrigin.pathname !== '/' ||
-      parsedApiOrigin.search ||
-      parsedApiOrigin.hash
-    ) {
-      errors.push('API_ORIGIN must not include a pathname, query string, or hash.');
-    }
-  } catch {
-    errors.push('API_ORIGIN must be a valid absolute URL.');
+if (analyticsEnabled) {
+  const approvalEnvironment = isProductionCheck ? 'production' : environment;
+  const approval = approvalEnvironment
+    ? APPROVED_ANALYTICS_PROJECTS[approvalEnvironment]
+    : undefined;
+  const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  const host = process.env.NEXT_PUBLIC_POSTHOG_HOST;
+
+  if (!approval) {
+    errors.push(
+      `Analytics is not approved for ${approvalEnvironment ?? 'an unknown environment'}.`,
+    );
   }
+  if (!key) errors.push('NEXT_PUBLIC_POSTHOG_KEY is required when analytics is enabled.');
+  if (!host || host !== approval?.host) {
+    errors.push('NEXT_PUBLIC_POSTHOG_HOST must exactly match the source-approved regional origin.');
+  } else {
+    const parsed = new URL(host);
+    if (
+      parsed.origin !== host ||
+      parsed.pathname !== '/' ||
+      parsed.search ||
+      parsed.hash ||
+      parsed.username ||
+      parsed.password
+    ) {
+      errors.push('NEXT_PUBLIC_POSTHOG_HOST must not include credentials, path, query, or hash.');
+    }
+  }
+
+  if (!approval?.tokenSha256) {
+    errors.push(
+      `No reviewed PostHog project fingerprint is committed for ${
+        approvalEnvironment ?? 'this environment'
+      }.`,
+    );
+  } else if (key) {
+    const actualFingerprint = createHash('sha256').update(key).digest('hex');
+    if (actualFingerprint !== approval.tokenSha256) {
+      errors.push(`The PostHog project token is not approved for ${approvalEnvironment}.`);
+    }
+  }
+}
+
+if (isProductionCheck) {
+  if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
+    errors.push(
+      'NEXT_PUBLIC_API_MOCKING must not be "true" in production — MSW should never intercept real users.',
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    errors.push('NEXT_PUBLIC_API_URL is required in production.');
+  }
+
+  const apiOrigin = process.env.API_ORIGIN;
+  if (!apiOrigin) {
+    errors.push('API_ORIGIN is required in production.');
+  } else {
+    try {
+      const parsedApiOrigin = new URL(apiOrigin);
+      if (parsedApiOrigin.protocol !== 'https:') {
+        errors.push('API_ORIGIN must use HTTPS in production.');
+      }
+      if (parsedApiOrigin.pathname !== '/' || parsedApiOrigin.search || parsedApiOrigin.hash) {
+        errors.push('API_ORIGIN must not include a pathname, query string, or hash.');
+      }
+    } catch {
+      errors.push('API_ORIGIN must be a valid absolute URL.');
+    }
+  }
+}
+
+if (!isProductionCheck && !analyticsEnabled && !environment) {
+  console.log('[verify-prod-env] skipped outside deployment checks');
+  process.exit(0);
 }
 
 if (errors.length > 0) {
-  console.error('[verify-prod-env] production env checks failed:');
-  for (const err of errors) {
-    console.error(` - ${err}`);
-  }
+  console.error('[verify-prod-env] environment checks failed:');
+  for (const error of errors) console.error(` - ${error}`);
   process.exit(1);
 }
 

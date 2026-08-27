@@ -1,9 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 
 import { ArrowUpRight } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { capture } from '@/lib/analytics/client';
+import type { RecommendationSource } from '@/lib/analytics/events';
 
 export type RoadmapCardProps = {
   title: string;
@@ -12,6 +16,7 @@ export type RoadmapCardProps = {
   progress?: number;
   href: string;
   tags?: string[];
+  analyticsSource?: RecommendationSource;
 };
 
 export function RoadmapCard({
@@ -21,6 +26,7 @@ export function RoadmapCard({
   progress,
   href,
   tags = [],
+  analyticsSource,
 }: RoadmapCardProps) {
   const normalizedProgress =
     progress === undefined ? undefined : Math.min(100, Math.max(0, progress));
@@ -72,6 +78,9 @@ export function RoadmapCard({
 
         <Link
           href={href}
+          onClick={() => {
+            if (analyticsSource) capture('recommendation_selected', { source: analyticsSource });
+          }}
           className="focus-visible:ring-ring focus-visible:ring-offset-background absolute inset-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           <span className="sr-only">{title} 실행 과제 보기</span>

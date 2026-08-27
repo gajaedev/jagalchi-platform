@@ -8,6 +8,7 @@ import { useSetAtom } from 'jotai';
 
 import { getAppleOAuthUrl, getGithubOAuthUrl, getGoogleOAuthUrl } from '@/api/auth';
 import { AUTH_MESSAGES } from '@/constants/messages';
+import { capture } from '@/lib/analytics/client';
 
 import { useRegister } from '../../hooks/use-register';
 import { useUpdateProfileLinks } from '../../hooks/use-update-profile-links';
@@ -28,6 +29,21 @@ import type { RegisterStep } from '../../types/auth.types';
 
 interface RegisterFormProps {
   onStepChange?: (step: RegisterStep, title: string, description: string) => void;
+}
+
+function getLinksCountBucket(count: number): '0' | '1' | '2' | '3' | null {
+  switch (count) {
+    case 0:
+      return '0';
+    case 1:
+      return '1';
+    case 2:
+      return '2';
+    case 3:
+      return '3';
+    default:
+      return null;
+  }
 }
 
 export function RegisterForm({ onStepChange }: RegisterFormProps) {
@@ -78,6 +94,10 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
       },
       {
         onSuccess: async () => {
+          const linksCountBucket = getLinksCountBucket(links?.length ?? 0);
+          if (linksCountBucket) {
+            capture('signup_completed', { method: 'email', links_count_bucket: linksCountBucket });
+          }
           if (links && links.length > 0) {
             // 링크 반영 실패해도 회원가입 자체는 성공이라 흡수.
             // 사용자는 프로필 설정에서 추후 재입력 가능.
@@ -156,6 +176,7 @@ export function RegisterForm({ onStepChange }: RegisterFormProps) {
     <>
       <RegisterStep1Form
         onSubmit={handleStep1Submit}
+        onSignupStart={() => capture('signup_started', { method: 'email' })}
         onGoogleRegister={handleGoogleRegister}
         onGitHubRegister={handleGitHubRegister}
         onAppleRegister={handleAppleRegister}

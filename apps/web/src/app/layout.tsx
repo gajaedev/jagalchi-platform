@@ -1,6 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 
 import { MSWProvider } from '@/components/MswProvider';
+import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Toaster } from '@/components/ui/sonner';
@@ -61,7 +62,9 @@ export default function RootLayout({
         <ThemeProvider>
           <MSWProvider>
             <QueryProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                <AnalyticsProvider>{children}</AnalyticsProvider>
+              </AuthProvider>
             </QueryProvider>
           </MSWProvider>
           <Toaster richColors position="bottom-right" />

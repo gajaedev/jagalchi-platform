@@ -1,19 +1,21 @@
 import React from 'react';
 
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'jotai';
 import { useHydrateAtoms } from 'jotai/utils';
 
 const progressMocks = vi.hoisted(() => ({
-  mutate: vi.fn(),
+  mutate: vi.fn((_input: unknown, options?: { onSuccess?: () => void }) => options?.onSuccess?.()),
 }));
+const capture = vi.hoisted(() => vi.fn());
 
 vi.mock('@/hooks/use-roadmap-progress', () => ({
   useRoadmapProgress: () => ({ data: { completedNodeIds: [1], progressPercentage: 50 } }),
   useCompleteNode: () => ({ mutate: progressMocks.mutate }),
 }));
+vi.mock('@/lib/analytics/client', () => ({ capture }));
 
 vi.mock('@xyflow/react', () => ({
   ReactFlowProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -76,6 +78,8 @@ const mockRoadmap = {
 };
 
 describe('ViewerSidebar', () => {
+  beforeEach(() => vi.clearAllMocks());
+
   it('renders sidebar title when isOpen is true', () => {
     render(
       <TestWrapper initialValues={[[viewerRoadmapAtom, mockRoadmap]]}>
@@ -151,9 +155,28 @@ describe('ViewerSidebar', () => {
 
     await user.click(screen.getAllByLabelText(VIEWER_MESSAGES.NODE_INCOMPLETE)[0]);
 
-    expect(progressMocks.mutate).toHaveBeenCalledWith({
-      nodeId: 'n1',
-      isCompleted: true,
+    expect(progressMocks.mutate).toHaveBeenCalledWith(
+      { nodeId: 'n1', isCompleted: true },
+      expect.objectContaining({ onSuccess: expect.any(Function) }),
+    );
+    expect(capture).toHaveBeenCalledWith('learning_node_completion_changed', {
+      action: 'completed',
     });
+  });
+
+  it('captures node opens without sending node or roadmap identifiers', async () => {
+    render(
+      <TestWrapper initialValues={[[viewerRoadmapAtom, mockRoadmap]]}>
+        <ViewerSidebar isOpen={true} roadmapId="roadmap-id" />
+      </TestWrapper>,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Node Alpha' }));
+
+    expect(capture).toHaveBeenCalledWith('learning_node_opened', {
+      completion_state: 'incomplete',
+    });
+    expect(JSON.stringify(capture.mock.calls)).not.toContain('roadmap-id');
+    expect(JSON.stringify(capture.mock.calls)).not.toContain('n1');
   });
 });
