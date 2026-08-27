@@ -49,8 +49,8 @@ services:
       OAUTH_GOOGLE_CLIENT_SECRET: ${OAUTH_GOOGLE_CLIENT_SECRET:-}
       OAUTH_GITHUB_CLIENT_ID: ${OAUTH_GITHUB_CLIENT_ID:-}
       OAUTH_GITHUB_CLIENT_SECRET: ${OAUTH_GITHUB_CLIENT_SECRET:-}
-      EMAIL_DELIVERY_URL: ${EMAIL_DELIVERY_URL:-}
-      EMAIL_DELIVERY_TOKEN: ${EMAIL_DELIVERY_TOKEN:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Jagalchi <no-reply@mail.jagalchi.justn.me>}
     depends_on:
       api-db:
         condition: service_healthy
