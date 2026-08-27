@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useSetAtom } from 'jotai';
 
 import { refreshToken } from '@/api/auth';
-import { clearAccessToken } from '@/api/client';
+import { clearAccessToken, getAccessToken } from '@/api/client';
 
 import { loginAtom, logoutAtom, isAuthInitializedAtom } from '../stores/auth.atoms';
 
@@ -24,6 +24,7 @@ export function useRefreshToken() {
     let isCancelled = false;
 
     const tryRefresh = async () => {
+      const tokenAtStart = getAccessToken();
       try {
         const response = await refreshToken();
         if (!isCancelled) {
@@ -31,7 +32,7 @@ export function useRefreshToken() {
         }
         return true;
       } catch {
-        if (!isCancelled) {
+        if (!isCancelled && getAccessToken() === tokenAtStart) {
           clearAccessToken();
           setLogout();
         }

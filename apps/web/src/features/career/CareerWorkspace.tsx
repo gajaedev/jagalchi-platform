@@ -303,8 +303,13 @@ function CareerWorkspaceContent({ proofProfileEnabled }: { proofProfileEnabled: 
     window.location.assign(claim.setupUrl);
   };
 
-  const isInitialLoading = competenciesQuery.isLoading || targetsQuery.isLoading;
   const hasInitialError = competenciesQuery.isError || targetsQuery.isError;
+  const isInitialLoading =
+    !hasInitialError &&
+    (competenciesQuery.isLoading ||
+      targetsQuery.isLoading ||
+      competenciesQuery.data === undefined ||
+      targetsQuery.data === undefined);
   const proofProfileSettings = proofProfileEnabled ? <ProofProfileSettingsSection /> : null;
 
   return (
