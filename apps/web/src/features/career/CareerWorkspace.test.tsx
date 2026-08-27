@@ -6,6 +6,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CareerDiff, ProofMission } from '@/api/career';
+import type { OwnerProofProfile } from '@/api/proof-profile';
 
 import { CareerWorkspace } from './CareerWorkspace';
 
@@ -24,10 +25,17 @@ const renewOwnerProof = vi.fn();
 const unpublishOwnerProof = vi.fn();
 const refetchOwnerProofProfile = vi.fn();
 const completeGithubInstallationClaimApi = vi.hoisted(() => vi.fn());
+const featureFlags = vi.hoisted(() => ({ proofProfileEnabled: true }));
 
 let missions: ProofMission[] = [];
 let diffStatus: CareerDiff['competencies'][number]['status'] = 'MISSING';
-let ownerProofProfileQuery = {
+let ownerProofProfileQuery: {
+  data: OwnerProofProfile | null;
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
+  refetch: typeof refetchOwnerProofProfile;
+} = {
   data: {
     state: 'DISABLED' as const,
     publicId: null,
@@ -40,6 +48,7 @@ let ownerProofProfileQuery = {
   error: null as Error | null,
   refetch: refetchOwnerProofProfile,
 };
+const useOwnerProofProfile = vi.fn(() => ownerProofProfileQuery);
 
 const target = {
   id: 'target-toss-frontend',
@@ -157,6 +166,11 @@ vi.mock('@/components/app-shell/app-shell', () => ({
   AppShell: ({ children }: PropsWithChildren) => <main>{children}</main>,
 }));
 
+vi.mock('@/hooks/use-feature-flag', () => ({
+  useFeatureFlag: (flag: string) =>
+    flag === 'PROOF_PROFILE_ENABLED' && featureFlags.proofProfileEnabled,
+}));
+
 vi.mock('@/api/github', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/api/github')>()),
   completeGithubInstallationClaim: completeGithubInstallationClaimApi,
@@ -206,7 +220,7 @@ vi.mock('./use-career', () => ({
   useBindProofMission: () => mutationResult(bindMission),
   useRefreshProofVerification: () => mutationResult(refreshVerification),
   useSubmitProofMission: () => mutationResult(submitMission),
-  useOwnerProofProfile: () => ownerProofProfileQuery,
+  useOwnerProofProfile: () => useOwnerProofProfile(),
   useUpdateOwnerProofProfile: () => mutationResult(updateOwnerProofProfile),
   usePublishOwnerProof: () => mutationResult(publishOwnerProof),
   useRenewOwnerProof: () => mutationResult(renewOwnerProof),
@@ -237,6 +251,7 @@ vi.mock('./use-github', () => ({
 
 describe('CareerWorkspace proof mission vertical', () => {
   beforeEach(() => {
+    featureFlags.proofProfileEnabled = true;
     missions = [];
     diffStatus = 'MISSING';
     ownerProofProfileQuery = {
@@ -440,6 +455,32 @@ describe('CareerWorkspace proof mission vertical', () => {
 
     expect(screen.getByLabelText('공개 표시 이름')).toHaveValue('');
     expect(screen.getByRole('button', { name: '표시 정보 저장' })).toBeInTheDocument();
+  });
+
+  it('keeps GitHub Evidence available without querying or rendering Public Proof when disabled', () => {
+    featureFlags.proofProfileEnabled = false;
+    missions = [approvedMission];
+
+    render(<CareerWorkspace />);
+
+    expect(screen.getByText('목표 직무까지 부족한 증거')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '증명 미션 열기' })).toBeInTheDocument();
+    expect(useOwnerProofProfile).not.toHaveBeenCalled();
+    expect(screen.queryByLabelText('공개 표시 이름')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Proof Profile/ })).not.toBeInTheDocument();
+  });
+
+  it('queries and renders Public Proof controls when fully enabled', () => {
+    missions = [approvedMission];
+    ownerProofProfileQuery = {
+      ...ownerProofProfileQuery,
+      data: enabledOwnerProfile(),
+    };
+
+    render(<CareerWorkspace />);
+
+    expect(useOwnerProofProfile).toHaveBeenCalled();
+    expect(screen.getByLabelText('공개 표시 이름')).toBeInTheDocument();
   });
 
   it('creates a mission from the selected target gap with one target-scoped competency', async () => {

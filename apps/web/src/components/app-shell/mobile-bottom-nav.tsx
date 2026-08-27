@@ -2,6 +2,8 @@ import Link from 'next/link';
 
 import { Bell, House, Route, Target, UserRound, type LucideIcon } from 'lucide-react';
 
+import { isEnabled } from '@/lib/feature-flags';
+
 export type AppTab = 'home' | 'career' | 'roadmaps' | 'explore' | 'create' | 'activity' | 'my';
 
 export interface MobileBottomNavProps {
@@ -15,7 +17,9 @@ const navItems: ReadonlyArray<{
   icon: LucideIcon;
 }> = [
   { id: 'home', label: '홈', href: '/', icon: House },
-  { id: 'career', label: '커리어', href: '/career', icon: Target },
+  ...(isEnabled('EVIDENCE_EXECUTION_ENABLED')
+    ? [{ id: 'career' as const, label: '커리어', href: '/career', icon: Target }]
+    : []),
   { id: 'roadmaps', label: '실행', href: '/myroadmap', icon: Route },
   { id: 'activity', label: '활동', href: '/activity', icon: Bell },
   { id: 'my', label: '마이', href: '/profile', icon: UserRound },

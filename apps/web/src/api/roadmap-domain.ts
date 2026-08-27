@@ -18,9 +18,15 @@ export interface RoadmapRecord {
   tags: string[];
   visibility: 'PUBLIC' | 'UNLISTED' | 'PRIVATE';
   graph: RoadmapGraph;
+  directoryId: string | null;
+  forkedFromId: string | null;
+  forkCount: number;
+  likeCount: number;
+  favoriteCount: number;
   version: number;
   createdAt: string;
   updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface RoadmapDomainEvent {
@@ -37,6 +43,21 @@ export interface RoadmapDomainEvent {
       };
     };
   };
+}
+
+export interface RoadmapListResponse {
+  items: RoadmapRecord[];
+  page: number;
+  size: number;
+  total: number;
+}
+
+export interface RoadmapListQuery {
+  ownerId?: string;
+  page?: number;
+  size?: number;
+  search?: string;
+  tag?: string;
 }
 
 export const createDraftRoadmap = () =>
@@ -77,15 +98,7 @@ export const getRoadmapDomainEvents = (roadmapId: string, after = 0) =>
     `/roadmaps/${roadmapId}/events?after=${after}&limit=500`,
   );
 
-export const listPublicRoadmaps = (
-  filters: {
-    ownerId?: string;
-    search?: string;
-    tag?: string;
-    page?: number;
-    size?: number;
-  } = {},
-) => {
+export const listPublicRoadmaps = (filters: RoadmapListQuery = {}) => {
   const query = new URLSearchParams({
     page: String(filters.page ?? 1),
     size: String(filters.size ?? 50),
@@ -93,21 +106,15 @@ export const listPublicRoadmaps = (
   if (filters.ownerId) query.set('ownerId', filters.ownerId);
   if (filters.search) query.set('search', filters.search);
   if (filters.tag) query.set('tag', filters.tag);
-  return apiClient.get<{
-    items: RoadmapRecord[];
-    page: number;
-    size: number;
-    total: number;
-  }>(`/roadmaps/public?${query.toString()}`);
+  return apiClient.get<RoadmapListResponse>(`/roadmaps/public?${query.toString()}`);
 };
 
-export const listOwnedRoadmaps = (search?: string) => {
-  const query = new URLSearchParams({ page: '1', size: '50' });
-  if (search) query.set('search', search);
-  return apiClient.get<{
-    items: RoadmapRecord[];
-    page: number;
-    size: number;
-    total: number;
-  }>(`/roadmaps?${query.toString()}`);
+export const listOwnedRoadmaps = (filters: Omit<RoadmapListQuery, 'ownerId'> = {}) => {
+  const query = new URLSearchParams();
+  if (filters.page !== undefined) query.set('page', String(filters.page));
+  if (filters.size !== undefined) query.set('size', String(filters.size));
+  if (filters.search) query.set('search', filters.search);
+  if (filters.tag) query.set('tag', filters.tag);
+  const qs = query.toString();
+  return apiClient.get<RoadmapListResponse>(`/roadmaps/mine${qs ? `?${qs}` : ''}`);
 };

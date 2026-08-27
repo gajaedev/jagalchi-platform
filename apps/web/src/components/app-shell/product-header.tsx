@@ -7,10 +7,11 @@ import { Bell, Search, UserRound } from 'lucide-react';
 
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { isAuthenticatedAtom } from '@/lib/auth-atoms';
+import { isEnabled } from '@/lib/feature-flags';
 
 const headerLinks = [
   { label: '홈', href: '/' },
-  { label: '목표 공고', href: '/career' },
+  ...(isEnabled('EVIDENCE_EXECUTION_ENABLED') ? [{ label: '목표 공고', href: '/career' }] : []),
   { label: '실행 과제', href: '/myroadmap' },
   { label: '과제 템플릿', href: '/explore' },
 ] as const;

@@ -6,6 +6,7 @@ import { AppShell } from '@/components/app-shell/app-shell';
 import { HomeAudience } from '@/components/product/home-audience';
 import { RoadmapCard } from '@/components/product/roadmap-card';
 import { Button } from '@/components/ui/button';
+import { isEnabled } from '@/lib/feature-flags';
 
 import type { Metadata } from 'next';
 
@@ -32,6 +33,8 @@ const roadmaps = [
   },
 ];
 
+const isEvidenceExecutionEnabled = isEnabled('EVIDENCE_EXECUTION_ENABLED');
+
 function GuestHome() {
   return (
     <>
@@ -49,12 +52,14 @@ function GuestHome() {
           확인하세요.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Button asChild intent="inverse" size="lg">
-            <Link href="/register">
-              Career Diff 시작
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </Button>
+          {isEvidenceExecutionEnabled ? (
+            <Button asChild intent="inverse" size="lg">
+              <Link href="/register">
+                Career Diff 시작
+                <ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </Button>
+          ) : null}
           <Button asChild intent="inverse" variant="outline" size="lg">
             <Link href="/explore">실전 과제 둘러보기</Link>
           </Button>
@@ -115,19 +120,21 @@ export default function Home() {
                 <h2 id="signed-start-heading" className="sr-only">
                   커리어 준비 시작
                 </h2>
-                <article className="border-primary/30 bg-primary-subtle rounded-3xl border p-6 sm:p-7">
-                  <Target aria-hidden="true" className="text-primary size-6" />
-                  <h3 className="mt-5 text-xl font-extrabold">목표 직무와 증거 차이 정하기</h3>
-                  <p className="text-muted-foreground mt-2 text-sm leading-6">
-                    목표 공고를 등록하고, 요구 역량에 연결할 결과물과 검토 상태를 관리합니다.
-                  </p>
-                  <Button asChild className="mt-6">
-                    <Link href="/career">
-                      Career 열기
-                      <ArrowRight aria-hidden="true" className="size-4" />
-                    </Link>
-                  </Button>
-                </article>
+                {isEvidenceExecutionEnabled ? (
+                  <article className="border-primary/30 bg-primary-subtle rounded-3xl border p-6 sm:p-7">
+                    <Target aria-hidden="true" className="text-primary size-6" />
+                    <h3 className="mt-5 text-xl font-extrabold">목표 직무와 증거 차이 정하기</h3>
+                    <p className="text-muted-foreground mt-2 text-sm leading-6">
+                      목표 공고를 등록하고, 요구 역량에 연결할 결과물과 검토 상태를 관리합니다.
+                    </p>
+                    <Button asChild className="mt-6">
+                      <Link href="/career">
+                        Career 열기
+                        <ArrowRight aria-hidden="true" className="size-4" />
+                      </Link>
+                    </Button>
+                  </article>
+                ) : null}
 
                 <article className="border-border bg-card rounded-3xl border p-6 sm:p-7">
                   <ListChecks aria-hidden="true" className="text-primary size-6" />

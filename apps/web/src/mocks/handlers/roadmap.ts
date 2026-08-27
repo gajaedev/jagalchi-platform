@@ -17,9 +17,15 @@ const toRecord = (roadmap: Roadmap): RoadmapRecord => ({
     nodes: roadmap.nodes,
     edges: roadmap.edges,
   },
+  directoryId: null,
+  forkedFromId: null,
+  forkCount: 0,
+  likeCount: 0,
+  favoriteCount: 0,
   version: 1,
   createdAt: roadmap.createdAt,
   updatedAt: roadmap.updatedAt,
+  deletedAt: null,
 });
 
 const roadmapStore: RoadmapRecord[] = MOCK_ROADMAPS.map(toRecord);
@@ -45,18 +51,23 @@ const directoryStore = [
   },
 ];
 
-function paginate(request: Request, records: RoadmapRecord[]) {
+function paginate(request: Request, records: RoadmapRecord[], filterByTag = false) {
   const url = new URL(request.url);
   const page = Math.max(Number(url.searchParams.get('page') ?? '1'), 1);
   const size = Math.max(Number(url.searchParams.get('size') ?? '20'), 1);
   const search = url.searchParams.get('search')?.trim().toLowerCase();
-  const filtered = search
+  const tag = url.searchParams.get('tag')?.trim().toLowerCase();
+  const searchFiltered = search
     ? records.filter(
         (record) =>
           record.title.toLowerCase().includes(search) ||
           record.description.toLowerCase().includes(search),
       )
     : records;
+  const filtered =
+    filterByTag && tag
+      ? searchFiltered.filter((record) => record.tags.includes(tag))
+      : searchFiltered;
   const start = (page - 1) * size;
   return {
     items: filtered.slice(start, start + size),
@@ -72,9 +83,17 @@ function findRoadmap(id: string) {
 
 export const roadmapHandlers = [
   http.get('/api/roadmaps/public', ({ request }) => {
-    const publicRoadmaps = roadmapStore.filter((roadmap) => roadmap.visibility === 'PUBLIC');
-    return HttpResponse.json(paginate(request, publicRoadmaps));
+    const ownerId = new URL(request.url).searchParams.get('ownerId');
+    const publicRoadmaps = roadmapStore.filter(
+      (roadmap) =>
+        roadmap.visibility === 'PUBLIC' && (ownerId === null || roadmap.ownerId === ownerId),
+    );
+    return HttpResponse.json(paginate(request, publicRoadmaps, true));
   }),
+
+  http.get('/api/roadmaps/mine', ({ request }) =>
+    HttpResponse.json(paginate(request, roadmapStore)),
+  ),
 
   http.get<{ id: string }>('/api/roadmaps/public/:id', ({ params }) => {
     const roadmap = findRoadmap(params.id);
@@ -83,8 +102,6 @@ export const roadmapHandlers = [
     }
     return HttpResponse.json(roadmap);
   }),
-
-  http.get('/api/roadmaps', ({ request }) => HttpResponse.json(paginate(request, roadmapStore))),
 
   http.get<{ id: string }>('/api/roadmaps/:id', ({ params }) => {
     const roadmap = findRoadmap(params.id);
@@ -107,9 +124,15 @@ export const roadmapHandlers = [
       tags: body.tags ?? [],
       visibility: body.visibility ?? 'PRIVATE',
       graph: body.graph ?? { schemaVersion: 1, nodes: [], edges: [] },
+      directoryId: null,
+      forkedFromId: null,
+      forkCount: 0,
+      likeCount: 0,
+      favoriteCount: 0,
       version: 1,
       createdAt: now,
       updatedAt: now,
+      deletedAt: null,
     };
     roadmapStore.push(roadmap);
     return HttpResponse.json(roadmap, { status: 201 });

@@ -43,4 +43,11 @@ describe('JWT product role mapping', () => {
     const token = createToken({ roles: ['USER'] });
     expect(extractUserRoleFromToken(token)).toBe('USER');
   });
+
+  it('uses the highest privilege from every Nest access-token role', () => {
+    const token = createToken({ roles: ['USER', 'REVIEWER'] });
+
+    expect(extractUserRoleFromToken(token)).toBe('ADMIN');
+    expect(normalizeUserRole(['USER', 'TEACHER'])).toBe('ADMIN');
+  });
 });

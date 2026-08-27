@@ -10,7 +10,7 @@ export function useRoadmaps(params: RoadmapListParams = {}) {
   const authenticated = useAtomValue(isAuthenticatedAtom);
   return useQuery({
     queryKey: [...queryKeys.roadmaps.lists(), params],
-    queryFn: () => listOwnedRoadmaps(params.query),
+    queryFn: () => listOwnedRoadmaps(params),
     enabled: authenticated,
     placeholderData: (previousData) => previousData,
   });

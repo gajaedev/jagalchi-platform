@@ -1,4 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import { CareerReviewQueue } from '@/features/career/CareerReviewQueue';
+import { isEnabled } from '@/lib/feature-flags';
 
 import type { Metadata } from 'next';
 
@@ -8,5 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function CareerReviewPage() {
+  if (!isEnabled('EVIDENCE_EXECUTION_ENABLED')) notFound();
+
   return <CareerReviewQueue />;
 }

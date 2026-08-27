@@ -1,6 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { forkRoadmap, getForkStatus, getForkTree, getPopularRoadmaps } from './roadmap';
+import {
+  forkRoadmap,
+  getForkStatus,
+  getForkTree,
+  getPopularRoadmaps,
+  getRoadmaps,
+} from './roadmap';
 
 vi.mock('./client', () => ({
   apiClient: {
@@ -53,31 +59,40 @@ describe('getPopularRoadmaps', () => {
     vi.clearAllMocks();
   });
 
-  it('calls GET /roadmaps/popular with no params', () => {
+  it('calls GET /roadmaps/public with no params', () => {
     getPopularRoadmaps();
-    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/popular');
+    expect(apiClient.get).toHaveBeenCalledWith('/roadmaps/public');
   });
 
-  it('calls GET /roadmaps/popular with query string when params provided', () => {
-    getPopularRoadmaps({ page: 0, size: 10, sortBy: 'forks' });
+  it('calls GET /roadmaps/public with canonical query string when params provided', () => {
+    getPopularRoadmaps({ page: 1, size: 10, search: 'React', tag: 'frontend' });
     const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/roadmaps/popular?');
-    expect(call).toContain('page=0');
+    expect(call).toContain('/roadmaps/public?');
+    expect(call).toContain('page=1');
     expect(call).toContain('size=10');
-    expect(call).toContain('sortBy=forks');
-  });
-
-  it('supports sortBy=views', () => {
-    getPopularRoadmaps({ sortBy: 'views' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('sortBy=views');
+    expect(call).toContain('search=React');
+    expect(call).toContain('tag=frontend');
   });
 
   it('omits undefined params from query string', () => {
     getPopularRoadmaps({ page: 1 });
     const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
     expect(call).toContain('page=1');
-    expect(call).not.toContain('sortBy');
+    expect(call).not.toContain('search');
+    expect(call).not.toContain('tag');
     expect(call).not.toContain('size');
+  });
+});
+
+describe('getRoadmaps', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('calls GET /roadmaps/mine with canonical query parameters', () => {
+    getRoadmaps({ page: 2, size: 20, search: 'TypeScript', tag: 'backend' });
+    expect(apiClient.get).toHaveBeenCalledWith(
+      '/roadmaps/mine?page=2&size=20&search=TypeScript&tag=backend',
+    );
   });
 });

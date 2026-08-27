@@ -5,18 +5,16 @@ import { createTestWrapper } from '@/test-utils';
 
 vi.mock('@/api/roadmap', () => ({
   getPopularRoadmaps: vi.fn().mockResolvedValue({
-    content: [
+    items: [
       {
         id: 1,
         title: 'Popular Roadmap',
         tags: [],
-        owner: { id: 1, nickname: '홍길동', profileImageUrl: null },
       },
     ],
-    pageable: { pageNumber: 0, pageSize: 12 },
-    totalElements: 1,
-    totalPages: 1,
-    hasNext: false,
+    page: 1,
+    size: 12,
+    total: 1,
   }),
 }));
 
@@ -43,7 +41,7 @@ describe('usePopularRoadmaps', () => {
   });
 
   it('calls getPopularRoadmaps with provided params', async () => {
-    const params = { page: 0, size: 6 };
+    const params = { page: 1, size: 6 };
     const { result } = renderHook(() => usePopularRoadmaps(params), {
       wrapper: createTestWrapper(),
     });
@@ -61,7 +59,7 @@ describe('usePopularRoadmaps', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toBeDefined();
-    expect((result.current.data as any)?.content).toHaveLength(1);
+    expect(result.current.data?.items).toHaveLength(1);
   });
 
   it('returns error state when API fails', async () => {

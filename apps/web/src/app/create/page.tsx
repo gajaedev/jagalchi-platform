@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, FileCheck2, PencilLine, Target } from 'lucide-react';
 
 import { AppShell } from '@/components/app-shell/app-shell';
+import { isEnabled } from '@/lib/feature-flags';
 
 import type { Metadata } from 'next';
 
@@ -12,6 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default function CreatePage() {
+  const evidenceEnabled = isEnabled('EVIDENCE_EXECUTION_ENABLED');
+
   return (
     <AppShell activeTab="create">
       <div className="mx-auto w-full max-w-5xl">
@@ -30,28 +33,30 @@ export default function CreatePage() {
             실행 계획 시작 방법
           </h2>
           <div className="grid gap-5 md:grid-cols-2">
-            <Link
-              href="/career"
-              className="group border-primary/30 bg-primary-subtle hover:border-primary/60 focus-visible:ring-ring flex min-h-80 flex-col rounded-3xl border p-6 transition-[transform,box-shadow,border-color] outline-none hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 sm:p-8"
-            >
-              <span className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-2xl shadow-sm">
-                <Target aria-hidden="true" className="size-6" />
-              </span>
-              <div className="mt-7">
-                <p className="text-primary text-xs font-extrabold">목표 직무가 있다면</p>
-                <h3 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
-                  목표 공고에서 시작
-                </h3>
-                <p className="text-muted-foreground mt-3 text-sm leading-6">
-                  채용공고가 요구하는 역량과 내 GitHub·배포·기술 문서를 비교해 다음에 만들 증거를
-                  정합니다.
-                </p>
-              </div>
-              <span className="bg-primary text-primary-foreground hover:bg-primary-hover mt-auto flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold">
-                부족한 증거 확인
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </span>
-            </Link>
+            {evidenceEnabled ? (
+              <Link
+                href="/career"
+                className="group border-primary/30 bg-primary-subtle hover:border-primary/60 focus-visible:ring-ring flex min-h-80 flex-col rounded-3xl border p-6 transition-[transform,box-shadow,border-color] outline-none hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-offset-2 sm:p-8"
+              >
+                <span className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-2xl shadow-sm">
+                  <Target aria-hidden="true" className="size-6" />
+                </span>
+                <div className="mt-7">
+                  <p className="text-primary text-xs font-extrabold">목표 직무가 있다면</p>
+                  <h3 className="mt-2 text-xl font-extrabold tracking-tight sm:text-2xl">
+                    목표 공고에서 시작
+                  </h3>
+                  <p className="text-muted-foreground mt-3 text-sm leading-6">
+                    채용공고가 요구하는 역량과 내 GitHub·배포·기술 문서를 비교해 다음에 만들 증거를
+                    정합니다.
+                  </p>
+                </div>
+                <span className="bg-primary text-primary-foreground hover:bg-primary-hover mt-auto flex min-h-12 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold">
+                  부족한 증거 확인
+                  <ArrowRight aria-hidden="true" className="size-4" />
+                </span>
+              </Link>
+            ) : null}
 
             <Link
               href="/myroadmap"

@@ -412,6 +412,9 @@ importers:
       class-validator:
         specifier: ^0.14.2
         version: 0.14.4
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
       google-auth-library:
         specifier: 11.0.2
         version: 11.0.2
@@ -449,6 +452,9 @@ importers:
       '@nestjs/testing':
         specifier: ^11.1.0
         version: 11.2.1(@nestjs/common@11.2.1(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.2.1)(@nestjs/platform-express@11.2.1)
+      '@types/express':
+        specifier: ^5.0.6
+        version: 5.0.6
       '@types/node':
         specifier: ^24.0.0
         version: 24.13.3
@@ -13389,7 +13395,7 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.13.3
+      '@types/node': 25.9.5
 
   '@types/chai@5.2.3':
     dependencies:
@@ -13398,7 +13404,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.13.3
+      '@types/node': 25.9.5
 
   '@types/cors@2.8.19':
     dependencies:
@@ -13445,7 +13451,7 @@ snapshots:
 
   '@types/express-serve-static-core@5.1.3':
     dependencies:
-      '@types/node': 24.13.3
+      '@types/node': 25.9.5
       '@types/qs': 6.15.1
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -13539,12 +13545,12 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 24.13.3
+      '@types/node': 25.9.5
 
   '@types/serve-static@2.2.0':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.13.3
+      '@types/node': 25.9.5
 
   '@types/set-cookie-parser@2.4.10':
     dependencies:

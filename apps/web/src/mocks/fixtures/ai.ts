@@ -44,54 +44,6 @@ export const MOCK_RESOURCE_RECOMMENDATIONS = {
   ],
 };
 
-export const MOCK_GENERATED_ROADMAP = {
-  title: 'AI 생성 프론트엔드 로드맵',
-  description: 'AI가 추천하는 프론트엔드 학습 경로입니다.',
-  nodes: [
-    {
-      id: 'ai-node-1',
-      type: 'jagalchi-node',
-      position: { x: 250, y: 0 },
-      data: {
-        label: 'HTML/CSS',
-        description: '웹의 기본 구조와 스타일링을 학습합니다.',
-        resources: ['https://developer.mozilla.org/ko/docs/Web/HTML'],
-        variant: 'blue',
-        isLocked: false,
-      },
-    },
-    {
-      id: 'ai-node-2',
-      type: 'jagalchi-node',
-      position: { x: 250, y: 150 },
-      data: {
-        label: 'JavaScript',
-        description: '웹 개발의 핵심 프로그래밍 언어를 학습합니다.',
-        resources: ['https://javascript.info/'],
-        variant: 'orange',
-        isLocked: false,
-      },
-    },
-    {
-      id: 'ai-node-3',
-      type: 'jagalchi-node',
-      position: { x: 250, y: 300 },
-      data: {
-        label: 'React',
-        description: 'React를 활용한 SPA 개발을 학습합니다.',
-        resources: ['https://react.dev/'],
-        variant: 'purple',
-        isLocked: false,
-      },
-    },
-  ],
-  edges: [
-    { id: 'ai-edge-1-2', source: 'ai-node-1', target: 'ai-node-2' },
-    { id: 'ai-edge-2-3', source: 'ai-node-2', target: 'ai-node-3' },
-  ],
-  generated_at: '2026-04-14T00:00:00.000Z',
-};
-
 export const MOCK_TECH_CARD = {
   title: 'React',
   category: 'Frontend',

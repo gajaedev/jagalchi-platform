@@ -169,13 +169,6 @@ interface RoadmapGeneratedResponse {
   retrieval_evidence: RetrievalEvidence[];
 }
 
-interface RoadmapGeneratedParams {
-  goal: string;
-  preferred_tags?: string;
-  max_nodes?: number;
-  compose_level?: 'quick' | 'full';
-}
-
 interface RecommendationNode {
   node_id: string;
   status: 'COMPLETED' | 'AVAILABLE' | 'LOCKED' | 'IN_PROGRESS' | 'NEEDS_REVIEW';
@@ -550,19 +543,6 @@ export const getRelatedRoadmaps = (roadmapId: string) =>
     `/ai/related-roadmaps?roadmap_id=${encodeURIComponent(roadmapId)}`,
   );
 
-/** GET /ai/roadmap-generated */
-export const getRoadmapGenerated = (params: RoadmapGeneratedParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('goal', params.goal);
-  if (params.preferred_tags) searchParams.set('preferred_tags', params.preferred_tags);
-  if (params.max_nodes !== undefined) searchParams.set('max_nodes', String(params.max_nodes));
-  if (params.compose_level) searchParams.set('compose_level', params.compose_level);
-
-  return apiClient.get<RoadmapGeneratedResponse>(
-    `/ai/roadmap-generated?${searchParams.toString()}`,
-  );
-};
-
 /** GET /ai/roadmap-recommendation */
 export const getRoadmapRecommendation = (params: RoadmapRecommendationParams) => {
   const searchParams = new URLSearchParams();
@@ -725,7 +705,6 @@ export type {
   GeneratedRoadmapNode,
   GeneratedRoadmapEdge,
   RoadmapGeneratedResponse,
-  RoadmapGeneratedParams,
   RecommendationNode,
   RoadmapRecommendationResponse,
   RoadmapRecommendationParams,

@@ -4,7 +4,7 @@ import { memo, useState } from 'react';
 
 import { useAtomValue, useSetAtom } from 'jotai';
 
-import { getRoadmapGenerated } from '@/api/ai';
+import { runAiJob } from '@/api/ai-jobs';
 import {
   Dialog,
   DialogContent,
@@ -46,7 +46,10 @@ export const RoadmapAiModal = memo(function RoadmapAiModal({
     setIsLoading(true);
     setErrorMessage('');
     try {
-      const response = await getRoadmapGenerated({ goal: prompt, max_nodes: 6 });
+      const response = await runAiJob('roadmap_generation', {
+        goal: prompt,
+        max_nodes: 6,
+      });
 
       const newNodes: RoadmapNode[] = response.nodes.map((n, index) => ({
         id: n.node_id,
@@ -92,7 +95,7 @@ export const RoadmapAiModal = memo(function RoadmapAiModal({
 
       const goal = nodeContext ? `현재 노드: ${nodeContext}. 수정 요청: ${prompt}` : prompt;
 
-      const response = await getRoadmapGenerated({ goal, max_nodes: 6 });
+      const response = await runAiJob('roadmap_generation', { goal, max_nodes: 6 });
 
       const newNodes: RoadmapNode[] = response.nodes.map((n, index) => ({
         id: n.node_id,

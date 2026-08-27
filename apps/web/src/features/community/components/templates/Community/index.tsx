@@ -37,28 +37,27 @@ export function Community() {
     isError: isLatestError,
     refetch: refetchLatest,
   } = useCommunityRoadmaps({
-    sort: 'latest',
-    query: debouncedQuery || undefined,
+    search: debouncedQuery || undefined,
     size: 12,
   });
 
   const popularItems = useMemo<
     Pick<CommunityItem, 'id' | 'title' | 'author' | 'imageUrl'>[]
   >(() => {
-    if (!popularData?.content) return [];
-    return popularData.content.map((item) => ({
+    if (!popularData?.items) return [];
+    return popularData.items.map((item) => ({
       id: item.id,
       title: item.title,
-      author: item.owner.nickname,
+      author: item.ownerId,
     }));
   }, [popularData]);
 
   const latestItems = useMemo<Pick<CommunityItem, 'id' | 'title' | 'author' | 'imageUrl'>[]>(() => {
-    if (!latestData?.content) return [];
-    return latestData.content.map((item) => ({
+    if (!latestData?.items) return [];
+    return latestData.items.map((item) => ({
       id: item.id,
       title: item.title,
-      author: item.owner.nickname,
+      author: item.ownerId,
     }));
   }, [latestData]);
 

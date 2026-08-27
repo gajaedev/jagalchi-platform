@@ -69,16 +69,24 @@ export function extractUserIdFromToken(token: string): string | null {
 export function extractUserRoleFromToken(token: string): string | null {
   const payload = decodeJwtPayload(token);
   if (!payload) return null;
-  if (Array.isArray(payload.roles) && typeof payload.roles[0] === 'string') {
-    return payload.roles[0];
+  if (Array.isArray(payload.roles)) {
+    return normalizeUserRole(payload.roles);
   }
-  return typeof payload.role === 'string' ? payload.role : null;
+  return typeof payload.role === 'string' ? normalizeUserRole(payload.role) : null;
 }
 
 /**
  * 여러 인증 공급자의 역할 값을 제품 역할로 정규화한다.
  */
 export function normalizeUserRole(role: unknown): string {
+  if (Array.isArray(role)) {
+    const normalizedRoles = role.map(normalizeUserRole);
+    if (normalizedRoles.includes('ADMIN')) return 'ADMIN';
+    if (normalizedRoles.includes('USER')) return 'USER';
+    if (normalizedRoles.includes('GUEST')) return 'GUEST';
+    return 'GUEST';
+  }
+
   if (typeof role !== 'string' || !role) return 'GUEST';
 
   switch (role.toUpperCase()) {

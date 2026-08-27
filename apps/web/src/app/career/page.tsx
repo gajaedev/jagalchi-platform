@@ -1,4 +1,7 @@
+import { notFound } from 'next/navigation';
+
 import { CareerWorkspace } from '@/features/career/CareerWorkspace';
+import { isEnabled } from '@/lib/feature-flags';
 
 import type { Metadata } from 'next';
 
@@ -8,5 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function CareerPage() {
+  if (!isEnabled('EVIDENCE_EXECUTION_ENABLED')) notFound();
+
   return <CareerWorkspace />;
 }

@@ -8,6 +8,7 @@ import {
   PublicProofProfileUnavailableError,
   type PublicProofCriterionType,
 } from '@/api/proof-profile';
+import { isEnabled } from '@/lib/feature-flags';
 
 import type { Metadata } from 'next';
 
@@ -50,6 +51,15 @@ async function loadOrNotFound(publicId: string) {
 }
 
 export async function generateMetadata({ params }: ProofProfilePageProps): Promise<Metadata> {
+  if (!isEnabled('PROOF_PROFILE_ENABLED')) {
+    return {
+      title: 'Proof Profile',
+      description: '검증된 실행 증거를 확인하세요.',
+      icons: { icon: '/favicon.ico' },
+      robots: { index: false, follow: false },
+    };
+  }
+
   const { publicId } = await params;
   try {
     const { profile } = await loadPublicProfile(publicId);
@@ -74,6 +84,8 @@ export async function generateMetadata({ params }: ProofProfilePageProps): Promi
 }
 
 export default async function ProofProfilePage({ params }: ProofProfilePageProps) {
+  if (!isEnabled('PROOF_PROFILE_ENABLED')) notFound();
+
   const { publicId } = await params;
   const profile = await loadOrNotFound(publicId);
 
