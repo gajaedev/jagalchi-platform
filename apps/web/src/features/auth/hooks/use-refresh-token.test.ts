@@ -3,16 +3,22 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { createTestWrapper } from '@/test-utils';
 
-const mockSetAccessToken = vi.fn();
-const mockClearAccessToken = vi.fn();
+let currentAccessToken: string | null = null;
+const mockSetAccessToken = vi.fn((token: string) => {
+  currentAccessToken = token;
+});
+const mockClearAccessToken = vi.fn(() => {
+  currentAccessToken = null;
+});
 
 vi.mock('@/api/auth', () => ({
   refreshToken: vi.fn(),
 }));
 
 vi.mock('@/api/client', () => ({
-  setAccessToken: (...args: unknown[]) => mockSetAccessToken(...args),
-  clearAccessToken: (...args: unknown[]) => mockClearAccessToken(...args),
+  getAccessToken: () => currentAccessToken,
+  setAccessToken: (token: string) => mockSetAccessToken(token),
+  clearAccessToken: () => mockClearAccessToken(),
 }));
 
 import { refreshToken } from '@/api/auth';
@@ -23,6 +29,7 @@ describe('useRefreshToken', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.clearAllMocks();
+    currentAccessToken = null;
   });
 
   afterEach(() => {
@@ -55,6 +62,27 @@ describe('useRefreshToken', () => {
 
     // logoutAtom calls clearAccessToken, plus the hook itself calls clearAccessToken
     expect(mockClearAccessToken).toHaveBeenCalled();
+  });
+
+  it('does not clear a newer interactive login when the initial refresh fails late', async () => {
+    let rejectRefresh: (error: Error) => void = () => undefined;
+    vi.mocked(refreshToken).mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectRefresh = reject;
+        }),
+    );
+
+    renderHook(() => useRefreshToken(), { wrapper: createTestWrapper() });
+    currentAccessToken = 'interactive-login-token';
+    rejectRefresh(new Error('stale refresh failed'));
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    expect(mockClearAccessToken).not.toHaveBeenCalled();
+    expect(currentAccessToken).toBe('interactive-login-token');
   });
 
   it('starts interval on successful refresh', async () => {

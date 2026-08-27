@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
 
 import {
   bindProofMission,
@@ -37,6 +38,7 @@ import {
   type RenewOwnerProofInput,
   type UpdateOwnerProofProfileInput,
 } from '@/api/proof-profile';
+import { isAuthenticatedAtom, isAuthInitializedAtom } from '@/lib/auth-atoms';
 import { queryKeys } from '@/lib/query-keys';
 
 const proofMissionKeys = {
@@ -48,6 +50,12 @@ const proofMissionKeys = {
 };
 
 const commandKey = () => crypto.randomUUID();
+
+function useAuthenticatedQueryReady() {
+  const initialized = useAtomValue(isAuthInitializedAtom);
+  const authenticated = useAtomValue(isAuthenticatedAtom);
+  return initialized && authenticated;
+}
 
 function setMissionData(queryClient: QueryClient, mission: ProofMission) {
   queryClient.setQueryData(proofMissionKeys.detail(mission.id), mission);
@@ -61,27 +69,32 @@ function setMissionData(queryClient: QueryClient, mission: ProofMission) {
 }
 
 export function useCareerCompetencies() {
+  const enabled = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: queryKeys.career.competencies(),
     queryFn: listCareerCompetencies,
     staleTime: Number.POSITIVE_INFINITY,
+    enabled,
   });
 }
 
 export function useCareerTargets() {
-  return useQuery({ queryKey: queryKeys.career.targets(), queryFn: listCareerTargets });
+  const enabled = useAuthenticatedQueryReady();
+  return useQuery({ queryKey: queryKeys.career.targets(), queryFn: listCareerTargets, enabled });
 }
 
 export function useCareerDiff(targetId: string | null) {
+  const ready = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: queryKeys.career.diff(targetId ?? 'none'),
     queryFn: () => getCareerDiff(targetId!),
-    enabled: Boolean(targetId),
+    enabled: ready && Boolean(targetId),
   });
 }
 
 export function useCareerEvidence() {
-  return useQuery({ queryKey: queryKeys.career.evidence(), queryFn: listCareerEvidence });
+  const enabled = useAuthenticatedQueryReady();
+  return useQuery({ queryKey: queryKeys.career.evidence(), queryFn: listCareerEvidence, enabled });
 }
 
 export function useCreateCareerTarget() {
@@ -109,7 +122,8 @@ export function useCreateCareerEvidence(targetId: string | null) {
 }
 
 export function useCareerReviews() {
-  return useQuery({ queryKey: queryKeys.career.reviews(), queryFn: listCareerReviews });
+  const enabled = useAuthenticatedQueryReady();
+  return useQuery({ queryKey: queryKeys.career.reviews(), queryFn: listCareerReviews, enabled });
 }
 
 export function useReviewCareerEvidence() {
@@ -135,18 +149,20 @@ export function useReviewCareerEvidence() {
 }
 
 export function useProofMissions(targetId: string | null) {
+  const ready = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: proofMissionKeys.list(targetId ?? 'none'),
     queryFn: () => listProofMissions(targetId!),
-    enabled: Boolean(targetId),
+    enabled: ready && Boolean(targetId),
   });
 }
 
 export function useProofMission(missionId: string | null) {
+  const ready = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: proofMissionKeys.detail(missionId ?? 'none'),
     queryFn: () => getProofMission(missionId!),
-    enabled: Boolean(missionId),
+    enabled: ready && Boolean(missionId),
   });
 }
 
@@ -222,9 +238,11 @@ export function useSubmitProofMission() {
 }
 
 export function useProofReviews() {
+  const enabled = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: proofMissionKeys.reviews(),
     queryFn: listProofReviews,
+    enabled,
   });
 }
 
@@ -250,9 +268,11 @@ export function useReviewProofMission() {
 }
 
 export function useOwnerProofProfile() {
+  const enabled = useAuthenticatedQueryReady();
   return useQuery({
     queryKey: queryKeys.career.proofProfile(),
     queryFn: getOwnerProofProfile,
+    enabled,
   });
 }
 
