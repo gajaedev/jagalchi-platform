@@ -23,6 +23,27 @@ if (!process.env.NEXT_PUBLIC_API_URL) {
   errors.push('NEXT_PUBLIC_API_URL is required in production.');
 }
 
+const apiOrigin = process.env.API_ORIGIN;
+if (!apiOrigin) {
+  errors.push('API_ORIGIN is required in production.');
+} else {
+  try {
+    const parsedApiOrigin = new URL(apiOrigin);
+    if (parsedApiOrigin.protocol !== 'https:') {
+      errors.push('API_ORIGIN must use HTTPS in production.');
+    }
+    if (
+      parsedApiOrigin.pathname !== '/' ||
+      parsedApiOrigin.search ||
+      parsedApiOrigin.hash
+    ) {
+      errors.push('API_ORIGIN must not include a pathname, query string, or hash.');
+    }
+  } catch {
+    errors.push('API_ORIGIN must be a valid absolute URL.');
+  }
+}
+
 if (errors.length > 0) {
   console.error('[verify-prod-env] production env checks failed:');
   for (const err of errors) {

@@ -80,8 +80,6 @@ export const queryKeys = {
     learningPattern: (params: object) => [...queryKeys.ai.all, 'learning-pattern', params] as const,
     relatedRoadmaps: (roadmapId: string) =>
       [...queryKeys.ai.all, 'related-roadmaps', roadmapId] as const,
-    roadmapGenerated: (params: object) =>
-      [...queryKeys.ai.all, 'roadmap-generated', params] as const,
     roadmapRecommendation: (params: object) =>
       [...queryKeys.ai.all, 'roadmap-recommendation', params] as const,
     techCard: (slug: string) => [...queryKeys.ai.all, 'tech-card', slug] as const,

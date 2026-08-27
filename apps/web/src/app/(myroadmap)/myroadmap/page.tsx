@@ -35,7 +35,7 @@ export default function MyRoadmapsPage() {
   const trimmedSearchQuery = searchQuery.trim();
 
   const { data, isLoading } = useRoadmaps(
-    trimmedSearchQuery ? { query: trimmedSearchQuery } : undefined,
+    trimmedSearchQuery ? { search: trimmedSearchQuery } : undefined,
   );
 
   // 서버 응답 → RoadmapSummary 매핑

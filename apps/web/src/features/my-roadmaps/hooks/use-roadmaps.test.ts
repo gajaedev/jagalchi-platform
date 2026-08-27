@@ -30,15 +30,15 @@ describe('useRoadmaps', () => {
   it('loads all owned roadmaps by default', async () => {
     const { result } = renderHook(() => useRoadmaps(), { wrapper: wrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(listOwnedRoadmaps).toHaveBeenCalledWith(undefined);
+    expect(listOwnedRoadmaps).toHaveBeenCalledWith({});
   });
 
-  it('passes the search query to the UUID roadmap endpoint', async () => {
-    const { result } = renderHook(() => useRoadmaps({ query: 'React' }), {
+  it('passes the canonical search query to the owned roadmap endpoint', async () => {
+    const { result } = renderHook(() => useRoadmaps({ search: 'React' }), {
       wrapper: wrapper(),
     });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(listOwnedRoadmaps).toHaveBeenCalledWith('React');
+    expect(listOwnedRoadmaps).toHaveBeenCalledWith({ search: 'React' });
   });
 
   it('returns persisted roadmap data', async () => {

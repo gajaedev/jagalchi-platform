@@ -15,6 +15,7 @@ import type {
 import type { OwnerProofProfile } from '@/api/proof-profile';
 import { AppShell } from '@/components/app-shell/app-shell';
 import { Button } from '@/components/ui/button';
+import { useFeatureFlag } from '@/hooks/use-feature-flag';
 import { cn } from '@/lib/utils';
 
 import { CareerEvidenceForm } from './CareerEvidenceForm';
@@ -167,7 +168,7 @@ function verificationErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : '검증을 완료하지 못했습니다.';
 }
 
-export function CareerWorkspace() {
+function CareerWorkspaceContent({ proofProfileEnabled }: { proofProfileEnabled: boolean }) {
   const [renderedAt] = useState(Date.now);
   const [githubCallbackStatus, setGithubCallbackStatus] = useState<
     { state: 'pending' | 'success' | 'error'; message: string } | undefined
@@ -193,11 +194,6 @@ export function CareerWorkspace() {
   const bindMission = useBindProofMission();
   const refreshVerification = useRefreshProofVerification();
   const submitMission = useSubmitProofMission();
-  const ownerProofProfileQuery = useOwnerProofProfile();
-  const updateOwnerProofProfile = useUpdateOwnerProofProfile();
-  const publishOwnerProof = usePublishOwnerProof();
-  const renewOwnerProof = useRenewOwnerProof();
-  const unpublishOwnerProof = useUnpublishOwnerProof();
   const selectedMission =
     missionsQuery.data?.find((mission) => mission.competencySlug === selectedCompetencySlug) ??
     null;
@@ -263,43 +259,6 @@ export function CareerWorkspace() {
       });
   }, [completeGithubClaim]);
 
-  const ownerProofProfile =
-    ownerProofProfileQuery.data === null
-      ? {
-          state: 'DISABLED' as const,
-          publicId: null,
-          displayName: '',
-          summary: '',
-          proofs: [],
-        }
-      : ownerProofProfileQuery.data;
-
-  const proofMissionIds = useMemo(
-    () =>
-      new Map(
-        (ownerProofProfile?.proofs ?? []).map(
-          (proof) => [proof.publicProofId, proof.missionId] as const,
-        ),
-      ),
-    [ownerProofProfile?.proofs],
-  );
-  const selectedPublication = ownerProofProfile?.proofs.find(
-    (proof) => proof.missionId === selectedMission?.id,
-  );
-  const selectedMissionEligible = Boolean(
-    ownerProofProfile?.state === 'ENABLED' &&
-    selectedMission?.state === 'APPROVED' &&
-    selectedMission.currentVerificationRun?.status === 'PASS' &&
-    selectedMission.currentVerificationRun.stale === false &&
-    selectedMission.currentReview?.decision === 'APPROVED' &&
-    selectedMission.currentReview.verificationRunId === selectedMission.currentVerificationRun.id,
-  );
-  const selectedPublicationCapability = getProofPublicationCapability(
-    selectedMissionEligible,
-    selectedPublication,
-    renderedAt,
-  );
-
   const targetCompetencies = useMemo(() => {
     const allowed = new Set(diffQuery.data?.target.competencySlugs ?? []);
     return (competenciesQuery.data ?? []).filter((competency) => allowed.has(competency.slug));
@@ -346,135 +305,7 @@ export function CareerWorkspace() {
 
   const isInitialLoading = competenciesQuery.isLoading || targetsQuery.isLoading;
   const hasInitialError = competenciesQuery.isError || targetsQuery.isError;
-  const proofProfileSettings = ownerProofProfileQuery.isLoading ? (
-    <section aria-label="공개 증명 프로필" className="border-border bg-card rounded-2xl border p-6">
-      <p role="status" className="text-muted-foreground text-sm">
-        공개 증명 프로필을 불러오는 중입니다.
-      </p>
-    </section>
-  ) : ownerProofProfileQuery.isError ? (
-    <section
-      aria-label="공개 증명 프로필"
-      className="border-error/30 bg-error-subtle rounded-2xl border p-6"
-    >
-      <p className="text-error font-bold">공개 증명 프로필을 불러오지 못했습니다.</p>
-      <Button
-        className="mt-4"
-        onClick={() => void ownerProofProfileQuery.refetch()}
-        variant="outline"
-      >
-        프로필 다시 시도
-      </Button>
-    </section>
-  ) : ownerProofProfile === undefined ? (
-    <section
-      aria-label="공개 증명 프로필"
-      className="border-error/30 bg-error-subtle rounded-2xl border p-6"
-    >
-      <p className="text-error font-bold">공개 증명 프로필 상태를 확인하지 못했습니다.</p>
-      <Button
-        className="mt-4"
-        onClick={() => void ownerProofProfileQuery.refetch()}
-        variant="outline"
-      >
-        프로필 다시 시도
-      </Button>
-    </section>
-  ) : (
-    <ProofProfileSettings
-      profile={{
-        state: ownerProofProfile.state,
-        publicId: ownerProofProfile.publicId,
-        displayName: ownerProofProfile.displayName,
-        summary: ownerProofProfile.summary,
-        proofs: ownerProofProfile.proofs.map((proof) => ({
-          publicProofId: proof.publicProofId,
-          title: proof.title,
-          summary: proof.summary,
-          competencyLabel: proof.competencyLabel,
-          contributionSummary: null,
-          verifiedAt: proof.verifiedAt,
-          criteria: proof.criteria,
-          publicationState: proof.publicationState,
-          validUntil: proof.validUntil,
-          isPublished: proof.isPublished,
-        })),
-      }}
-      onSaveProfile={async ({ displayName, summary }) => {
-        await updateOwnerProofProfile.mutateAsync({
-          state: ownerProofProfile.state,
-          displayName,
-          summary,
-        });
-      }}
-      onEnableProfile={async () => {
-        await updateOwnerProofProfile.mutateAsync({
-          state: 'ENABLED',
-          displayName: ownerProofProfile.displayName,
-          summary: ownerProofProfile.summary || null,
-        });
-      }}
-      onDisableProfile={async () => {
-        await updateOwnerProofProfile.mutateAsync({
-          state: 'DISABLED',
-          displayName: ownerProofProfile.displayName,
-          summary: ownerProofProfile.summary || null,
-        });
-      }}
-      onSetProofPublished={async (publicProofId, published) => {
-        const missionId = proofMissionIds.get(publicProofId);
-        if (!missionId) {
-          throw new Error('현재 목표에서 이 증명의 미션을 찾지 못했습니다.');
-        }
-        if (published) {
-          await publishOwnerProof.mutateAsync({ missionId });
-        } else {
-          await unpublishOwnerProof.mutateAsync(missionId);
-        }
-      }}
-      onRenewProof={async (publicProofId) => {
-        const missionId = proofMissionIds.get(publicProofId);
-        if (!missionId) {
-          throw new Error('현재 목표에서 이 증명의 미션을 찾지 못했습니다.');
-        }
-        await renewOwnerProof.mutateAsync({ missionId });
-      }}
-      isSaving={
-        updateOwnerProofProfile.isPending &&
-        updateOwnerProofProfile.variables?.state === ownerProofProfile.state
-      }
-      isEnabling={
-        updateOwnerProofProfile.isPending && updateOwnerProofProfile.variables?.state === 'ENABLED'
-      }
-      isDisabling={
-        updateOwnerProofProfile.isPending && updateOwnerProofProfile.variables?.state === 'DISABLED'
-      }
-      updatingProofId={
-        [...proofMissionIds.entries()].find(
-          ([, missionId]) =>
-            (publishOwnerProof.isPending && missionId === publishOwnerProof.variables?.missionId) ||
-            (unpublishOwnerProof.isPending && missionId === unpublishOwnerProof.variables),
-        )?.[0] ?? null
-      }
-      renewingProofId={
-        [...proofMissionIds.entries()].find(
-          ([, missionId]) =>
-            renewOwnerProof.isPending && missionId === renewOwnerProof.variables?.missionId,
-        )?.[0] ?? null
-      }
-      error={
-        updateOwnerProofProfile.error instanceof Error
-          ? updateOwnerProofProfile.error.message
-          : publishOwnerProof.error instanceof Error
-            ? publishOwnerProof.error.message
-            : renewOwnerProof.error instanceof Error
-              ? renewOwnerProof.error.message
-              : unpublishOwnerProof.error instanceof Error
-                ? unpublishOwnerProof.error.message
-                : null
-      }
-    />
-  );
+  const proofProfileSettings = proofProfileEnabled ? <ProofProfileSettingsSection /> : null;
 
   return (
     <AppShell activeTab="career">
@@ -742,59 +573,11 @@ export function CareerWorkspace() {
                         isSubmitting={submitMission.isPending}
                       />
 
-                      {selectedPublicationCapability === 'FIRST_PUBLISH' ||
-                      selectedPublicationCapability === 'REPUBLISH' ? (
-                        <div
-                          key={selectedMission.id}
-                          className="border-primary/30 bg-primary/5 rounded-2xl border p-5"
-                        >
-                          <p className="text-sm font-bold">
-                            {selectedPublicationCapability === 'FIRST_PUBLISH'
-                              ? '승인된 증명을 공개 프로필에 추가할 수 있습니다.'
-                              : '현재 승인이 유효해 이 증명을 다시 공개할 수 있습니다.'}
-                          </p>
-                          <Button
-                            className="mt-3"
-                            disabled={publishOwnerProof.isPending}
-                            onClick={() =>
-                              void publishOwnerProof.mutateAsync({
-                                missionId: selectedMission.id,
-                              })
-                            }
-                          >
-                            {publishOwnerProof.isPending
-                              ? 'Proof Profile에 공개 중'
-                              : selectedPublicationCapability === 'FIRST_PUBLISH'
-                                ? 'Proof Profile에 공개'
-                                : 'Proof Profile에 다시 공개'}
-                          </Button>
-                        </div>
-                      ) : selectedPublicationCapability === 'RECOVER_INVALIDATED' ? (
-                        <div className="border-warning/30 bg-warning-subtle rounded-2xl border p-5">
-                          <p className="text-sm font-bold">
-                            최신 검증과 승인을 확인해 다시 공개할 수 있는 상태로 준비합니다.
-                          </p>
-                          <Button
-                            className="mt-3"
-                            disabled={renewOwnerProof.isPending}
-                            onClick={() =>
-                              void renewOwnerProof.mutateAsync({
-                                missionId: selectedMission.id,
-                              })
-                            }
-                          >
-                            {renewOwnerProof.isPending
-                              ? '검증 상태 확인 중'
-                              : '검증 상태 확인 후 공개 준비'}
-                          </Button>
-                        </div>
-                      ) : selectedPublicationCapability === 'RENEW_IN_SETTINGS' ? (
-                        <div className="border-warning/30 bg-warning-subtle rounded-2xl border p-5">
-                          <p className="text-sm font-bold">
-                            게시 기한이 지났습니다. Proof Profile 공개 설정에서 기한을 갱신한 뒤
-                            공개해주세요.
-                          </p>
-                        </div>
+                      {proofProfileEnabled ? (
+                        <ProofPublicationControls
+                          mission={selectedMission}
+                          renderedAt={renderedAt}
+                        />
                       ) : null}
 
                       {showCriteriaEditor ? (
@@ -1051,4 +834,235 @@ export function CareerWorkspace() {
       )}
     </AppShell>
   );
+}
+
+function ProofProfileSettingsSection() {
+  const ownerProofProfileQuery = useOwnerProofProfile();
+  const updateOwnerProofProfile = useUpdateOwnerProofProfile();
+  const publishOwnerProof = usePublishOwnerProof();
+  const renewOwnerProof = useRenewOwnerProof();
+  const unpublishOwnerProof = useUnpublishOwnerProof();
+  const ownerProofProfile =
+    ownerProofProfileQuery.data === null
+      ? {
+          state: 'DISABLED' as const,
+          publicId: null,
+          displayName: '',
+          summary: '',
+          proofs: [],
+        }
+      : ownerProofProfileQuery.data;
+  const proofMissionIds = useMemo(
+    () =>
+      new Map(
+        (ownerProofProfile?.proofs ?? []).map(
+          (proof) => [proof.publicProofId, proof.missionId] as const,
+        ),
+      ),
+    [ownerProofProfile?.proofs],
+  );
+
+  if (ownerProofProfileQuery.isLoading) {
+    return (
+      <section
+        aria-label="공개 증명 프로필"
+        className="border-border bg-card rounded-2xl border p-6"
+      >
+        <p role="status" className="text-muted-foreground text-sm">
+          공개 증명 프로필을 불러오는 중입니다.
+        </p>
+      </section>
+    );
+  }
+  if (ownerProofProfileQuery.isError || ownerProofProfile === undefined) {
+    return (
+      <section
+        aria-label="공개 증명 프로필"
+        className="border-error/30 bg-error-subtle rounded-2xl border p-6"
+      >
+        <p className="text-error font-bold">
+          {ownerProofProfileQuery.isError
+            ? '공개 증명 프로필을 불러오지 못했습니다.'
+            : '공개 증명 프로필 상태를 확인하지 못했습니다.'}
+        </p>
+        <Button
+          className="mt-4"
+          onClick={() => void ownerProofProfileQuery.refetch()}
+          variant="outline"
+        >
+          프로필 다시 시도
+        </Button>
+      </section>
+    );
+  }
+
+  return (
+    <ProofProfileSettings
+      profile={{
+        state: ownerProofProfile.state,
+        publicId: ownerProofProfile.publicId,
+        displayName: ownerProofProfile.displayName,
+        summary: ownerProofProfile.summary,
+        proofs: ownerProofProfile.proofs.map((proof) => ({
+          publicProofId: proof.publicProofId,
+          title: proof.title,
+          summary: proof.summary,
+          competencyLabel: proof.competencyLabel,
+          contributionSummary: null,
+          verifiedAt: proof.verifiedAt,
+          criteria: proof.criteria,
+          publicationState: proof.publicationState,
+          validUntil: proof.validUntil,
+          isPublished: proof.isPublished,
+        })),
+      }}
+      onSaveProfile={async ({ displayName, summary }) => {
+        await updateOwnerProofProfile.mutateAsync({
+          state: ownerProofProfile.state,
+          displayName,
+          summary,
+        });
+      }}
+      onEnableProfile={async () => {
+        await updateOwnerProofProfile.mutateAsync({
+          state: 'ENABLED',
+          displayName: ownerProofProfile.displayName,
+          summary: ownerProofProfile.summary || null,
+        });
+      }}
+      onDisableProfile={async () => {
+        await updateOwnerProofProfile.mutateAsync({
+          state: 'DISABLED',
+          displayName: ownerProofProfile.displayName,
+          summary: ownerProofProfile.summary || null,
+        });
+      }}
+      onSetProofPublished={async (publicProofId, published) => {
+        const missionId = proofMissionIds.get(publicProofId);
+        if (!missionId) throw new Error('현재 목표에서 이 증명의 미션을 찾지 못했습니다.');
+        if (published) {
+          await publishOwnerProof.mutateAsync({ missionId });
+        } else {
+          await unpublishOwnerProof.mutateAsync(missionId);
+        }
+      }}
+      onRenewProof={async (publicProofId) => {
+        const missionId = proofMissionIds.get(publicProofId);
+        if (!missionId) throw new Error('현재 목표에서 이 증명의 미션을 찾지 못했습니다.');
+        await renewOwnerProof.mutateAsync({ missionId });
+      }}
+      isSaving={
+        updateOwnerProofProfile.isPending &&
+        updateOwnerProofProfile.variables?.state === ownerProofProfile.state
+      }
+      isEnabling={
+        updateOwnerProofProfile.isPending && updateOwnerProofProfile.variables?.state === 'ENABLED'
+      }
+      isDisabling={
+        updateOwnerProofProfile.isPending && updateOwnerProofProfile.variables?.state === 'DISABLED'
+      }
+      updatingProofId={
+        [...proofMissionIds.entries()].find(
+          ([, missionId]) =>
+            (publishOwnerProof.isPending && missionId === publishOwnerProof.variables?.missionId) ||
+            (unpublishOwnerProof.isPending && missionId === unpublishOwnerProof.variables),
+        )?.[0] ?? null
+      }
+      renewingProofId={
+        [...proofMissionIds.entries()].find(
+          ([, missionId]) =>
+            renewOwnerProof.isPending && missionId === renewOwnerProof.variables?.missionId,
+        )?.[0] ?? null
+      }
+      error={
+        updateOwnerProofProfile.error instanceof Error
+          ? updateOwnerProofProfile.error.message
+          : publishOwnerProof.error instanceof Error
+            ? publishOwnerProof.error.message
+            : renewOwnerProof.error instanceof Error
+              ? renewOwnerProof.error.message
+              : unpublishOwnerProof.error instanceof Error
+                ? unpublishOwnerProof.error.message
+                : null
+      }
+    />
+  );
+}
+
+function ProofPublicationControls({
+  mission,
+  renderedAt,
+}: {
+  mission: ProofMission;
+  renderedAt: number;
+}) {
+  const ownerProofProfileQuery = useOwnerProofProfile();
+  const publishOwnerProof = usePublishOwnerProof();
+  const renewOwnerProof = useRenewOwnerProof();
+  const ownerProofProfile = ownerProofProfileQuery.data;
+  const publication = ownerProofProfile?.proofs.find((proof) => proof.missionId === mission.id);
+  const eligible = Boolean(
+    ownerProofProfile?.state === 'ENABLED' &&
+    mission.state === 'APPROVED' &&
+    mission.currentVerificationRun?.status === 'PASS' &&
+    mission.currentVerificationRun.stale === false &&
+    mission.currentReview?.decision === 'APPROVED' &&
+    mission.currentReview.verificationRunId === mission.currentVerificationRun.id,
+  );
+  const capability = getProofPublicationCapability(eligible, publication, renderedAt);
+
+  if (capability === 'FIRST_PUBLISH' || capability === 'REPUBLISH') {
+    return (
+      <div key={mission.id} className="border-primary/30 bg-primary/5 rounded-2xl border p-5">
+        <p className="text-sm font-bold">
+          {capability === 'FIRST_PUBLISH'
+            ? '승인된 증명을 공개 프로필에 추가할 수 있습니다.'
+            : '현재 승인이 유효해 이 증명을 다시 공개할 수 있습니다.'}
+        </p>
+        <Button
+          className="mt-3"
+          disabled={publishOwnerProof.isPending}
+          onClick={() => void publishOwnerProof.mutateAsync({ missionId: mission.id })}
+        >
+          {publishOwnerProof.isPending
+            ? 'Proof Profile에 공개 중'
+            : capability === 'FIRST_PUBLISH'
+              ? 'Proof Profile에 공개'
+              : 'Proof Profile에 다시 공개'}
+        </Button>
+      </div>
+    );
+  }
+  if (capability === 'RECOVER_INVALIDATED') {
+    return (
+      <div className="border-warning/30 bg-warning-subtle rounded-2xl border p-5">
+        <p className="text-sm font-bold">
+          최신 검증과 승인을 확인해 다시 공개할 수 있는 상태로 준비합니다.
+        </p>
+        <Button
+          className="mt-3"
+          disabled={renewOwnerProof.isPending}
+          onClick={() => void renewOwnerProof.mutateAsync({ missionId: mission.id })}
+        >
+          {renewOwnerProof.isPending ? '검증 상태 확인 중' : '검증 상태 확인 후 공개 준비'}
+        </Button>
+      </div>
+    );
+  }
+  if (capability === 'RENEW_IN_SETTINGS') {
+    return (
+      <div className="border-warning/30 bg-warning-subtle rounded-2xl border p-5">
+        <p className="text-sm font-bold">
+          게시 기한이 지났습니다. Proof Profile 공개 설정에서 기한을 갱신한 뒤 공개해주세요.
+        </p>
+      </div>
+    );
+  }
+  return null;
+}
+
+export function CareerWorkspace() {
+  const proofProfileEnabled = useFeatureFlag('PROOF_PROFILE_ENABLED');
+
+  return <CareerWorkspaceContent proofProfileEnabled={proofProfileEnabled} />;
 }

@@ -28,6 +28,7 @@ let socket: Socket | null = null;
 let consumers = 0;
 const sequences = new Map<string, number>();
 const localSubscribers = new Map<RealtimeEvent, Set<(payload: unknown) => void>>();
+const maxReplayPages = 100;
 
 function realtimeOrigin(): string {
   const configured =
@@ -126,15 +127,23 @@ function deliverLocalEvent(event: RealtimeEvent, payload: unknown): void {
 
 async function replayMissedEvents(roadmapId: string, after: number): Promise<number> {
   let cursor = after;
-  for (let page = 0; page < 20; page += 1) {
+  for (let page = 0; page < maxReplayPages; page += 1) {
     const result = await getRoadmapDomainEvents(roadmapId, cursor);
+    if (
+      !Number.isSafeInteger(result.currentSequence) ||
+      result.currentSequence < cursor ||
+      !Array.isArray(result.events)
+    ) {
+      throw new Error('실시간 변경 내역 페이지가 유효하지 않습니다.');
+    }
     const events = [...result.events].sort(
       (left, right) => Number(left.sequence) - Number(right.sequence),
     );
-    let advanced = false;
     for (const event of events) {
       const sequence = Number(event.sequence);
-      if (!Number.isSafeInteger(sequence) || sequence <= cursor) continue;
+      if (!Number.isSafeInteger(sequence) || sequence !== cursor + 1) {
+        throw new Error('실시간 변경 내역 페이지가 연속되지 않습니다.');
+      }
       deliverLocalEvent('roadmap:event', {
         roadmapId,
         eventId: event.id,
@@ -143,13 +152,14 @@ async function replayMissedEvents(roadmapId: string, after: number): Promise<num
         replayed: true,
       });
       cursor = sequence;
-      advanced = true;
     }
-    if (cursor >= result.currentSequence) {
-      sequences.set(roadmapId, result.currentSequence);
-      return result.currentSequence;
+    if (cursor === result.currentSequence) {
+      sequences.set(roadmapId, cursor);
+      return cursor;
     }
-    if (!advanced) break;
+    if (events.length === 0 || cursor > result.currentSequence) {
+      throw new Error('실시간 변경 내역을 모두 복구하지 못했습니다.');
+    }
   }
   throw new Error('실시간 변경 내역을 모두 복구하지 못했습니다.');
 }

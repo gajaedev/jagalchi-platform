@@ -1,5 +1,7 @@
 import { apiClient } from './client';
 
+import type { RoadmapRecord } from './roadmap-domain';
+
 // === Common Types ===
 
 interface RoadmapOwnerResponse {
@@ -15,8 +17,8 @@ interface RoadmapStatsResponse {
 }
 
 interface PageableResponse {
-  pageNumber: number;
-  pageSize: number;
+  page: number;
+  size: number;
 }
 
 // === Roadmap Types (aligned with Roadmap Service OpenAPI spec) ===
@@ -65,22 +67,13 @@ interface RoadmapDetailResponse {
   updatedAt: string;
 }
 
-interface RoadmapListItemResponse {
-  id: string;
-  isPublic?: boolean;
-  thumbnailUrl?: string | null;
-  title: string;
-  tags: string[];
-  updatedAt?: string;
-  owner: RoadmapOwnerResponse;
-}
+type RoadmapListItemResponse = RoadmapRecord;
 
 interface RoadmapListResponse {
-  content: RoadmapListItemResponse[];
-  pageable: PageableResponse;
-  totalElements: number;
-  totalPages: number;
-  hasNext: boolean;
+  items: RoadmapListItemResponse[];
+  page: number;
+  size: number;
+  total: number;
 }
 
 interface RoadmapUpdateResponse {
@@ -167,29 +160,19 @@ export const getRoadmap = (roadmapId: string) =>
 interface RoadmapListParams {
   page?: number;
   size?: number;
-  sort?: string;
-  period?: string;
-  query?: string;
-  userId?: string;
-  directoryId?: string;
-  isPublic?: boolean;
-  tags?: string[];
+  search?: string;
+  tag?: string;
 }
 
 export const getRoadmaps = (params: RoadmapListParams = {}) => {
   const searchParams = new URLSearchParams();
   if (params.page !== undefined) searchParams.set('page', String(params.page));
   if (params.size !== undefined) searchParams.set('size', String(params.size));
-  if (params.sort) searchParams.set('sort', params.sort);
-  if (params.period) searchParams.set('period', params.period);
-  if (params.query) searchParams.set('query', params.query);
-  if (params.userId !== undefined) searchParams.set('userId', String(params.userId));
-  if (params.directoryId !== undefined) searchParams.set('directoryId', String(params.directoryId));
-  if (params.isPublic !== undefined) searchParams.set('isPublic', String(params.isPublic));
-  if (params.tags?.length) params.tags.forEach((tag) => searchParams.append('tags', tag));
+  if (params.search) searchParams.set('search', params.search);
+  if (params.tag) searchParams.set('tag', params.tag);
 
   const qs = searchParams.toString();
-  return apiClient.get<RoadmapListResponse>(`/roadmaps${qs ? `?${qs}` : ''}`);
+  return apiClient.get<RoadmapListResponse>(`/roadmaps/mine${qs ? `?${qs}` : ''}`);
 };
 
 export const updateRoadmap = (roadmapId: string, data: UpdateRoadmapRequest) =>
@@ -260,17 +243,19 @@ export const getForkStatus = (roadmapId: string) =>
 interface PopularRoadmapsParams {
   page?: number;
   size?: number;
-  sortBy?: string;
+  search?: string;
+  tag?: string;
 }
 
 export const getPopularRoadmaps = (params: PopularRoadmapsParams = {}) => {
   const searchParams = new URLSearchParams();
   if (params.page !== undefined) searchParams.set('page', String(params.page));
   if (params.size !== undefined) searchParams.set('size', String(params.size));
-  if (params.sortBy) searchParams.set('sortBy', params.sortBy);
+  if (params.search) searchParams.set('search', params.search);
+  if (params.tag) searchParams.set('tag', params.tag);
 
   const qs = searchParams.toString();
-  return apiClient.get<RoadmapListResponse>(`/roadmaps/popular${qs ? `?${qs}` : ''}`);
+  return apiClient.get<RoadmapListResponse>(`/roadmaps/public${qs ? `?${qs}` : ''}`);
 };
 
 // === Type Exports ===

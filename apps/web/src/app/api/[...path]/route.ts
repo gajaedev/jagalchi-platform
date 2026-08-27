@@ -4,13 +4,19 @@ import { timingSafeEqual } from 'crypto';
 
 import { ATTACHMENT_UPLOAD_CONSTRAINTS, ATTACHMENT_UPLOAD_ENDPOINT } from '@/constants/upload';
 
-const API_ORIGIN = process.env.API_ORIGIN ?? 'https://api.jagalchi.dev';
 const DEFAULT_TIMEOUT_MS = 15_000;
 const CSRF_COOKIE_NAME = 'csrf-token';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+function getApiOrigin(): string {
+  const value = process.env.API_ORIGIN ?? 'http://localhost:8080';
+  return new URL(value).origin;
+}
+
+const API_ORIGIN = getApiOrigin();
 
 /**
  * 허용할 origin 목록.
@@ -163,8 +169,7 @@ async function validateAttachmentUploadRequest(
 
 async function proxyRequest(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
-  const targetPath = pathname.replace(/^\/api/, '');
-  const targetUrl = `${API_ORIGIN}${targetPath}${search}`;
+  const targetUrl = `${API_ORIGIN}${pathname}${search}`;
 
   // safe 메서드(GET/HEAD/OPTIONS)는 CSRF 검증 스킵
   if (!SAFE_METHODS.has(request.method)) {
@@ -195,7 +200,7 @@ async function proxyRequest(request: NextRequest) {
 
     // GET/HEAD/OPTIONS 는 바디를 포함할 수 없다.
     if (!SAFE_METHODS.has(request.method)) {
-      if (request.method === 'POST' && targetPath === ATTACHMENT_UPLOAD_ENDPOINT) {
+      if (request.method === 'POST' && pathname === `/api${ATTACHMENT_UPLOAD_ENDPOINT}`) {
         const uploadBody = await validateAttachmentUploadRequest(request);
         if (uploadBody instanceof NextResponse) {
           return uploadBody;
@@ -203,7 +208,7 @@ async function proxyRequest(request: NextRequest) {
 
         headers.delete('content-type');
         init.body = uploadBody;
-      } else {
+      } else if (request.body) {
         init.body = request.body;
         init.duplex = 'half';
       }
@@ -214,7 +219,9 @@ async function proxyRequest(request: NextRequest) {
     const responseHeaders = new Headers(response.headers);
     stripCorsHeaders(responseHeaders);
 
-    return new NextResponse(response.body, {
+    const responseBody = [204, 205, 304].includes(response.status) ? null : response.body;
+
+    return new NextResponse(responseBody, {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders,

@@ -2,7 +2,6 @@ import { http, HttpResponse } from 'msw';
 
 import {
   MOCK_AI_HEALTH,
-  MOCK_GENERATED_ROADMAP,
   MOCK_NODE_DESCRIPTION,
   MOCK_RESOURCE_RECOMMENDATIONS,
   MOCK_TECH_CARD,
@@ -46,14 +45,6 @@ export const aiHandlers = [
     return HttpResponse.json({
       ...MOCK_RESOURCE_RECOMMENDATIONS,
       query,
-    });
-  }),
-
-  // GET /api/ai/roadmap-generated — AI 로드맵 생성
-  http.get('/api/ai/roadmap-generated', () => {
-    return HttpResponse.json({
-      ...MOCK_GENERATED_ROADMAP,
-      generated_at: new Date().toISOString(),
     });
   }),
 

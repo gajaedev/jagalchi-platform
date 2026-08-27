@@ -7,12 +7,17 @@ import { ATTACHMENT_UPLOAD_CONSTRAINTS } from '@/constants/upload';
 const mockFetch = vi.fn();
 vi.stubGlobal('fetch', mockFetch);
 
+vi.hoisted(() => {
+  process.env.API_ORIGIN = 'https://api.example.com/';
+});
+
 import { GET, POST, PUT, PATCH, DELETE } from './route';
 
 // ---------------------------------------------------------------------------
 // 헬퍼
 // ---------------------------------------------------------------------------
 
+const TEST_API_ORIGIN = 'https://api.example.com';
 function makeRequest(
   method: string,
   pathname: string,
@@ -95,21 +100,20 @@ describe('GET /api/[...path] (safe method)', () => {
     expect(res.status).toBe(200);
   });
 
-  it('upstream URL 에서 /api prefix 가 제거된다', async () => {
-    const req = makeRequest('GET', '/api/v1/roadmaps');
+  it('Nest global /api prefix를 유지한 upstream URL로 프록시한다', async () => {
+    const req = makeRequest('GET', '/api/users/auth/login');
     await GET(req);
 
     const calledUrl = mockFetch.mock.calls[0][0] as string;
-    expect(calledUrl).toContain('/v1/roadmaps');
-    expect(calledUrl).not.toContain('/api/v1');
+    expect(calledUrl).toBe(`${TEST_API_ORIGIN}/api/users/auth/login`);
   });
 
-  it('쿼리스트링이 upstream 에 그대로 전달된다', async () => {
-    const req = makeRequest('GET', '/api/v1/users?page=1&size=10');
+  it('Nest prefix와 쿼리스트링을 upstream에 그대로 전달한다', async () => {
+    const req = makeRequest('GET', '/api/roadmaps/mine?status=active&page=1&size=10');
     await GET(req);
 
     const calledUrl = mockFetch.mock.calls[0][0] as string;
-    expect(calledUrl).toContain('?page=1&size=10');
+    expect(calledUrl).toBe(`${TEST_API_ORIGIN}/api/roadmaps/mine?status=active&page=1&size=10`);
   });
 
   it('upstream 응답 상태코드를 그대로 반환한다', async () => {
@@ -118,6 +122,16 @@ describe('GET /api/[...path] (safe method)', () => {
     const res = await GET(req);
 
     expect(res.status).toBe(404);
+  });
+
+  it('204 upstream 응답을 null body로 전달한다', async () => {
+    mockFetch.mockResolvedValue(new Response(null, { status: 204 }));
+    const req = makeRequest('GET', '/api/health');
+
+    const res = await GET(req);
+
+    expect(res.status).toBe(204);
+    expect(res.body).toBeNull();
   });
 });
 

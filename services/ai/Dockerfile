@@ -119,10 +119,10 @@ RUN python manage.py collectstatic --noinput --clear 2>/dev/null || true
 EXPOSE 8000
 
 # 헬스체크 설정
-# - 30초마다 /api/health 엔드포인트 확인
+# - 30초마다 /ai/health/ 엔드포인트 확인
 # - 5초 타임아웃, 3번 실패 시 unhealthy 상태
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health/ || exit 1
+    CMD curl -f http://localhost:8000/ai/health/ || exit 1
 
 # Gunicorn을 사용한 프로덕션 서버 실행
 # - workers: CPU 코어 수 * 2 + 1 권장

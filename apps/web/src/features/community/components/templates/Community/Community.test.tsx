@@ -24,18 +24,17 @@ vi.mock('@/hooks/use-popular-roadmaps', () => ({
 vi.mock('@/hooks/use-community-roadmaps', () => ({
   useCommunityRoadmaps: () => ({
     data: {
-      content: [
+      items: [
         {
           id: 1,
           title: 'Test Roadmap',
           tags: [],
-          owner: { id: 1, nickname: '홍길동', profileImageUrl: null },
+          ownerId: '11111111-1111-4111-8111-111111111111',
         },
       ],
-      pageable: { pageNumber: 0, pageSize: 12 },
-      totalElements: 1,
-      totalPages: 1,
-      hasNext: false,
+      page: 1,
+      size: 12,
+      total: 1,
     },
     isLoading: false,
   }),

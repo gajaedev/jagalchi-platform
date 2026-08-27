@@ -20,7 +20,6 @@ import {
   getNodeResourceRecommendation,
   getRecordCoach,
   getRelatedRoadmaps,
-  getRoadmapGenerated,
   getRoadmapRecommendation,
   getResourceRecommendation,
   getTechCards,
@@ -121,26 +120,6 @@ describe('getRelatedRoadmaps', () => {
   it('calls GET /ai/related-roadmaps with encoded roadmap_id', () => {
     getRelatedRoadmaps('rm-1');
     expect(apiClient.get).toHaveBeenCalledWith('/ai/related-roadmaps?roadmap_id=rm-1');
-  });
-});
-
-describe('getRoadmapGenerated', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('calls GET /ai/roadmap-generated with required goal', () => {
-    getRoadmapGenerated({ goal: 'learn frontend' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/ai/roadmap-generated?');
-    expect(call).toContain('goal=learn+frontend');
-  });
-
-  it('includes optional params when provided', () => {
-    getRoadmapGenerated({ goal: 'learn', max_nodes: 10, compose_level: 'full' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('max_nodes=10');
-    expect(call).toContain('compose_level=full');
   });
 });
 
