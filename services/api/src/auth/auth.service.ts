@@ -263,16 +263,21 @@ export class AuthService {
       }),
     );
     try {
+      const resendApiKey = this.config.get<string>('RESEND_API_KEY')?.trim();
+      const emailFrom = this.config.get<string>('EMAIL_FROM')?.trim();
+      if (!resendApiKey || !emailFrom) {
+        throw new Error('Email delivery is not configured');
+      }
       const content = verificationEmailContent(template, code);
       const response = await fetch(RESEND_EMAIL_API_URL, {
         method: 'POST',
         headers: {
-          authorization: `Bearer ${this.config.getOrThrow<string>('RESEND_API_KEY')}`,
+          authorization: `Bearer ${resendApiKey}`,
           'content-type': 'application/json',
           'idempotency-key': `email-challenge-${challenge.id}`,
         },
         body: JSON.stringify({
-          from: this.config.getOrThrow<string>('EMAIL_FROM'),
+          from: emailFrom,
           to: [email],
           subject: content.subject,
           text: content.text,

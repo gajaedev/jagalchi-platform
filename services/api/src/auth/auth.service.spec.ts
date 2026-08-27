@@ -72,6 +72,7 @@ describe('AuthService', () => {
       EMAIL_FROM: 'Jagalchi <no-reply@mail.jagalchi.justn.me>',
     };
     const config = {
+      get: vi.fn((key: string) => configValues[key]),
       getOrThrow: vi.fn((key: string) => {
         const value = configValues[key];
         if (!value) throw new Error(`Missing ${key}`);
@@ -98,7 +99,7 @@ describe('AuthService', () => {
       {} as never,
       verificationChallenges as never,
     );
-    return { attempts, service, sessions, tickets, users, verificationChallenges };
+    return { attempts, configValues, service, sessions, tickets, users, verificationChallenges };
   };
 
   it('hashes a new password and opens the approved signup ticket account', async () => {
@@ -196,6 +197,19 @@ describe('AuthService', () => {
     expect(subject.verificationChallenges.save).toHaveBeenLastCalledWith(
       expect.objectContaining({ consumedAt: expect.any(Date) }),
     );
+  });
+
+  it('fails closed without making a request when development email delivery is unconfigured', async () => {
+    const subject = createSubject();
+    delete subject.configValues.RESEND_API_KEY;
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(
+      subject.service.sendEmailVerification({ email: 'user@example.com' }),
+    ).rejects.toBeInstanceOf(ServiceUnavailableException);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(subject.verificationChallenges.delete).toHaveBeenCalledWith({ id: 'challenge-1' });
   });
 
   it('fails closed and removes the challenge when Resend rejects delivery', async () => {
