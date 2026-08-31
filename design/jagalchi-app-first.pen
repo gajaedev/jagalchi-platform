@@ -695,8 +695,14 @@
                           "stroke": "$--v2-border",
                           "descendants": {
                             "jn2sd": {
-                              "icon": "chrome",
-                              "fill": "$--v2-foreground"
+                              "type": "text",
+                              "id": "ifzPo",
+                              "name": "Button/Google Icon",
+                              "fill": "$--v2-foreground",
+                              "content": "G",
+                              "fontFamily": "Arial",
+                              "fontSize": 17,
+                              "fontWeight": "900"
                             },
                             "wquol": {
                               "content": "Google로 계속하기",
@@ -863,17 +869,35 @@
                       }
                     },
                     {
-                      "type": "text",
-                      "id": "ovZTX",
-                      "name": "Login Signup Link",
-                      "fill": "$--v2-muted-foreground",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "처음 오셨나요?  이메일로 회원가입",
-                      "textAlign": "center",
-                      "fontFamily": "$--v2-font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
+                      "type": "frame",
+                      "id": "X6WWSl",
+                      "name": "Login Signup Link Row",
+                      "width": 350,
+                      "height": 17,
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "wKbl6",
+                          "name": "Login Signup Prompt",
+                          "fill": "$--v2-muted-foreground",
+                          "content": "처음 오셨나요?",
+                          "fontFamily": "$--v2-font-body",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "zRmpt",
+                          "name": "Login Signup Action",
+                          "fill": "$--v2-primary",
+                          "content": "이메일로 회원가입",
+                          "fontFamily": "$--v2-font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -2127,42 +2151,50 @@
                       "ref": "M3NlEg",
                       "name": "Home Current Lesson",
                       "width": "fill_container",
-                      "fill": "$--v2-surface",
-                      "stroke": "$--v2-border",
+                      "fill": "$--v2-primary",
+                      "stroke": "$--v2-primary",
                       "padding": 20,
                       "gap": 12,
                       "descendants": {
                         "mZUho": {
                           "content": "이어서 학습하기",
                           "fontFamily": "$--v2-font-body",
-                          "fill": "$--v2-muted-foreground"
+                          "fill": "#FFFFFFB3"
                         },
                         "tfXfl": {
-                          "content": "2-2",
+                          "content": "2-2강",
                           "fontFamily": "$--v2-font-body",
-                          "fill": "$--v2-muted-foreground"
+                          "fill": "#FFFFFFB3"
                         },
                         "LmXY3": {
                           "content": "React 상태 관리 이해하기",
                           "fontFamily": "$--v2-font-body",
-                          "fill": "$--v2-foreground",
+                          "fill": "#FFFFFF",
                           "fontSize": 18,
                           "fontWeight": "700"
                         },
                         "facaT": {
                           "content": "약 18분 · 자료 3개 · 퀘스트 2개",
                           "fontFamily": "$--v2-font-body",
-                          "fill": "$--v2-muted-foreground"
+                          "fill": "#FFFFFFB3"
                         },
                         "jRZL9": {
-                          "fill": "$--v2-primary"
-                        },
-                        "l92Us": {
                           "fill": "$--v2-primary-foreground"
                         },
+                        "l92Us": {
+                          "type": "text",
+                          "id": "im5yA",
+                          "name": "Learning/Current Lesson Action Icon",
+                          "fill": "$--v2-primary",
+                          "content": "▶",
+                          "fontFamily": "Arial",
+                          "fontSize": 13,
+                          "fontWeight": "800"
+                        },
                         "MeFKC": {
-                          "fill": "$--v2-primary-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fill": "$--v2-primary",
+                          "fontFamily": "$--v2-font-body",
+                          "content": "학습 이어가기"
                         }
                       }
                     },
@@ -2242,6 +2274,8 @@
                               "id": "yj7eo",
                               "name": "Home Goal Label — React Query 개념 복습",
                               "fill": "$--v2-muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "React Query 개념 복습",
                               "fontFamily": "$--v2-font-body",
                               "fontSize": 13,
@@ -2297,6 +2331,8 @@
                               "id": "OsABr",
                               "name": "Home Goal Label — 캐싱 전략 실습",
                               "fill": "$--v2-muted-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "캐싱 전략 실습",
                               "fontFamily": "$--v2-font-body",
                               "fontSize": 13,
@@ -2330,8 +2366,8 @@
                               "height": 28,
                               "fill": "$--v2-surface",
                               "cornerRadius": "$--radius-full",
-                              "stroke": "$--border",
-                              "strokeWidth": 1,
+                              "stroke": "$--v2-muted-foreground",
+                              "strokeWidth": 1.5,
                               "justifyContent": "center",
                               "alignItems": "center"
                             },
@@ -2340,6 +2376,8 @@
                               "id": "QcCBV",
                               "name": "Home Goal Label — 낙관적 업데이트 배우기",
                               "fill": "$--v2-foreground",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
                               "content": "낙관적 업데이트 배우기",
                               "fontFamily": "$--v2-font-body",
                               "fontSize": 13,
@@ -2491,21 +2529,24 @@
                             },
                             "a0xFOa": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "430"
                             },
                             "j2DY7": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "Yly3x": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "4주"
                             },
                             "dUaW4": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "O1bUVw": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "중급"
                             },
                             "tTKyJ": {
                               "content": "박준호",
@@ -2513,7 +2554,7 @@
                               "fontFamily": "$--v2-font-body"
                             },
                             "wJ77w": {
-                              "content": "4.8 · 654명 학습 중",
+                              "content": "★ 4.8 · 654명 학습 중",
                               "fill": "$--v2-muted-foreground",
                               "fontFamily": "$--v2-font-body"
                             }
@@ -2661,7 +2702,10 @@
                             {
                               "type": "text",
                               "id": "HNgBj",
+                              "x": 0,
+                              "y": 0,
                               "name": "Explore Eyebrow",
+                              "enabled": false,
                               "fill": "$--v2-primary",
                               "content": "새로운 배움을 발견해요",
                               "fontFamily": "$--v2-font-body",
@@ -2861,7 +2905,7 @@
                           "id": "FZOK4",
                           "name": "Explore Featured Category",
                           "fill": "$--v2-muted-foreground",
-                          "content": "MOBILE · 12주 과정",
+                          "content": "모바일 · 12주 과정",
                           "fontFamily": "$--font-mono",
                           "fontSize": 10,
                           "fontWeight": "700"
@@ -2981,21 +3025,24 @@
                             },
                             "a0xFOa": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "1.2천"
                             },
                             "j2DY7": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "Yly3x": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "10주"
                             },
                             "dUaW4": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "O1bUVw": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "초급"
                             },
                             "tTKyJ": {
                               "fill": "$--v2-foreground",
@@ -3003,7 +3050,8 @@
                             },
                             "wJ77w": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "★ 4.9 · 1.2천명 학습 중"
                             }
                           }
                         },
@@ -3024,7 +3072,8 @@
                             },
                             "gJ8C2/rjcvY": {
                               "fill": "$--v2-primary",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "백엔드"
                             },
                             "pVEyQ": {
                               "fill": "$--v2-muted-foreground"
@@ -3044,21 +3093,24 @@
                             },
                             "a0xFOa": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "512"
                             },
                             "j2DY7": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "Yly3x": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "6주"
                             },
                             "dUaW4": {
                               "fill": "$--v2-muted-foreground"
                             },
                             "O1bUVw": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "중급"
                             },
                             "tTKyJ": {
                               "content": "이서준",
@@ -3066,7 +3118,7 @@
                               "fontFamily": "$--v2-font-body"
                             },
                             "wJ77w": {
-                              "content": "4.9 · 930명 학습 중",
+                              "content": "★ 4.7 · 620명 학습 중",
                               "fill": "$--v2-muted-foreground",
                               "fontFamily": "$--v2-font-body"
                             }
@@ -3394,7 +3446,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     },
@@ -3458,7 +3511,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     },
@@ -3522,7 +3576,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     }
@@ -7557,6 +7612,9 @@
                           "content": "지금 학습할 차례",
                           "fontFamily": "$--v2-font-body"
                         },
+                        "tfXfl": {
+                          "content": "2-2강"
+                        },
                         "LmXY3": {
                           "content": "React 상태 관리 이해하기",
                           "fontFamily": "$--v2-font-body"
@@ -7566,7 +7624,14 @@
                           "fontFamily": "$--v2-font-body"
                         },
                         "l92Us": {
-                          "fill": "$--v2-primary"
+                          "type": "text",
+                          "id": "aBREA",
+                          "name": "Learning/Current Lesson Action Icon",
+                          "fill": "$--v2-primary",
+                          "content": "▶",
+                          "fontFamily": "Arial",
+                          "fontSize": 13,
+                          "fontWeight": "800"
                         },
                         "MeFKC": {
                           "fill": "$--v2-primary",
@@ -7657,20 +7722,21 @@
                           "fill": "$--v2-muted"
                         },
                         "G3StBD": {
-                          "content": "03"
+                          "content": "03",
+                          "fill": "#737373"
                         },
                         "EKwAV": {
                           "content": "React로 서비스 만들기",
-                          "fill": "$--v2-muted-foreground",
+                          "fill": "#737373",
                           "fontFamily": "$--v2-font-body"
                         },
                         "yNeA2": {
                           "content": "0 / 6",
-                          "fill": "$--v2-muted-foreground",
+                          "fill": "#737373",
                           "fontFamily": "$--v2-font-body"
                         },
                         "nHURc": {
-                          "fill": "$--v2-muted-foreground"
+                          "fill": "#A3A3A3"
                         }
                       }
                     },
@@ -7687,20 +7753,21 @@
                           "fill": "$--v2-muted"
                         },
                         "G3StBD": {
-                          "content": "04"
+                          "content": "04",
+                          "fill": "#737373"
                         },
                         "EKwAV": {
                           "content": "배포와 운영",
-                          "fill": "$--v2-muted-foreground",
+                          "fill": "#737373",
                           "fontFamily": "$--v2-font-body"
                         },
                         "yNeA2": {
                           "content": "0 / 3",
-                          "fill": "$--v2-muted-foreground",
+                          "fill": "#737373",
                           "fontFamily": "$--v2-font-body"
                         },
                         "nHURc": {
-                          "fill": "$--v2-muted-foreground"
+                          "fill": "#A3A3A3"
                         }
                       }
                     }
@@ -11951,7 +12018,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     },
@@ -12014,7 +12082,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     }
@@ -14817,7 +14886,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     },
@@ -14880,7 +14950,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     },
@@ -14943,7 +15014,8 @@
                         },
                         "wJ77w": {
                           "fill": "$--v2-muted-foreground",
-                          "fontFamily": "$--v2-font-body"
+                          "fontFamily": "$--v2-font-body",
+                          "content": "★ 4.9 · 1.2천명 학습 중"
                         }
                       }
                     }
@@ -15157,7 +15229,7 @@
                               "id": "hCTZN",
                               "name": "Ticket Wallet Grant Description",
                               "fill": "$--v2-muted-foreground",
-                              "content": "다음 지급일 · 5월 1일",
+                              "content": "다음 지급일 · 매월 1일",
                               "fontFamily": "$--v2-font-body",
                               "fontSize": 11,
                               "fontWeight": "normal"
@@ -18470,7 +18542,7 @@
                               "fontFamily": "$--v2-font-body"
                             },
                             "wJ77w": {
-                              "content": "4.8 · 654명 학습 중",
+                              "content": "★ 4.8 · 654명 학습 중",
                               "fill": "$--v2-muted-foreground",
                               "fontFamily": "$--v2-font-body"
                             }
@@ -18664,7 +18736,7 @@
                           "name": "Login Apple로 계속하기",
                           "width": "fill_container",
                           "fill": "$--v2-surface",
-                          "stroke": "$--v2-border",
+                          "stroke": "#525252",
                           "descendants": {
                             "jn2sd": {
                               "icon": "apple",
@@ -18684,11 +18756,17 @@
                           "name": "Login Google로 계속하기",
                           "width": "fill_container",
                           "fill": "$--v2-surface",
-                          "stroke": "$--v2-border",
+                          "stroke": "#525252",
                           "descendants": {
                             "jn2sd": {
-                              "icon": "chrome",
-                              "fill": "$--v2-foreground"
+                              "type": "text",
+                              "id": "g3W7Cw",
+                              "name": "Button/Google Icon",
+                              "fill": "$--v2-foreground",
+                              "content": "G",
+                              "fontFamily": "Arial",
+                              "fontSize": 17,
+                              "fontWeight": "900"
                             },
                             "wquol": {
                               "content": "Google로 계속하기",
@@ -18704,7 +18782,7 @@
                           "name": "Login GitHub로 계속하기",
                           "width": "fill_container",
                           "fill": "$--v2-surface",
-                          "stroke": "$--v2-border",
+                          "stroke": "#525252",
                           "descendants": {
                             "jn2sd": {
                               "icon": "github",
@@ -18768,7 +18846,7 @@
                           "fontFamily": "$--v2-font-body"
                         },
                         "GeUEb": {
-                          "stroke": "$--v2-border"
+                          "stroke": "#525252"
                         },
                         "x4anK": {
                           "icon": "mail",
@@ -18803,7 +18881,7 @@
                           "fontFamily": "$--v2-font-body"
                         },
                         "GeUEb": {
-                          "stroke": "$--v2-border"
+                          "stroke": "#525252"
                         },
                         "x4anK": {
                           "icon": "lock-keyhole",
@@ -18855,17 +18933,35 @@
                       }
                     },
                     {
-                      "type": "text",
-                      "id": "ISp4f",
-                      "name": "Login Signup Link",
-                      "fill": "$--v2-muted-foreground",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "처음 오셨나요?  이메일로 회원가입",
-                      "textAlign": "center",
-                      "fontFamily": "$--v2-font-body",
-                      "fontSize": 12,
-                      "fontWeight": "normal"
+                      "type": "frame",
+                      "id": "YervS",
+                      "name": "Login Signup Link Row",
+                      "width": 350,
+                      "height": 17,
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qbsun",
+                          "name": "Login Signup Prompt",
+                          "fill": "$--v2-muted-foreground",
+                          "content": "처음 오셨나요?",
+                          "fontFamily": "$--v2-font-body",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "afUqW",
+                          "name": "Login Signup Action",
+                          "fill": "$--v2-primary",
+                          "content": "이메일로 회원가입",
+                          "fontFamily": "$--v2-font-body",
+                          "fontSize": 12,
+                          "fontWeight": "700"
+                        }
+                      ]
                     }
                   ]
                 }
@@ -19505,7 +19601,7 @@
                               "id": "RolOw",
                               "name": "Web Home Hero Meta",
                               "fill": "#FFFFFFCC",
-                              "content": "프론트엔드 마스터 · 11 / 18 완료 · 약 18분",
+                              "content": "프론트엔드 마스터 · 5 / 18 완료 · 약 18분",
                               "fontFamily": "$--v2-font-body",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -19523,7 +19619,7 @@
                                   "type": "frame",
                                   "id": "KT6RI",
                                   "name": "Web Home Hero Progress Fill",
-                                  "width": 430,
+                                  "width": 242,
                                   "height": "fill_container",
                                   "fill": "#FFFFFF",
                                   "cornerRadius": "$--radius-full"
@@ -19539,8 +19635,14 @@
                               "stroke": "$--v2-border",
                               "descendants": {
                                 "jn2sd": {
-                                  "icon": "arrow-right",
-                                  "fill": "$--v2-primary"
+                                  "type": "text",
+                                  "id": "DNJFK",
+                                  "name": "Button/Outline Icon",
+                                  "fill": "#000000",
+                                  "content": "▶",
+                                  "fontFamily": "Arial",
+                                  "fontSize": 13,
+                                  "fontWeight": "800"
                                 },
                                 "wquol": {
                                   "content": "학습 이어가기",
@@ -19684,7 +19786,7 @@
                                   "fontFamily": "$--v2-font-body"
                                 },
                                 "F7d65L": {
-                                  "content": "62% 학습 중",
+                                  "content": "28% 학습 중",
                                   "fill": "$--v2-muted-foreground",
                                   "fontFamily": "$--v2-font-body"
                                 },
@@ -19693,21 +19795,24 @@
                                 },
                                 "a0xFOa": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "1.2천"
                                 },
                                 "j2DY7": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "Yly3x": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "10주"
                                 },
                                 "dUaW4": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "O1bUVw": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "초급"
                                 },
                                 "tTKyJ": {
                                   "content": "내가 만든 로드맵",
@@ -19716,7 +19821,8 @@
                                 },
                                 "wJ77w": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "★ 4.9 · 1.2천명 학습 중"
                                 }
                               }
                             },
@@ -19737,7 +19843,8 @@
                                 },
                                 "gJ8C2/rjcvY": {
                                   "fill": "$--v2-primary",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "모바일"
                                 },
                                 "pVEyQ": {
                                   "fill": "$--v2-muted-foreground"
@@ -19757,21 +19864,24 @@
                                 },
                                 "a0xFOa": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "780"
                                 },
                                 "j2DY7": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "Yly3x": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "12주"
                                 },
                                 "dUaW4": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "O1bUVw": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "중급"
                                 },
                                 "tTKyJ": {
                                   "content": "재민님의 로드맵을 포크",
@@ -19780,7 +19890,8 @@
                                 },
                                 "wJ77w": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "★ 4.8 · 850명 학습 중"
                                 }
                               }
                             },
@@ -19801,7 +19912,8 @@
                                 },
                                 "gJ8C2/rjcvY": {
                                   "fill": "$--v2-primary",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "백엔드"
                                 },
                                 "pVEyQ": {
                                   "fill": "$--v2-muted-foreground"
@@ -19821,21 +19933,24 @@
                                 },
                                 "a0xFOa": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "512"
                                 },
                                 "j2DY7": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "Yly3x": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "6주"
                                 },
                                 "dUaW4": {
                                   "fill": "$--v2-muted-foreground"
                                 },
                                 "O1bUVw": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "중급"
                                 },
                                 "tTKyJ": {
                                   "content": "내가 만든 로드맵",
@@ -19844,7 +19959,8 @@
                                 },
                                 "wJ77w": {
                                   "fill": "$--v2-muted-foreground",
-                                  "fontFamily": "$--v2-font-body"
+                                  "fontFamily": "$--v2-font-body",
+                                  "content": "★ 4.7 · 620명 학습 중"
                                 }
                               }
                             }
@@ -19888,27 +20004,53 @@
                               "name": "Web Home Goal — React Query 개념 복습",
                               "width": "fill_container",
                               "gap": 10,
+                              "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "aXEha",
-                                  "name": "Web Home Goal Icon — React Query 개념 복습",
+                                  "type": "frame",
+                                  "id": "mSOkm",
+                                  "name": "Web Home Goal Completed Marker",
                                   "width": 20,
                                   "height": 20,
-                                  "icon": "circle-check",
-                                  "library": "lucide",
-                                  "fill": "$--success"
+                                  "fill": "$--success",
+                                  "cornerRadius": 999,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "I6ghO",
+                                      "name": "Web Home Goal Completed Check",
+                                      "width": 12,
+                                      "height": 12,
+                                      "icon": "check",
+                                      "library": "lucide",
+                                      "fill": "#FFFFFF"
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
                                   "id": "IYlgr",
                                   "name": "Web Home Goal Label — React Query 개념 복습",
                                   "fill": "$--v2-muted-foreground",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "React Query 개념 복습",
                                   "fontFamily": "$--v2-font-body",
                                   "fontSize": 13,
                                   "fontWeight": "550"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "hz2il",
+                                  "name": "Web Home Goal Meta — React Query 개념 복습",
+                                  "fill": "$--success",
+                                  "content": "완료",
+                                  "fontFamily": "$--v2-font-body",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -19918,27 +20060,53 @@
                               "name": "Web Home Goal — 캐싱 전략 실습",
                               "width": "fill_container",
                               "gap": 10,
+                              "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
                                 {
-                                  "type": "icon",
-                                  "id": "qYEIK",
-                                  "name": "Web Home Goal Icon — 캐싱 전략 실습",
+                                  "type": "frame",
+                                  "id": "xs34t",
+                                  "name": "Web Home Goal Completed Marker",
                                   "width": 20,
                                   "height": 20,
-                                  "icon": "circle-check",
-                                  "library": "lucide",
-                                  "fill": "$--success"
+                                  "fill": "$--success",
+                                  "cornerRadius": 999,
+                                  "justifyContent": "center",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "icon",
+                                      "id": "x6pY47",
+                                      "name": "Web Home Goal Completed Check",
+                                      "width": 12,
+                                      "height": 12,
+                                      "icon": "check",
+                                      "library": "lucide",
+                                      "fill": "#FFFFFF"
+                                    }
+                                  ]
                                 },
                                 {
                                   "type": "text",
                                   "id": "fCVyK",
                                   "name": "Web Home Goal Label — 캐싱 전략 실습",
                                   "fill": "$--v2-muted-foreground",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "캐싱 전략 실습",
                                   "fontFamily": "$--v2-font-body",
                                   "fontSize": 13,
                                   "fontWeight": "550"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "NQlsK",
+                                  "name": "Web Home Goal Meta — 캐싱 전략 실습",
+                                  "fill": "$--success",
+                                  "content": "완료",
+                                  "fontFamily": "$--v2-font-body",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             },
@@ -19948,6 +20116,7 @@
                               "name": "Web Home Goal — 낙관적 업데이트 배우기",
                               "width": "fill_container",
                               "gap": 10,
+                              "justifyContent": "space_between",
                               "alignItems": "center",
                               "children": [
                                 {
@@ -19965,10 +20134,22 @@
                                   "id": "eJfpe",
                                   "name": "Web Home Goal Label — 낙관적 업데이트 배우기",
                                   "fill": "$--v2-foreground",
+                                  "textGrowth": "fixed-width",
+                                  "width": "fill_container",
                                   "content": "낙관적 업데이트 배우기",
                                   "fontFamily": "$--v2-font-body",
                                   "fontSize": 13,
                                   "fontWeight": "700"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "ukn0v",
+                                  "name": "Web Home Goal Meta — 낙관적 업데이트 배우기",
+                                  "fill": "$--v2-muted-foreground",
+                                  "content": "18분",
+                                  "fontFamily": "$--v2-font-body",
+                                  "fontSize": 11,
+                                  "fontWeight": "normal"
                                 }
                               ]
                             }
@@ -20448,7 +20629,8 @@
                             },
                             "wJ77w": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "★ 4.9 · 1.2천명 학습 중"
                             }
                           }
                         },
@@ -20512,7 +20694,8 @@
                             },
                             "wJ77w": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "★ 4.9 · 1.2천명 학습 중"
                             }
                           }
                         },
@@ -20576,7 +20759,8 @@
                             },
                             "wJ77w": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "★ 4.9 · 1.2천명 학습 중"
                             }
                           }
                         },
@@ -20640,7 +20824,8 @@
                             },
                             "wJ77w": {
                               "fill": "$--v2-muted-foreground",
-                              "fontFamily": "$--v2-font-body"
+                              "fontFamily": "$--v2-font-body",
+                              "content": "★ 4.9 · 1.2천명 학습 중"
                             }
                           }
                         }
