@@ -196,16 +196,20 @@ export const roadmapHandlers = [
     return HttpResponse.json(fork, { status: 201 });
   }),
 
-  http.get<{ roadmapId: string }>('/api/roadmaps/:roadmapId/fork-tree', ({ params }) =>
-    HttpResponse.json({
+  http.get<{ roadmapId: string }>('/api/roadmaps/public/:roadmapId/fork-tree', ({ params }) => {
+    const roadmap = findRoadmap(params.roadmapId);
+    if (!roadmap || roadmap.visibility !== 'PUBLIC') {
+      return HttpResponse.json({ message: '로드맵을 찾을 수 없습니다' }, { status: 404 });
+    }
+    return HttpResponse.json({
       id: params.roadmapId,
-      title: findRoadmap(params.roadmapId)?.title ?? '원본 로드맵',
+      title: roadmap.title,
       ownerId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       ownerName: '김선배',
       forkCount: 0,
       children: [],
-    }),
-  ),
+    });
+  }),
 
   http.get<{ roadmapId: string }>('/api/roadmaps/:roadmapId/fork-status', ({ params }) =>
     HttpResponse.json({

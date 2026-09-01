@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { useAtomValue } from 'jotai';
@@ -24,13 +25,15 @@ export function ProductHeader() {
 
   return (
     <header className="border-border bg-surface h-16 border-b md:h-[72px]">
-      <div className="mx-auto flex h-full max-w-[1200px] items-center gap-3 px-4 sm:px-6 md:gap-7 lg:px-8">
+      <div className="mx-auto flex h-full w-full max-w-[1440px] items-center gap-3 px-5 md:gap-7 md:px-16">
         <Link
           aria-label="Jagalchi 홈"
-          className={`text-primary shrink-0 text-lg font-black tracking-[0.12em] ${focusRing}`}
+          className={`text-primary size-touch inline-flex shrink-0 items-center justify-center rounded-md ${focusRing}`}
           href="/"
         >
-          JAGALCHI
+          <span className="dark:bg-primary flex size-7 items-center justify-center rounded-md">
+            <Image src="/jagalchi.svg" alt="" width={20} height={20} priority />
+          </span>
         </Link>
 
         <nav aria-label="데스크톱 주요 메뉴" className="hidden md:block">
@@ -50,7 +53,7 @@ export function ProductHeader() {
 
         <Link
           aria-label="실전 과제 검색"
-          className={`min-h-touch border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground ml-auto hidden min-w-0 flex-1 items-center gap-2 rounded-md border px-3 text-[13px] transition-colors md:flex lg:max-w-xs ${focusRing}`}
+          className={`min-h-touch border-border bg-surface text-muted-foreground hover:bg-muted hover:text-foreground ml-auto hidden min-w-0 flex-1 items-center gap-2 rounded-full border px-4 text-[13px] transition-colors md:flex lg:max-w-xs ${focusRing}`}
           href="/explore"
         >
           <Search aria-hidden="true" className="size-[18px] shrink-0" />

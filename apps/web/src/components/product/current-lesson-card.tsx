@@ -1,37 +1,44 @@
+import type { ReactNode } from 'react';
+
 import Link from 'next/link';
 
-import { ArrowRight, Play } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 
 export type CurrentLessonCardProps = {
   roadmap: string;
-  title: string;
+  title: ReactNode;
   meta: string;
   href: string;
+  actionLabel?: string;
+  headingId?: string;
 };
 
-export function CurrentLessonCard({ roadmap, title, meta, href }: CurrentLessonCardProps) {
+export function CurrentLessonCard({
+  roadmap,
+  title,
+  meta,
+  href,
+  actionLabel = '과제 이어가기',
+  headingId,
+}: CurrentLessonCardProps) {
   return (
-    <Card asChild intent="primary" variant="solid" padding="lg" radius="xl">
-      <article className="h-full">
-        <div className="text-primary-foreground/75 flex items-center gap-2 text-xs font-bold">
-          <span className="bg-primary-foreground/15 flex size-7 items-center justify-center rounded-full">
-            <Play aria-hidden="true" className="size-3.5 fill-current" />
-          </span>
-          이어서 실행하기
-        </div>
-
-        <p className="text-primary-foreground/75 mt-7 text-sm font-semibold">{roadmap}</p>
-        <h2 className="mt-2 max-w-2xl text-2xl font-extrabold tracking-tight sm:text-3xl">
+    <Card asChild intent="primary" variant="solid" padding="none" radius="xl">
+      <article className="flex h-full flex-col gap-[18px] rounded-3xl p-7">
+        <p className="text-primary-foreground/70 text-[13px] font-semibold">{roadmap}</p>
+        <h1
+          id={headingId}
+          className="max-w-2xl text-[30px] leading-[1.25] font-extrabold tracking-tight"
+        >
           {title}
-        </h2>
-        <p className="text-primary-foreground/75 mt-3 text-sm">{meta}</p>
+        </h1>
+        <p className="text-primary-foreground/70 max-w-2xl text-[13px] leading-6">{meta}</p>
 
-        <Button asChild intent="inverse" size="lg" className="mt-8 w-fit">
+        <Button asChild intent="inverse" size="lg" className="w-fit">
           <Link href={href}>
-            과제 이어가기
+            {actionLabel}
             <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </Button>

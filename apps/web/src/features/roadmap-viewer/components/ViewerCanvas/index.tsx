@@ -67,7 +67,7 @@ export function ViewerCanvas() {
   const proOptions = useMemo(() => ({ hideAttribution: true }), []);
 
   return (
-    <div className="bg-background h-[700px] w-full rounded-xl border">
+    <div className="border-border bg-surface-raised h-[700px] w-full rounded-xl border shadow-sm">
       <ReactFlow
         nodes={nodes}
         edges={edges}

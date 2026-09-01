@@ -51,7 +51,7 @@ test.describe('Auth E2E', () => {
       await passwordInput.fill('Test1234!');
       await submitButton.click();
 
-      await expect(page).toHaveURL('http://localhost:3100/', { timeout: 10000 });
+      await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
       await expect(
         page.getByRole('heading', { name: '목표를 정하고 첫 실행 과제를 시작하세요' }),
       ).toBeVisible();
@@ -59,7 +59,7 @@ test.describe('Auth E2E', () => {
         'href',
         '/career',
       );
-      await expect(page.getByRole('link', { name: '실행 과제 열기' })).toHaveAttribute(
+      await expect(page.getByRole('link', { name: '내 실행 과제 보기' })).toHaveAttribute(
         'href',
         '/myroadmap',
       );
@@ -229,7 +229,7 @@ test.describe('Auth E2E', () => {
 
       // Button should be disabled during submission
       // (check immediately after click, before redirect)
-      await expect(page).toHaveURL('http://localhost:3100/', { timeout: 10000 });
+      await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
     });
 
     test('register email disabled after verification code sent', async ({ page }) => {

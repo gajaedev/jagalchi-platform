@@ -5,7 +5,7 @@ import { loginAsTestUser } from './helpers/auth';
 test.describe('Home E2E', () => {
   test('signed-in home renders truthful onboarding actions', async ({ page }) => {
     await loginAsTestUser(page);
-    await expect(page).toHaveURL('http://localhost:3100/');
+    await expect(page).toHaveURL(/\/$/);
     await expect(
       page.getByRole('heading', { name: '목표를 정하고 첫 실행 과제를 시작하세요' }),
     ).toBeVisible();
@@ -14,7 +14,7 @@ test.describe('Home E2E', () => {
     await expect(careerLink).toBeVisible();
     await expect(careerLink).toHaveAttribute('href', '/career');
 
-    const executionLink = page.getByRole('link', { name: '실행 과제 열기' });
+    const executionLink = page.getByRole('link', { name: '내 실행 과제 보기' });
     await expect(executionLink).toBeVisible();
     await expect(executionLink).toHaveAttribute('href', '/myroadmap');
 

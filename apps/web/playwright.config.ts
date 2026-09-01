@@ -6,6 +6,9 @@ import { defineConfig, devices } from '@playwright/test';
  * - webServer: pnpm dev 자동 실행
  * - MSW 설정: 실제 개발 기본값과 분리하고 E2E 서버에서만 명시적으로 활성화
  */
+const e2ePort = process.env.E2E_PORT ?? '3100';
+const e2eBaseUrl = `http://localhost:${e2ePort}`;
+
 const e2eEnv = {
   NEXT_PUBLIC_API_URL: '/api',
   NEXT_PUBLIC_API_MOCKING: 'true',
@@ -13,8 +16,10 @@ const e2eEnv = {
   NEXT_PUBLIC_REALTIME_ENABLED: 'true',
   NEXT_PUBLIC_EVIDENCE_EXECUTION_ENABLED: 'true',
   NEXT_PUBLIC_PROOF_PROFILE_ENABLED: 'true',
-  NEXT_PUBLIC_SITE_URL: 'http://localhost:3100',
+  NEXT_PUBLIC_SITE_URL: e2eBaseUrl,
 };
+
+const useProductionServer = process.env.E2E_USE_PRODUCTION_SERVER === 'true';
 
 export const config = defineConfig({
   testDir: './e2e',
@@ -25,7 +30,7 @@ export const config = defineConfig({
   workers: 1,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3100',
+    baseURL: e2eBaseUrl,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     serviceWorkers: 'allow',
@@ -41,10 +46,12 @@ export const config = defineConfig({
     },
   ],
   webServer: {
-    command: process.env.CI ? 'PORT=3100 node_modules/.bin/next start' : 'pnpm dev --port 3100',
+    command: useProductionServer
+      ? `PORT=${e2ePort} node_modules/.bin/next start`
+      : `pnpm dev --port ${e2ePort}`,
     env: e2eEnv,
-    url: 'http://localhost:3100',
-    reuseExistingServer: !process.env.CI,
+    url: e2eBaseUrl,
+    reuseExistingServer: false,
     timeout: 120000,
   },
 });

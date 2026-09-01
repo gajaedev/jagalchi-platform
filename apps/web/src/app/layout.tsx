@@ -1,4 +1,5 @@
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { JetBrains_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 
 import { MSWProvider } from '@/components/MswProvider';
 import { AnalyticsProvider } from '@/components/providers/AnalyticsProvider';
@@ -12,9 +13,11 @@ import type { Metadata } from 'next';
 
 import './globals.css';
 
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
+const wantedSans = localFont({
+  src: './fonts/WantedSansVariable.woff2',
+  variable: '--font-wanted-sans',
+  weight: '400 800',
+  style: 'normal',
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -58,7 +61,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+      <body className={`${wantedSans.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider>
           <MSWProvider>
             <QueryProvider>

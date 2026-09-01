@@ -19,7 +19,7 @@ export function AppShell({ children, activeTab = 'home' }: AppShellProps) {
       </a>
       <ProductHeader />
       <main
-        className="mx-auto w-full max-w-[1200px] px-4 pt-5 pb-[calc(88px+env(safe-area-inset-bottom))] sm:px-6 md:px-8 md:pt-8 md:pb-10"
+        className="mx-auto w-full max-w-[1440px] px-5 pt-5 pb-[calc(88px+env(safe-area-inset-bottom))] md:px-16 md:pt-9 md:pb-14"
         id="main-content"
         tabIndex={-1}
       >

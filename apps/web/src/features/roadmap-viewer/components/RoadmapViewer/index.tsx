@@ -80,27 +80,33 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
         onAiFeedback={aiEnabled ? () => setIsCoachOpen(true) : undefined}
       />
 
-      <div className="mx-auto flex w-full max-w-[2011px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4 lg:flex-row">
         <div className="relative min-w-0 flex-1">
           {/* Toolbar row */}
-          <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1">
+          <div className="border-border bg-surface mb-3 flex items-center gap-2 overflow-x-auto rounded-lg border px-2 py-1.5">
             <HeaderMenu />
             <HeaderExportMenu />
             <HeaderSaveAsImageMenu />
             <ForkTreeDialog roadmapId={roadmapId} />
-            <div className="ml-auto flex shrink-0 items-center gap-1">
+            <div className="bg-muted ml-auto flex shrink-0 items-center gap-1 rounded-lg p-1">
               <Button
+                intent={layout === 'page' ? 'primary' : 'neutral'}
                 variant={layout === 'page' ? 'solid' : 'outline'}
                 size="sm"
                 onClick={() => setLayout('page')}
+                aria-pressed={layout === 'page'}
+                className="focus-visible:ring-2 focus-visible:ring-offset-2"
               >
                 <Map className="mr-1.5 h-4 w-4" />
                 {VIEWER_MESSAGES.VIEW_CANVAS}
               </Button>
               <Button
+                intent={layout === 'cards' ? 'primary' : 'neutral'}
                 variant={layout === 'cards' ? 'solid' : 'outline'}
                 size="sm"
                 onClick={() => setLayout('cards')}
+                aria-pressed={layout === 'cards'}
+                className="focus-visible:ring-2 focus-visible:ring-offset-2"
               >
                 <LayoutGrid className="mr-1.5 h-4 w-4" />
                 {VIEWER_MESSAGES.VIEW_CARDS}
@@ -111,6 +117,8 @@ function ViewerContent({ roadmapId }: RoadmapViewerProps) {
                   size="sm"
                   onClick={() => setIsSidebarOpen(true)}
                   aria-label={VIEWER_MESSAGES.SIDEBAR_OPEN_BUTTON_LABEL}
+                  intent="neutral"
+                  className="focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <PanelRight className="h-4 w-4" />
                 </Button>

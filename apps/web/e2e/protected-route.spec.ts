@@ -24,13 +24,13 @@ test.describe('Protected routes', () => {
   test('로그인 후 auth 페이지 접근 시 홈으로 리다이렉트된다', async ({ page }) => {
     await loginAsTestUser(page);
     await page.goto('/login');
-    await expect(page).toHaveURL('http://localhost:3100/', { timeout: 10000 });
+    await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
   });
 
   test('로그인 → 보호 라우트 진입 → 로그아웃 전체 플로우', async ({ page }) => {
     // 1. 로그인
     await loginAsTestUser(page);
-    await expect(page).toHaveURL('http://localhost:3100/', { timeout: 10000 });
+    await expect(page).toHaveURL(/\/$/, { timeout: 10000 });
 
     // 2. 보호 라우트 진입 확인
     await page.goto('/myroadmap');

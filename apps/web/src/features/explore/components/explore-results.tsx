@@ -50,10 +50,11 @@ export function ExploreResults() {
       </>
     );
   }
+
   return (
     <>
       <RecommendationListTracker source="explore" resultCount={roadmaps.length} />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-[18px] md:grid-cols-2 xl:grid-cols-4">
         {roadmaps.map((roadmap) => (
           <RoadmapCard
             key={roadmap.id}
