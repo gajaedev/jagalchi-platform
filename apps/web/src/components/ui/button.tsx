@@ -17,7 +17,7 @@ const buttonVariants = cva(
       intent: {
         primary: 'focus-visible:ring-primary/35',
         neutral: 'focus-visible:ring-ring/40',
-        inverse: 'focus-visible:ring-white/45',
+        inverse: 'focus-visible:ring-primary-foreground/45',
         ticket: 'focus-visible:ring-ticket/35',
         success: 'focus-visible:ring-success/35',
         warning: 'focus-visible:ring-warning/35',
@@ -61,7 +61,8 @@ const buttonVariants = cva(
       {
         intent: 'inverse',
         variant: 'solid',
-        className: 'bg-white text-primary hover:bg-white/90 active:bg-white/80',
+        className:
+          'bg-primary-foreground text-primary hover:bg-primary-foreground/90 active:bg-primary-foreground/80',
       },
       {
         intent: 'ticket',
@@ -102,7 +103,8 @@ const buttonVariants = cva(
       {
         intent: 'inverse',
         variant: 'outline',
-        className: 'border-white/50 bg-transparent text-white hover:bg-white/10 active:bg-white/20',
+        className:
+          'border-primary-foreground/50 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 active:bg-primary-foreground/20',
       },
       {
         intent: 'ticket',
@@ -140,7 +142,8 @@ const buttonVariants = cva(
       {
         intent: 'inverse',
         variant: ['ghost', 'link'],
-        className: 'text-white hover:bg-white/10 active:bg-white/20',
+        className:
+          'text-primary-foreground hover:bg-primary-foreground/10 active:bg-primary-foreground/20',
       },
       {
         intent: 'ticket',

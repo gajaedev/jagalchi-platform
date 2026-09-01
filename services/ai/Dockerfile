@@ -52,24 +52,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# pip 업그레이드 및 가상환경 생성
+# pip 업그레이드 및 독립 가상환경 생성
+RUN python -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
 RUN python -m pip install --upgrade pip setuptools wheel
 
 # 의존성 먼저 설치 (Docker 캐시 최적화)
 # 소스 코드 변경 시 의존성 재설치 방지
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.runtime.txt /app/
+RUN pip install --no-cache-dir -r requirements.runtime.txt
 
 # -----------------------------------------------------------------------------
 # 3단계: 개발 이미지
 # -----------------------------------------------------------------------------
 FROM builder AS development
 
-# 개발용 추가 도구 설치
-RUN pip install --no-cache-dir \
-    ipython \
-    ipdb \
-    watchfiles
+# Add test/lint/type-check dependencies only to the development image.
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 소스 코드 복사
 COPY . /app/
@@ -92,9 +93,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# 빌드 스테이지에서 설치된 패키지 복사
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Builder의 독립 runtime venv 전체를 복사한다. system site-packages와
+# /usr/local/bin을 병합 복사하지 않아 production dependency 경계가
+# requirements.runtime.txt 하나로 유지된다.
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
+COPY --from=builder /opt/venv /opt/venv
 
 # 비root 사용자 생성 (보안 강화)
 # - 컨테이너가 root로 실행되지 않도록 함

@@ -84,15 +84,16 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
   const progressPercent = progress?.progressPercentage ?? 0;
 
   return (
-    <aside className="bg-card flex max-h-[36rem] w-full shrink-0 flex-col rounded-xl border lg:h-full lg:max-h-none lg:w-[320px]">
+    <aside className="border-border bg-surface-raised flex max-h-[36rem] w-full shrink-0 flex-col overflow-hidden rounded-xl border shadow-sm lg:h-full lg:max-h-none lg:w-[320px]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3">
+      <div className="border-border flex items-center justify-between border-b px-4 py-3">
         <h2 className="text-sm font-semibold">{VIEWER_MESSAGES.SIDEBAR_TITLE}</h2>
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="text-muted-foreground hover:bg-muted rounded p-1"
+            aria-label="사이드바 닫기"
+            className="text-muted-foreground hover:bg-muted focus-visible:ring-ring rounded-lg p-1 outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           >
             <X className="h-4 w-4" />
           </button>
@@ -101,7 +102,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
 
       {/* Progress bar */}
       {roadmapId && progress && (
-        <div className="border-b px-4 py-3">
+        <div className="border-border border-b px-4 py-3">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">{VIEWER_MESSAGES.PROGRESS_LABEL}</span>
             <span className="font-medium">{progressPercent}%</span>
@@ -116,7 +117,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
       )}
 
       {/* Search */}
-      <div className="border-b px-4 py-3">
+      <div className="border-border border-b px-4 py-3">
         <div className="relative">
           <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <input
@@ -124,7 +125,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
             placeholder={VIEWER_MESSAGES.SIDEBAR_SEARCH_PLACEHOLDER}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-background placeholder:text-muted-foreground focus:ring-ring h-9 w-full rounded-md border pr-3 pl-9 text-sm outline-none focus:ring-2"
+            className="border-border bg-background placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-full rounded-md border pr-3 pl-9 text-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           />
         </div>
       </div>
@@ -147,7 +148,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                     <button
                       type="button"
                       onClick={() => handleToggleComplete(node.id)}
-                      className="shrink-0 p-1"
+                      className="focus-visible:ring-ring shrink-0 rounded-md p-1 outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                       aria-label={
                         isCompleted
                           ? VIEWER_MESSAGES.NODE_COMPLETED
@@ -164,7 +165,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                   <button
                     type="button"
                     onClick={() => handleSelectNode(node.id, isCompleted)}
-                    className={`flex-1 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                    className={`focus-visible:ring-ring flex-1 rounded-md px-3 py-2 text-left text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
                       isSelected
                         ? 'bg-accent text-accent-foreground font-medium'
                         : 'text-foreground hover:bg-muted'
@@ -180,7 +181,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
 
         {/* Detail panel */}
         {selectedNode && selectedNode.type === 'jagalchi-node' && (
-          <div className="border-t p-4">
+          <div className="border-border border-t p-4">
             <h3 className="text-sm font-semibold">
               {(selectedNode.data as JagalchiNodeData).label}
             </h3>
@@ -207,7 +208,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => capture('learning_resource_opened', {})}
-                        className="text-primary block truncate text-sm hover:underline"
+                        className="text-primary focus-visible:ring-ring block truncate rounded-sm text-sm outline-none hover:underline focus-visible:ring-2 focus-visible:ring-offset-2"
                       >
                         {url}
                       </a>
@@ -221,7 +222,7 @@ export function ViewerSidebar({ isOpen = true, onClose, roadmapId }: ViewerSideb
       </div>
 
       {/* Footer */}
-      <div className="text-muted-foreground border-t px-4 py-2 text-xs">
+      <div className="border-border text-muted-foreground border-t px-4 py-2 text-xs">
         {VIEWER_MESSAGES.SIDEBAR_TOTAL_COUNT.replace('{count}', String(nodeItems.length))}
       </div>
     </aside>

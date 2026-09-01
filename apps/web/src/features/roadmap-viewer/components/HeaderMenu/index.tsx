@@ -152,7 +152,14 @@ export function HeaderMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" disabled={isExporting}>
+        <Button
+          intent="neutral"
+          variant="outline"
+          size="sm"
+          disabled={isExporting}
+          aria-label="설정 메뉴"
+          className="focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
           <Settings className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>

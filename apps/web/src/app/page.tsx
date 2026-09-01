@@ -1,8 +1,9 @@
 import Link from 'next/link';
 
-import { ArrowRight, ListChecks, Target } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 import { AppShell } from '@/components/app-shell/app-shell';
+import { CurrentLessonCard } from '@/components/product/current-lesson-card';
 import { HomeAudience } from '@/components/product/home-audience';
 import { RecommendationListTracker } from '@/components/product/recommendation-list-tracker';
 import { RoadmapCard } from '@/components/product/roadmap-card';
@@ -36,64 +37,231 @@ const roadmaps = [
 
 const isEvidenceExecutionEnabled = isEnabled('EVIDENCE_EXECUTION_ENABLED');
 
+type SupportCardProps = {
+  label: string;
+  title: string;
+  description: string;
+};
+
+function SupportCard({ label, title, description }: SupportCardProps) {
+  return (
+    <article className="border-border bg-surface flex min-h-0 flex-1 flex-col gap-2 rounded-2xl border p-[22px]">
+      <p className="text-muted-foreground text-xs font-bold">{label}</p>
+      <h3 className="text-lg leading-tight font-extrabold tracking-tight">{title}</h3>
+      <p className="text-muted-foreground text-sm leading-6">{description}</p>
+    </article>
+  );
+}
+
+function HomeRoadmaps({
+  heading,
+  headingId,
+  trackRecommendations = true,
+}: {
+  heading: string;
+  headingId: string;
+  trackRecommendations?: boolean;
+}) {
+  return (
+    <section aria-labelledby={headingId} className="flex flex-col gap-4">
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-muted-foreground text-xs font-bold">실무 결과물 중심</p>
+          <h2 id={headingId} className="mt-1 text-2xl font-extrabold tracking-tight">
+            {heading}
+          </h2>
+        </div>
+        <Link
+          href="/explore"
+          className="text-primary focus-visible:ring-primary inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-bold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
+          전체보기
+          <ArrowRight aria-hidden="true" className="size-4" />
+        </Link>
+      </header>
+      {trackRecommendations ? (
+        <RecommendationListTracker source="home" resultCount={roadmaps.length} />
+      ) : null}
+      <div className="grid grid-cols-1 gap-[18px] lg:grid-cols-3">
+        {roadmaps.map((roadmap) => (
+          <RoadmapCard
+            key={roadmap.title}
+            {...roadmap}
+            author="자갈치 에디터 추천"
+            href="/explore"
+            analyticsSource={trackRecommendations ? 'home' : undefined}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function DiscoveryPanel({ signed = false }: { signed?: boolean }) {
+  return (
+    <aside
+      aria-labelledby={signed ? 'signed-discovery-heading' : 'guest-discovery-heading'}
+      className="border-border bg-muted flex h-full flex-col gap-3 rounded-2xl border p-[22px]"
+    >
+      <p className="text-muted-foreground text-xs font-bold">공개 자료</p>
+      <h2
+        id={signed ? 'signed-discovery-heading' : 'guest-discovery-heading'}
+        className="text-lg leading-tight font-extrabold"
+      >
+        검증 가능한 결과물 사례를 둘러보세요
+      </h2>
+      <p className="text-muted-foreground text-sm leading-6">
+        공개된 결과물 사례에서 과제 구성 방식을 확인하세요.
+      </p>
+      <Link
+        href="/community"
+        className="border-border bg-surface text-foreground hover:bg-muted focus-visible:ring-primary mt-auto inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      >
+        완료 사례 둘러보기
+        <ArrowRight aria-hidden="true" className="size-4" />
+      </Link>
+    </aside>
+  );
+}
+
+function GuestBottom() {
+  return (
+    <section
+      aria-labelledby="guest-next-heading"
+      className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]"
+    >
+      <article className="border-border bg-surface flex h-full flex-col gap-3 rounded-2xl border p-[22px]">
+        <p className="text-muted-foreground text-xs font-bold">Career Diff</p>
+        <h2 id="guest-next-heading" className="text-lg leading-tight font-extrabold">
+          목표 직무와 필요한 증거를 정해보세요
+        </h2>
+        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+          목표 직무의 요구사항과 GitHub·배포·기술 문서를 연결해 부족한 역량 증거를 확인하세요.
+        </p>
+        {isEvidenceExecutionEnabled ? (
+          <Button asChild className="mt-auto w-fit">
+            <Link href="/register">
+              Career Diff 시작
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        ) : null}
+      </article>
+      <DiscoveryPanel />
+    </section>
+  );
+}
+
+function SignedBottom() {
+  return (
+    <section
+      aria-labelledby="signed-next-heading"
+      className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_420px]"
+    >
+      <article className="border-border bg-surface flex h-full flex-col gap-3 rounded-2xl border p-[22px]">
+        <p className="text-muted-foreground text-xs font-bold">다음 작업</p>
+        <h2 id="signed-next-heading" className="text-lg leading-tight font-extrabold">
+          목표와 실행을 이어가세요
+        </h2>
+        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+          아직 이 화면에 표시할 계정별 진행 데이터가 없습니다. Career에서 목표 직무와 필요한 증거를
+          정하거나, 실행 과제에서 현재 작업을 확인하세요.
+        </p>
+        {isEvidenceExecutionEnabled ? (
+          <Button asChild className="mt-auto w-fit">
+            <Link href="/career">
+              Career 열기
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Button>
+        ) : null}
+      </article>
+      <DiscoveryPanel signed />
+    </section>
+  );
+}
+
 function GuestHome() {
   return (
-    <>
-      <section className="bg-primary text-primary-foreground overflow-hidden rounded-3xl px-6 py-9 sm:px-10 sm:py-12">
-        <p className="text-primary-foreground/80 text-sm font-bold">
-          채용공고에서 시작하는 커리어 준비
-        </p>
-        <h1 className="mt-3 max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">
-          공부한 만큼
-          <br />
-          증명되는 커리어를 만드세요
-        </h1>
-        <p className="text-primary-foreground/80 mt-4 max-w-xl text-sm leading-6 sm:text-base">
-          목표 직무의 요구사항과 GitHub·배포·기술 문서를 연결해, 부족한 역량 증거를 정확히
-          확인하세요.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          {isEvidenceExecutionEnabled ? (
-            <Button asChild intent="inverse" size="lg">
-              <Link href="/register">
-                Career Diff 시작
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-            </Button>
-          ) : null}
-          <Button asChild intent="inverse" variant="outline" size="lg">
-            <Link href="/explore">실전 과제 둘러보기</Link>
-          </Button>
-        </div>
+    <div className="flex flex-col gap-8">
+      <section
+        aria-labelledby="guest-home-heading"
+        className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
+      >
+        <CurrentLessonCard
+          roadmap="채용공고에서 시작하는 커리어 준비"
+          title={
+            <>
+              공부한 만큼
+              <br />
+              증명되는 커리어를 만드세요
+            </>
+          }
+          meta="목표 직무의 요구사항과 GitHub·배포·기술 문서를 연결해, 부족한 역량 증거를 정확히 확인하세요."
+          href="/explore"
+          actionLabel="실전 과제 둘러보기"
+          headingId="guest-home-heading"
+        />
+
+        <aside aria-label="커리어 준비 보조 정보" className="flex flex-col gap-4">
+          <SupportCard
+            label="지금 시작할 곳"
+            title="실전 과제"
+            description="결과물로 남길 수 있는 공개 실행 과제를 살펴보세요."
+          />
+          <SupportCard
+            label="완료 사례"
+            title="공개된 결과물"
+            description="다른 개발자가 남긴 과제 구성과 증거를 확인하세요."
+          />
+        </aside>
       </section>
 
-      <section aria-labelledby="guest-roadmaps-heading" className="mt-10">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-primary text-xs font-bold">실무 결과물 중심</p>
-            <h2 id="guest-roadmaps-heading" className="mt-1 text-xl font-extrabold sm:text-2xl">
-              역량 증거를 만드는 실행 과제
-            </h2>
-          </div>
-          <Link href="/explore" className="text-primary text-sm font-bold hover:underline">
-            전체보기
-          </Link>
-        </div>
-        <RecommendationListTracker source="home" resultCount={roadmaps.length} />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {roadmaps.map((roadmap) => (
-            <RoadmapCard
-              key={roadmap.title}
-              {...roadmap}
-              author="자갈치 에디터 추천"
-              progress={undefined}
-              href="/explore"
-              analyticsSource="home"
+      <HomeRoadmaps heading="역량 증거를 만드는 실행 과제" headingId="guest-roadmaps-heading" />
+      <GuestBottom />
+    </div>
+  );
+}
+
+function SignedHome() {
+  return (
+    <div className="flex flex-col gap-8">
+      <section
+        aria-labelledby="signed-home-heading"
+        className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"
+      >
+        <CurrentLessonCard
+          roadmap="결과물 중심 커리어 준비"
+          title="목표를 정하고 첫 실행 과제를 시작하세요"
+          meta="아직 이 화면에 표시할 계정별 진행 데이터가 없습니다. Career에서 목표 직무와 필요한 증거를 정하거나, 실행 과제에서 현재 작업을 확인하세요."
+          href="/myroadmap"
+          actionLabel="내 실행 과제 보기"
+          headingId="signed-home-heading"
+        />
+
+        <aside aria-label="계정별 진행 정보" className="flex flex-col gap-4">
+          {isEvidenceExecutionEnabled ? (
+            <SupportCard
+              label="계정별 진행"
+              title="진행 데이터 없음"
+              description="Career에서 목표 직무와 필요한 증거를 정하면 다음 작업을 관리할 수 있어요."
             />
-          ))}
-        </div>
+          ) : null}
+          <SupportCard
+            label="다음 단계"
+            title="실행 과제 확인하기"
+            description="만들어진 실행 과제를 열어 단계와 작업을 확인하고 관리합니다."
+          />
+        </aside>
       </section>
-    </>
+
+      <HomeRoadmaps
+        heading="계속할 실행 과제를 확인하세요"
+        headingId="signed-roadmaps-heading"
+        trackRecommendations={false}
+      />
+      <SignedBottom />
+    </div>
   );
 }
 
@@ -101,83 +269,7 @@ export default function Home() {
   return (
     <AppShell activeTab="home">
       <div className="w-full">
-        <HomeAudience
-          guest={<GuestHome />}
-          signed={
-            <>
-              <header className="max-w-2xl">
-                <p className="text-primary text-sm font-bold">결과물 중심 커리어 준비</p>
-                <h1 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
-                  목표를 정하고 첫 실행 과제를 시작하세요
-                </h1>
-                <p className="text-muted-foreground mt-3 text-sm leading-6 sm:text-base">
-                  아직 이 화면에 표시할 계정별 진행 데이터가 없습니다. Career에서 목표 직무와 필요한
-                  증거를 정하거나, 실행 과제에서 현재 작업을 확인하세요.
-                </p>
-              </header>
-
-              <section
-                aria-labelledby="signed-start-heading"
-                className="mt-7 grid gap-4 md:grid-cols-2"
-              >
-                <h2 id="signed-start-heading" className="sr-only">
-                  커리어 준비 시작
-                </h2>
-                {isEvidenceExecutionEnabled ? (
-                  <article className="border-primary/30 bg-primary-subtle rounded-3xl border p-6 sm:p-7">
-                    <Target aria-hidden="true" className="text-primary size-6" />
-                    <h3 className="mt-5 text-xl font-extrabold">목표 직무와 증거 차이 정하기</h3>
-                    <p className="text-muted-foreground mt-2 text-sm leading-6">
-                      목표 공고를 등록하고, 요구 역량에 연결할 결과물과 검토 상태를 관리합니다.
-                    </p>
-                    <Button asChild className="mt-6">
-                      <Link href="/career">
-                        Career 열기
-                        <ArrowRight aria-hidden="true" className="size-4" />
-                      </Link>
-                    </Button>
-                  </article>
-                ) : null}
-
-                <article className="border-border bg-card rounded-3xl border p-6 sm:p-7">
-                  <ListChecks aria-hidden="true" className="text-primary size-6" />
-                  <h3 className="mt-5 text-xl font-extrabold">실행 과제 확인하기</h3>
-                  <p className="text-muted-foreground mt-2 text-sm leading-6">
-                    만들어진 실행 과제를 열어 단계와 작업을 확인하고 관리합니다.
-                  </p>
-                  <Button asChild variant="outline" className="mt-6">
-                    <Link href="/myroadmap">
-                      실행 과제 열기
-                      <ArrowRight aria-hidden="true" className="size-4" />
-                    </Link>
-                  </Button>
-                </article>
-              </section>
-
-              <section
-                aria-labelledby="discovery-heading"
-                className="border-border bg-muted/50 mt-10 flex flex-col items-start justify-between gap-5 rounded-2xl border p-5 sm:flex-row sm:items-center sm:p-7"
-              >
-                <div>
-                  <p className="text-primary text-xs font-bold">처음 방문하셨나요?</p>
-                  <h2 id="discovery-heading" className="mt-2 text-lg font-extrabold">
-                    검증 가능한 결과물 사례를 둘러보세요
-                  </h2>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    공개된 결과물 사례에서 과제 구성 방식을 확인하세요.
-                  </p>
-                </div>
-                <Link
-                  href="/community"
-                  className="border-border bg-background hover:bg-accent focus-visible:ring-ring inline-flex shrink-0 items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                >
-                  완료 사례 둘러보기
-                  <ArrowRight aria-hidden="true" className="size-4" />
-                </Link>
-              </section>
-            </>
-          }
-        />
+        <HomeAudience guest={<GuestHome />} signed={<SignedHome />} />
       </div>
     </AppShell>
   );

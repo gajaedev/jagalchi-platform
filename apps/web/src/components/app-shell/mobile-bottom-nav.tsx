@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Bell, House, Route, Target, UserRound, type LucideIcon } from 'lucide-react';
+import { Bell, House, Route, Search, Target, UserRound, type LucideIcon } from 'lucide-react';
 
 import { isEnabled } from '@/lib/feature-flags';
 
@@ -20,6 +20,7 @@ const navItems: ReadonlyArray<{
   ...(isEnabled('EVIDENCE_EXECUTION_ENABLED')
     ? [{ id: 'career' as const, label: '커리어', href: '/career', icon: Target }]
     : []),
+  { id: 'explore', label: '탐색', href: '/explore', icon: Search },
   { id: 'roadmaps', label: '실행', href: '/myroadmap', icon: Route },
   { id: 'activity', label: '활동', href: '/activity', icon: Bell },
   { id: 'my', label: '마이', href: '/profile', icon: UserRound },
@@ -45,7 +46,7 @@ export function MobileBottomNav({ activeTab }: MobileBottomNavProps) {
                   'min-h-touch flex w-full flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-[10px] font-semibold transition-[background-color,color,transform] active:scale-95',
                   'focus-visible:ring-ring focus-visible:ring-offset-surface focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                   isActive
-                    ? 'bg-primary-subtle text-primary'
+                    ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                 ].join(' ')}
                 href={item.href}

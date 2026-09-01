@@ -39,7 +39,7 @@ export function RoadmapHeader({
   };
 
   return (
-    <header className="border-border bg-background flex min-h-14 w-full items-center gap-3 border-b px-3 py-2 sm:px-5">
+    <header className="border-border bg-surface flex min-h-14 w-full items-center gap-3 border-b px-3 py-2 sm:px-5">
       <div className="flex min-w-0 items-center gap-2">
         <Button
           type="button"
@@ -48,10 +48,13 @@ export function RoadmapHeader({
           size="icon-sm"
           onClick={() => router.back()}
           aria-label="뒤로가기"
+          className="focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <p className="min-w-0 truncate px-1 text-sm font-extrabold sm:text-base">{roadmapTitle}</p>
+        <p className="min-w-0 truncate px-1 text-base leading-tight font-extrabold tracking-tight sm:text-lg">
+          {roadmapTitle}
+        </p>
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
@@ -60,14 +63,15 @@ export function RoadmapHeader({
           <Input
             type="text"
             placeholder={VIEWER_MESSAGES.SEARCH_PLACEHOLDER}
-            className="h-9 w-[200px] rounded-lg pl-9 text-sm"
+            className="border-border bg-surface placeholder:text-muted-foreground focus-visible:ring-ring h-9 w-[200px] rounded-lg border pl-9 text-sm focus-visible:ring-2 focus-visible:ring-offset-2"
           />
         </div>
         <Button
           onClick={handleFork}
           disabled={!isAuthenticated || isForkPending || forkStatus?.forkedByCurrentUser}
+          intent="neutral"
           variant="outline"
-          className="h-9 rounded-lg px-3 text-xs font-semibold sm:px-4 sm:text-sm"
+          className="h-9 rounded-lg px-3 text-xs font-semibold focus-visible:ring-2 focus-visible:ring-offset-2 sm:px-4 sm:text-sm"
           title={
             forkStatus?.forkedByCurrentUser
               ? VIEWER_MESSAGES.FORK_ALREADY_FORKED
@@ -80,7 +84,11 @@ export function RoadmapHeader({
             : VIEWER_MESSAGES.FORK_BUTTON}
         </Button>
         {aiEnabled && onAiFeedback ? (
-          <Button onClick={onAiFeedback} className="h-9 rounded-lg px-4 text-sm font-semibold">
+          <Button
+            onClick={onAiFeedback}
+            intent="neutral"
+            className="h-9 rounded-lg px-4 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-offset-2"
+          >
             <Sparkles className="mr-1.5 h-4 w-4" />
             {VIEWER_MESSAGES.AI_FEEDBACK_BUTTON}
           </Button>

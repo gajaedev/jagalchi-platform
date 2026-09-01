@@ -39,7 +39,8 @@ export function CardListMode() {
             <button
               type="button"
               onClick={() => setSelectedNodeId(node.id)}
-              className="bg-background hover:bg-muted inline-flex h-8 shrink-0 items-center rounded-md border px-2 text-xs sm:px-3"
+              aria-label={`${data.label} 보기`}
+              className="border-border bg-background hover:bg-muted focus-visible:ring-ring inline-flex h-8 shrink-0 items-center rounded-md border px-2 text-xs outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:px-3"
             >
               보기
             </button>

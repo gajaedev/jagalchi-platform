@@ -1,0 +1,5 @@
+Wanted Sans v1.0.3
+Source: https://github.com/wanteddev/wanted-sans/releases/tag/v1.0.3
+File: WantedSansVariable.woff2
+SHA-256: 4259e7e9a172e634c2cb419d793b84148990316341e910443e5d10965b2c8f16
+License: SIL Open Font License 1.1; see WANTED-SANS-OFL.txt.
