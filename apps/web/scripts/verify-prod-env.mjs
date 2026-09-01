@@ -3,10 +3,24 @@ import { createHash } from 'node:crypto';
 
 const APPROVED_ANALYTICS_PROJECTS = {
   production: { host: 'https://us.i.posthog.com', tokenSha256: null },
-  staging: { host: 'https://us.i.posthog.com', tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60' },
-  preview: { host: 'https://us.i.posthog.com', tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60' },
+  staging: {
+    host: 'https://us.i.posthog.com',
+    tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60',
+  },
+  preview: {
+    host: 'https://us.i.posthog.com',
+    tokenSha256: '7171a1b0bd8932ef6a85955c3b4a0d73485cad7c90ea3db087754c0934d55c60',
+  },
   development: null,
 };
+
+const REQUIRED_PRODUCTION_FEATURE_FLAGS = [
+  'NEXT_PUBLIC_AI_FEATURES_ENABLED',
+  'NEXT_PUBLIC_REALTIME_ENABLED',
+  'NEXT_PUBLIC_EVIDENCE_EXECUTION_ENABLED',
+  'NEXT_PUBLIC_PROOF_PROFILE_ENABLED',
+  'NEXT_PUBLIC_OAUTH_ENABLED',
+];
 
 const environment = process.env.NEXT_PUBLIC_ENV;
 const enabledValue = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED;
@@ -22,9 +36,7 @@ if (enabledValue !== undefined && enabledValue !== 'true' && enabledValue !== 'f
 }
 
 if (environment && !(environment in APPROVED_ANALYTICS_PROJECTS)) {
-  errors.push(
-    'NEXT_PUBLIC_ENV must be one of production, staging, preview, or development.',
-  );
+  errors.push('NEXT_PUBLIC_ENV must be one of production, staging, preview, or development.');
 }
 
 if (isProductionCheck && environment !== 'production') {
@@ -76,6 +88,13 @@ if (analyticsEnabled) {
 }
 
 if (isProductionCheck) {
+  for (const flag of REQUIRED_PRODUCTION_FEATURE_FLAGS) {
+    const value = process.env[flag];
+    if (value !== 'true' && value !== 'false') {
+      errors.push(`${flag} must be exactly "true" or "false" in production.`);
+    }
+  }
+
   if (process.env.NEXT_PUBLIC_API_MOCKING === 'true') {
     errors.push(
       'NEXT_PUBLIC_API_MOCKING must not be "true" in production — MSW should never intercept real users.',

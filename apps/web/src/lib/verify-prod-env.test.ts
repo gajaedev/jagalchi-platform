@@ -5,9 +5,21 @@ import { describe, expect, it } from 'vitest';
 
 const script = resolve(process.cwd(), 'scripts/verify-prod-env.mjs');
 
+const productionFeatureFlags = {
+  NEXT_PUBLIC_AI_FEATURES_ENABLED: 'true',
+  NEXT_PUBLIC_REALTIME_ENABLED: 'true',
+  NEXT_PUBLIC_EVIDENCE_EXECUTION_ENABLED: 'true',
+  NEXT_PUBLIC_PROOF_PROFILE_ENABLED: 'true',
+  NEXT_PUBLIC_OAUTH_ENABLED: 'true',
+};
+
 function verify(env: Record<string, string>, args: string[] = []) {
+  const childEnvironment = { ...process.env };
+  for (const flag of Object.keys(productionFeatureFlags)) {
+    delete childEnvironment[flag];
+  }
   return spawnSync(process.execPath, [script, ...args], {
-    env: { ...process.env, ...env },
+    env: { ...childEnvironment, ...env },
     encoding: 'utf8',
   });
 }
@@ -66,6 +78,7 @@ describe('verify-prod-env analytics gate', () => {
         const result = verify(
           {
             ...productionEnv,
+            ...productionFeatureFlags,
             NEXT_PUBLIC_ENV: environment,
             NEXT_PUBLIC_ANALYTICS_ENABLED: 'true',
             NEXT_PUBLIC_POSTHOG_KEY: 'test',
@@ -94,10 +107,64 @@ describe('verify-prod-env analytics gate', () => {
       NEXT_PUBLIC_POSTHOG_HOST: 'https://us.i.posthog.com',
       NEXT_PUBLIC_API_URL: 'https://api.example.com',
       API_ORIGIN: 'https://api.example.com',
+      ...productionFeatureFlags,
     });
     expect(result.status).toBe(1);
     expect(result.stderr).toContain(
       'No reviewed PostHog project fingerprint is committed for production.',
     );
+  });
+
+  it.each([
+    'NEXT_PUBLIC_AI_FEATURES_ENABLED',
+    'NEXT_PUBLIC_REALTIME_ENABLED',
+    'NEXT_PUBLIC_EVIDENCE_EXECUTION_ENABLED',
+    'NEXT_PUBLIC_PROOF_PROFILE_ENABLED',
+    'NEXT_PUBLIC_OAUTH_ENABLED',
+  ])('requires %s in production', (flag) => {
+    const withoutFlag: Record<string, string> = { ...productionFeatureFlags };
+    delete withoutFlag[flag];
+    const result = verify({
+      NEXT_PUBLIC_ENV: 'production',
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
+      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      API_ORIGIN: 'https://api.example.com',
+      NEXT_PUBLIC_API_MOCKING: 'false',
+      ...withoutFlag,
+    });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(`${flag} must be exactly "true" or "false" in production.`);
+  });
+
+  it.each([
+    'NEXT_PUBLIC_AI_FEATURES_ENABLED',
+    'NEXT_PUBLIC_REALTIME_ENABLED',
+    'NEXT_PUBLIC_EVIDENCE_EXECUTION_ENABLED',
+    'NEXT_PUBLIC_PROOF_PROFILE_ENABLED',
+    'NEXT_PUBLIC_OAUTH_ENABLED',
+  ])('rejects invalid %s values in production', (flag) => {
+    const result = verify({
+      NEXT_PUBLIC_ENV: 'production',
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
+      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      API_ORIGIN: 'https://api.example.com',
+      NEXT_PUBLIC_API_MOCKING: 'false',
+      ...productionFeatureFlags,
+      [flag]: 'yes',
+    });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(`${flag} must be exactly "true" or "false" in production.`);
+  });
+
+  it('accepts a full-feature all-true production configuration', () => {
+    const result = verify({
+      NEXT_PUBLIC_ENV: 'production',
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
+      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      API_ORIGIN: 'https://api.example.com',
+      NEXT_PUBLIC_API_MOCKING: 'false',
+      ...productionFeatureFlags,
+    });
+    expect(result.status).toBe(0);
   });
 });
