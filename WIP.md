@@ -76,13 +76,15 @@ AI:
 - Compose assertions: API direct port 미노출, migration 완료 의존성, pinned MinIO 이미지와 `public/profiles/` trailing slash 확인
 - Caddy `2.10.0-alpine caddy validate`: 통과
 - API·AI production image, example env 기반 Compose build: 통과
-- API image: `jagalchi-personal-api:production`, `sha256:4a743e8c24cf56b4aa9b8d9955aa5a759e9ed2265917ee176cb05ce60b977288`, 80,282,662 bytes, `arm64/linux`, non-root `node`
-- AI image: `jagalchi-personal-ai:latest`, `sha256:971dbe2b071e24ce9575bc2406e69d843a05c6739954e4dd8e9dbb1f0de5ca78`, 229,348,669 bytes, `arm64/linux`, non-root `appuser`
+- API image: `jagalchi-personal-api:production`, `sha256:136e26420c3ec40ef6c02bcfec8a6dcc5e27cca0a14573ac5af6158726a32e18`, 80,282,160 bytes, `linux/arm64`, non-root `node`
+- AI image: `jagalchi-personal-ai:latest`, `sha256:d1c43684f3346544a6ea9486af619f0a410b5f4794c27319f9cf192e64d7d36b`, 229,353,666 bytes, `linux/arm64`, non-root `appuser`
+- API·AI 이미지 빌드 증거: clean source commit `9d418bd6c4f24d050c584d83e4823fcffb88476f`를 build context로 사용했고, BuildKit `--no-cache`와 `--provenance=true` SLSA provenance attestation을 활성화했다. 이미지 config에는 OCI source/version label이 기록되지 않았다.
+- 릴리스 게이트: 위 이미지의 SLSA provenance attestation을 보존하고 source commit과 대조해야 한다. attestation이 보존되지 않으면 이 이미지 증거는 deployment-ready 승인에 충분하지 않다. OCI label 부재를 provenance 증거로 간주하지 않는다.
 - AI production `pip check`, Python/Gunicorn binary checks, `sentence_transformers` 부재 확인: 통과
 - AI production source smoke: 115개 애플리케이션 모듈 import 통과
 - AI development target build, `pip check`, Django check, `jagalchi_ai.ai_core.tests`: **37 passed**
 - 새 volume 없는 pinned MinIO disposable test: init 2회 idempotent, `public/profiles` HTTP 200, `public/profiles-private` HTTP 403, `private/roadmaps` HTTP 403
-- `git diff --check`: 통과
+- `git diff --check 7df9ca2..HEAD`: 통과 (후속 문서 커밋을 포함해 현재 `HEAD`까지의 범위)
 
 위 Playwright 결과는 build-time `NEXT_PUBLIC_*` mocking flag를 사용한 MSW production-server 검증이다. 실제 secret 기반 Compose, 외부 provider, 실제 uploads/DB 경계, full-feature production E2E의 증거로 사용하지 않는다. `1 skip`은 기존 `apps/web/e2e/editor.spec.ts`의 `test.fixme`이며 이번 작업에서 완료 처리하지 않았다.
 
