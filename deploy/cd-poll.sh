@@ -20,7 +20,7 @@ done
 . "$CONFIG_FILE"
 
 : "${CD_ENABLED:=false}"
-: "${CD_REPOSITORY:=gajaedev/jagalchi-platform}"
+: "${CD_REPOSITORY:=stacking-money-forever/jagalchi-platform}"
 : "${CD_BRANCH:=main}"
 : "${CD_REQUIRED_WORKFLOW:=CI}"
 : "${CD_REQUIRED_WORKFLOW_PATH:=.github/workflows/ci.yml}"

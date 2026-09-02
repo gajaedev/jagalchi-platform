@@ -6,7 +6,7 @@
 
 현재 production API 소스: `ec82755385818f6e09b58f107b8bfc74aded7aae`
 
-이 문서는 최대 5계정 closed alpha의 현재 출시 판정과 다음 실행 게이트만 관리한다. Web은 Vercel이 main을 자동 배포하고 API는 Cloudtype artifact를 별도로 고정하므로 두 provider의 source를 각각 확인한다. 비밀값, 전체 데이터베이스 URL, 토큰, 인증번호, 개인 이메일은 기록하지 않는다. 상세 운영 증거의 정본은 GitHub Issue [#13](https://github.com/gajaedev/jagalchi-platform/issues/13)이다.
+이 문서는 최대 5계정 closed alpha의 현재 출시 판정과 다음 실행 게이트만 관리한다. Web은 Vercel이 main을 자동 배포하고 API는 Cloudtype artifact를 별도로 고정하므로 두 provider의 source를 각각 확인한다. 비밀값, 전체 데이터베이스 URL, 토큰, 인증번호, 개인 이메일은 기록하지 않는다. 상세 운영 증거의 정본은 GitHub Issue [#13](https://github.com/stacking-money-forever/jagalchi-platform/issues/13)이다.
 
 ## 출시 판정
 
@@ -131,7 +131,7 @@ Cloud Run은 [고정 outbound 구성을 위해 VPC egress와 Cloud NAT를 사용
 
 ## 비밀 없는 증거
 
-- [Production disposable account lifecycle](https://github.com/gajaedev/jagalchi-platform/issues/13#issuecomment-5440503148)
-- [Provider와 recovery 확인](https://github.com/gajaedev/jagalchi-platform/issues/13#issuecomment-5440770744)
-- [Supabase export/local restore](https://github.com/gajaedev/jagalchi-platform/issues/13#issuecomment-5441214484)
-- [GitHub App redelivery](https://github.com/gajaedev/jagalchi-platform/issues/13#issuecomment-5441532169)
+- [Production disposable account lifecycle](https://github.com/stacking-money-forever/jagalchi-platform/issues/13#issuecomment-5440503148)
+- [Provider와 recovery 확인](https://github.com/stacking-money-forever/jagalchi-platform/issues/13#issuecomment-5440770744)
+- [Supabase export/local restore](https://github.com/stacking-money-forever/jagalchi-platform/issues/13#issuecomment-5441214484)
+- [GitHub App redelivery](https://github.com/stacking-money-forever/jagalchi-platform/issues/13#issuecomment-5441532169)

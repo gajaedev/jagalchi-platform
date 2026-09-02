@@ -1,6 +1,6 @@
 # Jagalchi NestJS API
 
-This package is the canonical NestJS backend for Jagalchi. The temporary zero-cost alpha deployment runs one API container on Cloudtype Free and stores durable state only in Supabase Free PostgreSQL. Django AI, uploads, and public Proof are disabled; the verified GitHub Evidence flow is enabled.
+This directory is the migration-era monorepo copy of the Jagalchi NestJS API. New planned API work belongs in [`stacking-money-forever/jagalchi-api`](https://github.com/stacking-money-forever/jagalchi-api), but this copy remains the source of the current Cloudtype fallback until the separate API and infra repositories pass their cutover gates. The temporary zero-cost alpha deployment runs one API container on Cloudtype Free and stores durable state only in Supabase Free PostgreSQL. Django AI, uploads, and public Proof are disabled; the verified GitHub Evidence flow is enabled.
 
 Completed release evidence, the failed Cloudtype availability gate, and the personal-server cutover plan are tracked in [`CLOSED_ALPHA_REMAINING.md`](./CLOSED_ALPHA_REMAINING.md).
 
@@ -38,7 +38,7 @@ Cloudtype Free is temporary fallback infrastructure: one replica, Recreate updat
 
 | Setting | Required value |
 |---|---|
-| Repository | public `gajaedev/jagalchi-platform` |
+| Repository | public `stacking-money-forever/jagalchi-platform` |
 | Build context | repository root |
 | Dockerfile | `services/api/Dockerfile` |
 | Branch/SHA | exact reviewed and pushed SHA |

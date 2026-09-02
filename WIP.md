@@ -4,6 +4,8 @@
 
 검토 기준선: `worktree/quiet-cloud-774d`의 `bdaf1b0da7fe` 이후 현재 working tree. 구현을 시작할 때 최신 `HEAD`에서 완료된 진단 수치를 다시 검증한다.
 
+Repository home: `https://github.com/stacking-money-forever/jagalchi-platform`. 2026-09-02에 기존 `gajaedev/jagalchi-platform`을 이름과 공개 상태를 유지한 채 조직 이전했고, 이전 URL은 새 위치로 redirect된다.
+
 ## 현재 판정
 
 Jagalchi는 기능이 넓게 구현된 프로토타입이지만 아직 하나의 완성된 제품은 아니다. 현재 프론트엔드는 부분 개선보다 제품 구조, 라우팅, 데이터 로딩, 상태 UX, 디자인 시스템을 다시 세우는 전면 재구축이 더 합리적이다.
@@ -43,7 +45,7 @@ API와 AI는 기존 서브트리 Git 이력을 보존했다. Infra는 여러 경
 
 - 현재 Cloudtype production을 위한 긴급 hotfix는 원본 monorepo에 먼저 적용하고 새 API repo로 즉시 forward-port한다.
 - 계획된 Backend 안전선과 신규 API 작업은 `jagalchi-api` 또는 `jagalchi-ai`에서만 시작한다.
-- 향후 production orchestration의 정본은 `jagalchi-infra`다. 원본 `deploy/` 문서는 현재 Cloudtype 상태의 과거 증거로만 유지한다.
+- `jagalchi-infra`는 production-equivalent smoke와 cutover를 통과한 뒤 production orchestration 정본이 된다. 그전까지 원본 `deploy/`는 현재 Cloudtype 운영 fallback과 과거 증거를 함께 소유한다.
 - 같은 기능을 양쪽에서 병렬 수정하지 않는다. 원본 제거 PR이 병합되면 monorepo backend 경로는 더 이상 수정하지 않는다.
 
 제거 조건:
@@ -56,8 +58,8 @@ API와 AI는 기존 서브트리 Git 이력을 보존했다. Infra는 여러 경
 
 상세 배포 절차와 과거 검증 증거는 다음 위치에서 관리한다.
 
-- 향후 개인 서버 orchestration: `stacking-money-forever/jagalchi-infra/deploy/README.md`
-- 현재 monorepo·Cloudtype 과거 증거: `deploy/README.md`
+- 다음 개인 서버 orchestration 후보: `stacking-money-forever/jagalchi-infra/deploy/README.md`
+- 현재 monorepo·Cloudtype 운영 fallback과 과거 증거: `deploy/README.md`
 - `services/api/CLOSED_ALPHA_REMAINING.md`
 
 ## 현재 저장소 구조
