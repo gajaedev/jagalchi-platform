@@ -6,7 +6,7 @@ Jagalchi Client 의 프로덕션 배포 가이드. 운영 타깃은 **Vercel** �
 
 | 변수                            | 필수 | Production                            | Preview / Staging              | Development                        |
 | ------------------------------- | ---- | ------------------------------------- | ------------------------------ | ---------------------------------- |
-| `NEXT_PUBLIC_API_URL`           | ✅   | `https://api.jagalchi.dev`            | staging 백엔드                 | `http://localhost:8080`            |
+| `NEXT_PUBLIC_API_URL`           | ✅   | `/api` (Vercel same-origin proxy)     | `/api`                         | `/api` 또는 `http://localhost:8080` |
 | `NEXT_PUBLIC_WS_URL`            | ✅   | `https://api.jagalchi.dev/ws/roadmap` | staging                        | `http://localhost:8082/ws/roadmap` |
 | `NEXT_PUBLIC_SITE_URL`          | ✅   | `https://jagalchi.dev`                | `https://staging.jagalchi.dev` | `http://localhost:3000`            |
 | `NEXT_PUBLIC_ENV`               | ✅   | `production`                          | `staging` / `preview`          | `development`                      |
@@ -54,7 +54,7 @@ node scripts/verify-prod-env.mjs && pnpm build
 검증 내용:
 
 - `NEXT_PUBLIC_API_MOCKING` 이 `true` 면 exit 1 (MSW 유입 차단)
-- `NEXT_PUBLIC_API_URL` 미설정 시 exit 1
+- `NEXT_PUBLIC_API_URL` 미설정 또는 프로덕션에서 `/api`가 아니면 exit 1
 
 ## 보안 경계
 

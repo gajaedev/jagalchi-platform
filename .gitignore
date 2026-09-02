@@ -35,6 +35,7 @@ media/
 logs/
 *.log
 *.pid
+.deploy-state/
 
 # Editors and OS
 .DS_Store

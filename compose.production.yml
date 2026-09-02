@@ -2,7 +2,7 @@ name: jagalchi-personal
 
 services:
   api:
-    image: jagalchi-personal-api:production
+    image: "${API_IMAGE:-jagalchi-personal-api:production}"
     build:
       context: .
       dockerfile: services/api/Dockerfile
@@ -13,7 +13,7 @@ services:
       NODE_ENV: "production"
       PORT: "8080"
       DATABASE_URL: "${DATABASE_URL:?DATABASE_URL is required}"
-      DATABASE_SSL: "true"
+      DATABASE_SSL: "${DATABASE_SSL:?DATABASE_SSL is required}"
       DATABASE_SSL_CA: "${DATABASE_SSL_CA:?DATABASE_SSL_CA is required}"
       DATABASE_SYNCHRONIZE: "false"
       DATABASE_POOL_MAX: "5"
@@ -30,6 +30,13 @@ services:
       EVIDENCE_EXECUTION_ENABLED: "true"
       PUBLIC_PROOF_PROFILE_ENABLED: "true"
       OAUTH_ENABLED: "true"
+      OAUTH_APPLE_ENABLED: "false"
+      OAUTH_GOOGLE_CLIENT_ID: "${OAUTH_GOOGLE_CLIENT_ID:?OAUTH_GOOGLE_CLIENT_ID is required}"
+      OAUTH_GOOGLE_CLIENT_SECRET: "${OAUTH_GOOGLE_CLIENT_SECRET:?OAUTH_GOOGLE_CLIENT_SECRET is required}"
+      OAUTH_GITHUB_CLIENT_ID: "${OAUTH_GITHUB_CLIENT_ID:?OAUTH_GITHUB_CLIENT_ID is required}"
+      OAUTH_GITHUB_CLIENT_SECRET: "${OAUTH_GITHUB_CLIENT_SECRET:?OAUTH_GITHUB_CLIENT_SECRET is required}"
+      IAP_ENABLED: "false"
+      EMAIL_ENABLED: "true"
       AI_SERVICE_URL: "http://ai:8000"
       AI_TIMEOUT_MS: "45000"
       CORS_ORIGINS: "${CORS_ORIGINS:?CORS_ORIGINS is required}"
@@ -39,7 +46,9 @@ services:
       GITHUB_APP_PRIVATE_KEY: "${GITHUB_APP_PRIVATE_KEY:?GITHUB_APP_PRIVATE_KEY is required}"
       GITHUB_APP_WEBHOOK_SECRET: "${GITHUB_APP_WEBHOOK_SECRET:?GITHUB_APP_WEBHOOK_SECRET is required}"
       GITHUB_APP_SLUG: "${GITHUB_APP_SLUG:?GITHUB_APP_SLUG is required}"
-      GITHUB_APP_SETUP_URL: "${GITHUB_APP_SETUP_URL:?GITHUB_APP_SETUP_URL is required}"
+      GITHUB_APP_SETUP_URL: "https://github.com/apps/${GITHUB_APP_SLUG:?GITHUB_APP_SLUG is required}/installations/new"
+      RESEND_API_KEY: "${RESEND_API_KEY:?RESEND_API_KEY is required}"
+      EMAIL_FROM: "${EMAIL_FROM:?EMAIL_FROM is required}"
       OBJECT_STORAGE_BUCKET: "${OBJECT_STORAGE_BUCKET:?OBJECT_STORAGE_BUCKET is required}"
       OBJECT_STORAGE_REGION: "${OBJECT_STORAGE_REGION:?OBJECT_STORAGE_REGION is required}"
       OBJECT_STORAGE_ENDPOINT: "https://${UPLOADS_DOMAIN:?UPLOADS_DOMAIN is required}"
@@ -47,19 +56,6 @@ services:
       OBJECT_STORAGE_ACCESS_KEY_ID: "${OBJECT_STORAGE_ACCESS_KEY_ID:?OBJECT_STORAGE_ACCESS_KEY_ID is required}"
       OBJECT_STORAGE_SECRET_ACCESS_KEY: "${OBJECT_STORAGE_SECRET_ACCESS_KEY:?OBJECT_STORAGE_SECRET_ACCESS_KEY is required}"
       OBJECT_STORAGE_PUBLIC_BASE_URL: "https://${UPLOADS_DOMAIN:?UPLOADS_DOMAIN is required}/${OBJECT_STORAGE_BUCKET:?OBJECT_STORAGE_BUCKET is required}/"
-      IAP_ACCOUNT_BINDING_SECRET: "${IAP_ACCOUNT_BINDING_SECRET:?IAP_ACCOUNT_BINDING_SECRET is required}"
-      GOOGLE_PLAY_PACKAGE_NAME: "${GOOGLE_PLAY_PACKAGE_NAME:?GOOGLE_PLAY_PACKAGE_NAME is required}"
-      GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: "${GOOGLE_PLAY_SERVICE_ACCOUNT_JSON:?GOOGLE_PLAY_SERVICE_ACCOUNT_JSON is required}"
-      OAUTH_GOOGLE_CLIENT_ID: "${OAUTH_GOOGLE_CLIENT_ID:?OAUTH_GOOGLE_CLIENT_ID is required}"
-      OAUTH_GOOGLE_CLIENT_SECRET: "${OAUTH_GOOGLE_CLIENT_SECRET:?OAUTH_GOOGLE_CLIENT_SECRET is required}"
-      OAUTH_GITHUB_CLIENT_ID: "${OAUTH_GITHUB_CLIENT_ID:?OAUTH_GITHUB_CLIENT_ID is required}"
-      OAUTH_GITHUB_CLIENT_SECRET: "${OAUTH_GITHUB_CLIENT_SECRET:?OAUTH_GITHUB_CLIENT_SECRET is required}"
-      OAUTH_APPLE_CLIENT_ID: "${OAUTH_APPLE_CLIENT_ID:?OAUTH_APPLE_CLIENT_ID is required}"
-      OAUTH_APPLE_TEAM_ID: "${OAUTH_APPLE_TEAM_ID:?OAUTH_APPLE_TEAM_ID is required}"
-      OAUTH_APPLE_KEY_ID: "${OAUTH_APPLE_KEY_ID:?OAUTH_APPLE_KEY_ID is required}"
-      OAUTH_APPLE_PRIVATE_KEY: "${OAUTH_APPLE_PRIVATE_KEY:?OAUTH_APPLE_PRIVATE_KEY is required}"
-      RESEND_API_KEY: "${RESEND_API_KEY:?RESEND_API_KEY is required}"
-      EMAIL_FROM: "${EMAIL_FROM:?EMAIL_FROM is required}"
     expose:
       - "8080"
     depends_on:
@@ -84,18 +80,35 @@ services:
     restart: unless-stopped
 
   api-migrate:
-    image: jagalchi-personal-api:production
+    image: "${API_IMAGE:-jagalchi-personal-api:production}"
     command: ["node", "dist/database/run-migrations.js"]
     environment:
       DATABASE_URL: "${DATABASE_URL:?DATABASE_URL is required}"
-      DATABASE_SSL: "true"
+      DATABASE_SSL: "${DATABASE_SSL:?DATABASE_SSL is required}"
       DATABASE_SSL_CA: "${DATABASE_SSL_CA:?DATABASE_SSL_CA is required}"
       DATABASE_CONNECTION_TIMEOUT_MS: "5000"
       DATABASE_QUERY_TIMEOUT_MS: "10000"
       DATABASE_STATEMENT_TIMEOUT_MS: "10000"
     restart: "no"
 
+  api-db:
+    image: postgres:17-alpine
+    profiles: ["local-api-db"]
+    environment:
+      POSTGRES_DB: "jagalchi_api"
+      POSTGRES_USER: "jagalchi_api"
+      POSTGRES_PASSWORD: "${API_POSTGRES_PASSWORD:-}"
+    volumes:
+      - api-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jagalchi_api -d jagalchi_api"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
   ai:
+    image: "${AI_IMAGE:-jagalchi-personal-ai:production}"
     build:
       context: services/ai
       dockerfile: Dockerfile
@@ -109,7 +122,12 @@ services:
       AI_AUTH_JWT_SECRET: "${AI_AUTH_JWT_SECRET:?AI_AUTH_JWT_SECRET is required}"
       AI_DISABLE_EXTERNAL: "false"
       AI_DISABLE_LLM: "false"
-      GEMINI_API_KEY: "${GEMINI_API_KEY:?GEMINI_API_KEY is required}"
+      DEEPSEEK_API_KEY: "${DEEPSEEK_API_KEY:?DEEPSEEK_API_KEY is required}"
+      DEEPSEEK_MODEL: "${DEEPSEEK_MODEL:-deepseek-v4-flash}"
+      DEEPSEEK_BASE_URL: "${DEEPSEEK_BASE_URL:-https://api.deepseek.com}"
+      DEEPSEEK_TIMEOUT_SECONDS: "${DEEPSEEK_TIMEOUT_SECONDS:-45}"
+      DEEPSEEK_MAX_RETRIES: "${DEEPSEEK_MAX_RETRIES:-3}"
+      DEEPSEEK_THINKING_ENABLED: "${DEEPSEEK_THINKING_ENABLED:-false}"
       TAVILY_API_KEY: "${TAVILY_API_KEY:?TAVILY_API_KEY is required}"
       EXA_API_KEY: "${EXA_API_KEY:?EXA_API_KEY is required}"
       DATABASE_ENGINE: "django.db.backends.postgresql"
@@ -208,10 +226,11 @@ services:
 
   caddy:
     image: caddy:2.10.0-alpine
+    profiles: ["direct-ingress"]
     environment:
       API_DOMAIN: "${API_DOMAIN:?API_DOMAIN is required}"
       UPLOADS_DOMAIN: "${UPLOADS_DOMAIN:?UPLOADS_DOMAIN is required}"
-      CADDY_EMAIL: "${CADDY_EMAIL:?CADDY_EMAIL is required}"
+      CADDY_EMAIL: "${CADDY_EMAIL:-}"
     ports:
       - "80:80"
       - "443:443"
@@ -228,7 +247,31 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
+  cloudflared:
+    image: cloudflare/cloudflared:2026.7.3
+    profiles: ["cloudflare-tunnel"]
+    command:
+      - tunnel
+      - --no-autoupdate
+      - --metrics
+      - 0.0.0.0:2000
+      - run
+      - --token-file
+      - /run/secrets/cloudflare_tunnel_token
+    secrets:
+      - cloudflare_tunnel_token
+    depends_on:
+      api:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
 volumes:
+  api-postgres:
+    name: jagalchi-personal-api-postgres
   ai-postgres:
     name: jagalchi-personal-ai-postgres
   object-storage:
@@ -237,3 +280,7 @@ volumes:
     name: jagalchi-personal-caddy-data
   caddy-config:
     name: jagalchi-personal-caddy-config
+
+secrets:
+  cloudflare_tunnel_token:
+    environment: CLOUDFLARE_TUNNEL_TOKEN

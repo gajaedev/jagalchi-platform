@@ -19,6 +19,8 @@ API:
 - `EVIDENCE_EXECUTION_ENABLED=true`
 - `PUBLIC_PROOF_PROFILE_ENABLED=true`
 - `OAUTH_ENABLED=true`
+- `OAUTH_APPLE_ENABLED=false`
+- `IAP_ENABLED=false`
 
 Web:
 
@@ -42,11 +44,11 @@ AI:
   - Django AI production/Gunicorn 이미지
   - 영속 AI PostgreSQL
   - 영속 MinIO
-  - Caddy HTTPS ingress
+  - outbound-only Cloudflare Tunnel ingress for the current home-server network
   - API 컨테이너 직접 외부 노출 없음
   - API는 외부 Supabase TLS PostgreSQL 사용
 - `deploy/Caddyfile`
-  - API와 uploads 호스트 분리
+  - 포트포워딩이 가능한 향후 direct-ingress 프로필용으로만 유지
 - `deploy/personal-server.env.example`
   - 필수 변수와 안전한 placeholder 목록
   - 실제 secret 미포함
@@ -55,7 +57,8 @@ AI:
 
 - production API feature flag는 모두 명시적 boolean이어야 한다.
 - OAuth가 꺼져 있거나 누락·오타 상태면 API가 OAuth 진입점에서 즉시 `OAUTH_DISABLED`를 반환한다.
-- OAuth 활성화 시 Google, GitHub, Apple credential 전체가 필요하다.
+- 웹 OAuth 활성화 시 Google과 GitHub credential이 필요하다. Apple OAuth는 별도 flag가 켜진 경우에만 credential을 요구한다.
+- IAP가 꺼진 웹 출시에서는 모바일 결제 credential을 요구하지 않으며 관련 API가 fail-closed 응답을 반환한다.
 - AI, uploads, Evidence 활성화 시 각 provider credential 누락으로 startup이 실패한다.
 - Web production build는 다섯 개 공개 feature flag의 누락·오타를 거부한다.
 - MinIO anonymous download는 `public/profiles` prefix에만 부여한다. `private/roadmaps`는 비공개다.
@@ -96,15 +99,14 @@ AI:
 
 필수 범주:
 
-- 개인 서버 API/uploads 도메인과 Caddy 이메일
+- 개인 서버 API/uploads 도메인과 Cloudflare Tunnel token
 - Supabase `DATABASE_URL`, TLS CA, 승인된 서버 outbound CIDR
 - JWT, verification, rate-limit, AI auth, Django secret
 - GitHub App ID, private key, webhook secret, slug, setup URL
 - MinIO access key, secret, bucket
-- Google Play service account와 IAP binding secret
-- Google, GitHub, Apple OAuth credential
+- Google, GitHub OAuth credential
 - Resend API key와 sender
-- Gemini, Tavily, Exa API key
+- DeepSeek, Tavily, Exa API key
 - Vercel Web full-feature environment variables
 
 비밀값을 이 문서, Git, CI 출력, 채팅에 기록하지 않는다.
@@ -137,11 +139,11 @@ docker compose \
 실제 Compose 환경에서 다음 흐름을 확인한다.
 
 - 이메일 가입, 인증, 로그인, refresh, 계정 삭제
-- Google, GitHub, Apple OAuth
+- Google, GitHub OAuth
 - roadmap create/edit/view/fork
 - Socket.IO 재연결과 동기화
 - AI roadmap 생성과 learning coach
-- ticket/IAP 검증
+- ticket 잔액·AI 사용 검증; IAP는 이후 모바일 출시 단계로 이관
 - profile upload와 private attachment download
 - GitHub App 설치, repository claim, webhook, 별도 reviewer 승인
 - public Proof profile

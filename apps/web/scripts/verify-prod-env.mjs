@@ -103,6 +103,10 @@ if (isProductionCheck) {
 
   if (!process.env.NEXT_PUBLIC_API_URL) {
     errors.push('NEXT_PUBLIC_API_URL is required in production.');
+  } else if (process.env.NEXT_PUBLIC_API_URL !== '/api') {
+    errors.push(
+      'NEXT_PUBLIC_API_URL must be exactly "/api" in production so browser requests use the same-origin Vercel proxy.',
+    );
   }
 
   const apiOrigin = process.env.API_ORIGIN;

@@ -83,7 +83,7 @@ describe('verify-prod-env analytics gate', () => {
             NEXT_PUBLIC_ANALYTICS_ENABLED: 'true',
             NEXT_PUBLIC_POSTHOG_KEY: 'test',
             NEXT_PUBLIC_POSTHOG_HOST: 'https://us.i.posthog.com',
-            NEXT_PUBLIC_API_URL: 'https://api.example.com',
+            NEXT_PUBLIC_API_URL: '/api',
             API_ORIGIN: 'https://api.example.com',
           },
           args,
@@ -105,7 +105,7 @@ describe('verify-prod-env analytics gate', () => {
       NEXT_PUBLIC_ANALYTICS_ENABLED: 'true',
       NEXT_PUBLIC_POSTHOG_KEY: 'test',
       NEXT_PUBLIC_POSTHOG_HOST: 'https://us.i.posthog.com',
-      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      NEXT_PUBLIC_API_URL: '/api',
       API_ORIGIN: 'https://api.example.com',
       ...productionFeatureFlags,
     });
@@ -127,7 +127,7 @@ describe('verify-prod-env analytics gate', () => {
     const result = verify({
       NEXT_PUBLIC_ENV: 'production',
       NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
-      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      NEXT_PUBLIC_API_URL: '/api',
       API_ORIGIN: 'https://api.example.com',
       NEXT_PUBLIC_API_MOCKING: 'false',
       ...withoutFlag,
@@ -146,7 +146,7 @@ describe('verify-prod-env analytics gate', () => {
     const result = verify({
       NEXT_PUBLIC_ENV: 'production',
       NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
-      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      NEXT_PUBLIC_API_URL: '/api',
       API_ORIGIN: 'https://api.example.com',
       NEXT_PUBLIC_API_MOCKING: 'false',
       ...productionFeatureFlags,
@@ -160,11 +160,25 @@ describe('verify-prod-env analytics gate', () => {
     const result = verify({
       NEXT_PUBLIC_ENV: 'production',
       NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
-      NEXT_PUBLIC_API_URL: 'https://api.example.com',
+      NEXT_PUBLIC_API_URL: '/api',
       API_ORIGIN: 'https://api.example.com',
       NEXT_PUBLIC_API_MOCKING: 'false',
       ...productionFeatureFlags,
     });
     expect(result.status).toBe(0);
+  });
+
+  it('rejects a direct browser-to-API URL in production', () => {
+    const result = verify({
+      NEXT_PUBLIC_ENV: 'production',
+      NEXT_PUBLIC_ANALYTICS_ENABLED: 'false',
+      NEXT_PUBLIC_API_URL: 'https://api.example.com/api',
+      API_ORIGIN: 'https://api.example.com',
+      NEXT_PUBLIC_API_MOCKING: 'false',
+      ...productionFeatureFlags,
+    });
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('must be exactly "/api" in production');
   });
 });
