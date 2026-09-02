@@ -252,7 +252,7 @@ Authenticated
 - [x] 기존 GitHub URL redirect와 local remote 갱신
 - [x] Vercel GitHub App의 새 조직 repository 접근 승인
 - [x] 기존 Vercel project를 새 조직 repository에 연결
-- [ ] transfer 이후 branch push의 Preview Deployment 성공
+- [x] transfer 이후 branch push의 Preview Deployment 성공
 - [x] 기존 production deployment·domain·API readiness 유지
 
 완료 조건: 새 조직의 branch push와 `main` push가 각각 Preview와 Production deployment를 생성하고 기존 domain이 유지된다.
