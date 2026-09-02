@@ -45,5 +45,6 @@ logs/
 # Agent runtime
 .gjc/
 .vercel/
+.local-audit/
 artifacts/analytics-*
 artifacts/posthog-*
