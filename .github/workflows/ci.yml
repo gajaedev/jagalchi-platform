@@ -116,3 +116,15 @@ jobs:
           OBJECT_STORAGE_ACCESS_KEY_ID: ci-only
           OBJECT_STORAGE_SECRET_ACCESS_KEY: ci-only-storage-secret
           OBJECT_STORAGE_PUBLIC_BASE_URL: https://storage.example.com/jagalchi
+
+  deployment-contract:
+    name: Backend deployment contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate deployment scripts
+        run: bash -n deploy/*.sh
+      - name: Test CI decision gate
+        run: python3 -m unittest discover -s deploy/tests -p 'test_*.py'
+      - name: Validate production Compose contract
+        run: docker compose --env-file deploy/personal-server.env.example -f compose.production.yml --profile cloudflare-tunnel config --quiet
