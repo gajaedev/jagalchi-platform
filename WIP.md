@@ -6,6 +6,8 @@
 
 Repository home: `https://github.com/stacking-money-forever/jagalchi-platform`. 2026-09-02에 기존 `gajaedev/jagalchi-platform`을 이름과 공개 상태를 유지한 채 조직 이전했고, 이전 URL은 새 위치로 redirect된다.
 
+Vercel project `jagalchi-platform`도 새 조직 repository로 다시 연결했다. Production branch는 `main`, Root Directory는 `apps/web`, 기존 production deployment와 `jagalchi.justn.me` alias는 유지됐다.
+
 ## 현재 판정
 
 Jagalchi는 기능이 넓게 구현된 프로토타입이지만 아직 하나의 완성된 제품은 아니다. 현재 프론트엔드는 부분 개선보다 제품 구조, 라우팅, 데이터 로딩, 상태 UX, 디자인 시스템을 다시 세우는 전면 재구축이 더 합리적이다.
@@ -243,6 +245,17 @@ Authenticated
 - [ ] 원본 backend·infra 경로 제거 PR 승인과 병합
 
 완료 조건: 신규 backend 작업 위치가 새 저장소로 단일화되고, 원본 경로 제거 후에도 build·deploy·rollback 계약이 유지된다.
+
+### 0.6 Platform transfer 안정화
+
+- [x] `stacking-money-forever/jagalchi-platform` 조직 이전
+- [x] 기존 GitHub URL redirect와 local remote 갱신
+- [x] Vercel GitHub App의 새 조직 repository 접근 승인
+- [x] 기존 Vercel project를 새 조직 repository에 연결
+- [ ] transfer 이후 branch push의 Preview Deployment 성공
+- [x] 기존 production deployment·domain·API readiness 유지
+
+완료 조건: 새 조직의 branch push와 `main` push가 각각 Preview와 Production deployment를 생성하고 기존 domain이 유지된다.
 
 ### 1. Forensics와 보존 경계
 
