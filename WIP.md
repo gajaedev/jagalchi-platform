@@ -27,9 +27,37 @@ Jagalchi는 기능이 넓게 구현된 프로토타입이지만 아직 하나의
 - Django AI는 실제 제품 데이터보다 mock 데이터 의존도가 높고, 일부 객체 API에 로드맵 단위 권한 검증이 없다.
 - 배포, 마이그레이션, 백업·복구, GitHub Evidence 흐름에는 재사용할 기반이 존재한다.
 
-상세 배포 절차와 과거 검증 증거는 다음 문서에서 관리한다.
+## Backend repository split
 
-- `deploy/README.md`
+상태: **copy 완료, cutover·원본 제거 미착수**.
+
+2026-09-02에 backend와 production orchestration을 다음 공개 저장소로 copy-first 추출했다.
+
+- `stacking-money-forever/jagalchi-api`: NestJS API와 TypeORM migration, 독립 pnpm lockfile·Dockerfile·CI
+- `stacking-money-forever/jagalchi-ai`: Django AI runtime과 migration, 독립 Dockerfile·CI
+- `stacking-money-forever/jagalchi-infra`: image 기반 production Compose, ingress, backup, smoke, rollback, CD
+
+API와 AI는 기존 서브트리 Git 이력을 보존했다. Infra는 여러 경로를 합치는 새 운영 산출물이므로 정적 계약 검증을 통과한 조립 기준선에서 새 이력을 시작했다. 이는 production 배포 검증을 의미하지 않는다. 원본 저장소의 `services/api`, `services/ai`, `compose.production.yml`, `deploy/`는 아직 제거하지 않는다.
+
+전환 기간 source-of-truth 규칙:
+
+- 현재 Cloudtype production을 위한 긴급 hotfix는 원본 monorepo에 먼저 적용하고 새 API repo로 즉시 forward-port한다.
+- 계획된 Backend 안전선과 신규 API 작업은 `jagalchi-api` 또는 `jagalchi-ai`에서만 시작한다.
+- 향후 production orchestration의 정본은 `jagalchi-infra`다. 원본 `deploy/` 문서는 현재 Cloudtype 상태의 과거 증거로만 유지한다.
+- 같은 기능을 양쪽에서 병렬 수정하지 않는다. 원본 제거 PR이 병합되면 monorepo backend 경로는 더 이상 수정하지 않는다.
+
+제거 조건:
+
+- [x] 세 새 저장소의 초기 CI 성공
+- [ ] API와 AI image publication·version pin 정책 승인
+- [ ] Infra에서 pinned API·AI image를 사용한 production-equivalent smoke 성공
+- [ ] Web의 새 API origin·contract 연결 방식 승인
+- [ ] 원본 저장소에서 제거하는 migration PR 별도 승인
+
+상세 배포 절차와 과거 검증 증거는 다음 위치에서 관리한다.
+
+- 향후 개인 서버 orchestration: `stacking-money-forever/jagalchi-infra/deploy/README.md`
+- 현재 monorepo·Cloudtype 과거 증거: `deploy/README.md`
 - `services/api/CLOSED_ALPHA_REMAINING.md`
 
 ## 현재 저장소 구조
@@ -48,7 +76,7 @@ Jagalchi는 기능이 넓게 구현된 프로토타입이지만 아직 하나의
 └── compose.production.yml   # 개인 서버 production 후보
 ```
 
-이 상위 구조는 당장 바꿀 이유가 없다. 문제는 `apps/web` 내부의 책임과 라우트가 제품 구조를 표현하지 못한다는 점이다.
+이 구조는 backend split cutover 전의 현재 worktree다. 제거 조건을 통과하면 backend와 production orchestration 경로를 monorepo에서 제거한다. 프론트 재구축의 직접 대상은 `apps/web` 내부 책임과 라우트다.
 
 ## 프론트엔드 목표 구조
 
@@ -200,6 +228,20 @@ Authenticated
 
 완료 조건: 무엇을 보존하고 무엇을 폐기하는지 누락 없이 추적할 수 있다.
 
+### 0.5 Backend split 안정화
+
+- [x] 공개 `jagalchi-api`, `jagalchi-ai`, `jagalchi-infra` 생성
+- [x] API·AI 서브트리 Git 이력 보존
+- [x] 서비스별 standalone dependency·Dockerfile·CI 구성
+- [x] Infra를 source build가 아닌 pinned service image 조합으로 변경
+- [x] 세 저장소 초기 CI 성공
+- [ ] API·AI image publication과 immutable tag 정책 승인
+- [ ] Infra production-equivalent smoke와 rollback 검증
+- [ ] Web API origin·contract 전환 방식 승인
+- [ ] 원본 backend·infra 경로 제거 PR 승인과 병합
+
+완료 조건: 신규 backend 작업 위치가 새 저장소로 단일화되고, 원본 경로 제거 후에도 build·deploy·rollback 계약이 유지된다.
+
 ### 1. Forensics와 보존 경계
 
 - [ ] 현재 화면과 route의 구조·시각 결함 forensics
@@ -290,4 +332,4 @@ Authenticated
 
 ## 다음 행동
 
-`docs/frontend-v2/INVENTORY.md`에 현재 route·feature·API·state·test inventory를 만든다. 이어서 forensics와 `PRESERVE / KILL / QUESTION`을 확정하고, 제품 계약과 IA를 승인받은 뒤 구조 방향 3개와 preset을 제시한다. 사용자 승인 전에는 프론트 구현을 시작하지 않는다.
+세 분리 저장소의 초기 CI와 source-of-truth 규칙은 확정됐다. Backend image publication과 cutover는 별도 승인 게이트에 남겨둔 채, `docs/frontend-v2/INVENTORY.md`에 현재 route·feature·API·state·test inventory를 만든다. 이어서 forensics와 `PRESERVE / KILL / QUESTION`을 확정하고, 제품 계약과 IA를 승인받은 뒤 구조 방향 3개와 preset을 제시한다. 사용자 승인 전에는 프론트 구현을 시작하지 않는다.
