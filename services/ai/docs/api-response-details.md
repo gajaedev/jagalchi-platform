@@ -8,7 +8,7 @@
 - url: http://localhost:8000/ai/health/
 - status: 200
 - content_type: application/json
-- description: 서버와 외부 AI 서비스(Gemini/Tavily/Exa) 연결 가능 여부를 확인합니다.
+- description: 서버와 외부 AI 서비스(DeepSeek/Tavily/Exa) 연결 가능 여부를 확인합니다.
 - implementation: HealthCheckAPIView에서 각 클라이언트의 available() 결과를 수집해 응답합니다.
 - response:
 ```
@@ -16,7 +16,7 @@
   "status": "ok",
   "version": "1.0.0",
   "services": {
-    "gemini": true,
+    "deepseek": true,
     "tavily": true,
     "exa": true,
     "graph_rag": true,
@@ -314,7 +314,7 @@ paths:
         서버 상태 및 외부 AI 서비스 연결 가능 여부를 반환합니다. 모니터링/배포 시 서비스 가용성 체크에 사용하세요.
 
         응답 필드 요약:
-        - services: gemini/tavily/exa/graph_rag/semantic_cache 사용 가능 여부
+        - services: deepseek/tavily/exa/graph_rag/semantic_cache 사용 가능 여부
         - timestamp: 체크 시각
       summary: 헬스체크
       tags:

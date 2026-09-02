@@ -1060,7 +1060,7 @@ class HealthCheckAPIView(APIView):
             "서버 상태 및 외부 AI 서비스 연결 가능 여부를 반환합니다. "
             "모니터링/배포 시 서비스 가용성 체크에 사용하세요.\n\n"
             "응답 필드 요약:\n"
-            "- services: gemini/tavily/exa/graph_rag/semantic_cache 사용 가능 여부\n"
+            "- services: deepseek/tavily/exa/graph_rag/semantic_cache 사용 가능 여부\n"
             "- timestamp: 체크 시각"
         ),
         responses={200: HealthCheckSerializer},
@@ -1072,10 +1072,10 @@ class HealthCheckAPIView(APIView):
         @param {Request} request - DRF 요청 객체.
         @returns {Response} 서비스 상태를 담은 직렬화된 응답.
         """
-        from jagalchi_ai.ai_core.client import GeminiClient, TavilySearchClient, ExaSearchClient
+        from jagalchi_ai.ai_core.client import DeepSeekClient, TavilySearchClient, ExaSearchClient
 
         # 각 서비스 상태 확인
-        gemini_available = GeminiClient().available()
+        deepseek_available = DeepSeekClient().available()
         tavily_available = TavilySearchClient().available
         exa_available = ExaSearchClient().available()
 
@@ -1083,7 +1083,7 @@ class HealthCheckAPIView(APIView):
             "status": "ok",
             "version": "1.0.0",
             "services": {
-                "gemini": gemini_available,
+                "deepseek": deepseek_available,
                 "tavily": tavily_available,
                 "exa": exa_available,
                 "graph_rag": True,

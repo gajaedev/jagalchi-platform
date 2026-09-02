@@ -1250,7 +1250,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "status": "ok",
   "version": "1.0.0",
   "services": {
-    "gemini": true,
+    "deepseek": true,
     "tavily": true,
     "exa": true,
     "graph_rag": true,
@@ -1297,7 +1297,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "next_actions": [{ "...": "..." }],
   "followup_questions": ["useEffect 클린업은 어떻게 하나요?"],
   "retrieval_evidence": [{ "...": "..." }],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "prompt_version": "v3",
   "created_at": "2026-04-07T12:00:00Z"
 }
@@ -1325,7 +1325,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "answer": "useEffect에서 발생하는 에러는...",
   "retrieval_evidence": [{ "...": "..." }],
   "behavior_summary": { "...": "..." },
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "prompt_version": "v3",
   "created_at": "2026-04-07T12:00:00Z",
   "cache_hit": false
@@ -1349,7 +1349,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "period": "30d",
   "patterns": { "...": "..." },
   "recommendations": ["매일 30분씩 학습하면 효과적입니다"],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "generated_at": "2026-04-07T12:00:00Z"
 }
 ```
@@ -1376,7 +1376,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
       "reasons": [{ "type": "topic_overlap", "value": "React 관련 노드 80% 공유" }]
     }
   ],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "evidence_snapshot": { "...": "..." },
   "generated_at": "2026-04-07T12:00:00Z"
 }
@@ -1403,7 +1403,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "nodes": [{ "node_id": "n1", "title": "TypeScript 기초", "tags": ["typescript"] }],
   "edges": [{ "source": "n1", "target": "n2", "type": "prerequisite" }],
   "tags": ["typescript", "react", "nextjs"],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "prompt_version": "v3",
   "created_at": "2026-04-07T12:00:00Z",
   "retrieval_evidence": [{ "...": "..." }]
@@ -1452,7 +1452,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "extracted_keywords": ["React", "TypeScript"],
   "recommended_roadmaps": [{ "...": "..." }],
   "suggested_topics": ["상태 관리", "테스팅"],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "created_at": "2026-04-07T12:00:00Z"
 }
 ```
@@ -1507,7 +1507,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
     { "tech_slug": "webpack", "type": "optional", "confidence": 0.6, "rationale": "..." }
   ],
   "generated_at": "2026-04-07T12:00:00Z",
-  "model_version": "gemini-2.0"
+  "model_version": "deepseek-v4-flash"
 }
 ```
 
@@ -1533,7 +1533,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "highlights": ["React hooks에 대한 질문이 가장 많음"],
   "bottlenecks": [{ "node_id": "n5", "score": 0.85, "top_topics": ["useEffect", "cleanup"] }],
   "generated_by": {
-    "model_version": "gemini-2.0",
+    "model_version": "deepseek-v4-flash",
     "prompt_version": "v3"
   }
 }
@@ -1578,7 +1578,7 @@ STOMP + SockJS:   /ws/roadmap (PresentationWebSocketConfig)
   "items": [
     { "title": "useEffect 완벽 가이드", "url": "https://...", "source": "blog", "score": 0.95 }
   ],
-  "model_version": "gemini-2.0",
+  "model_version": "deepseek-v4-flash",
   "retrieval_evidence": [{ "...": "..." }],
   "generated_at": "2026-04-07T12:00:00Z"
 }

@@ -7,7 +7,7 @@ export const MOCK_AI_HEALTH = {
   status: 'ok',
   version: '1.0.0',
   services: {
-    gemini: true,
+    deepseek: true,
     apify: true,
   },
   timestamp: '2026-04-14T00:00:00.000Z',

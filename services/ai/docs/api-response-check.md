@@ -14,7 +14,7 @@
   "status": "ok",
   "version": "1.0.0",
   "services": {
-    "gemini": true,
+    "deepseek": true,
     "tavily": true,
     "exa": true,
     "graph_rag": true,

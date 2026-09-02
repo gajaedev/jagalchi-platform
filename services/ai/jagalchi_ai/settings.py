@@ -17,6 +17,7 @@ Jagalchi AI Server - Django 설정 모듈 (Settings Module)
     - `DJANGO_SECRET_KEY`: 보안 서명용 비밀키 (필수)
     - `DJANGO_DEBUG`: 디버그 모드 활성화 여부 (운영 환경에서는 반드시 False)
     - `DATABASE_URL`: 데이터베이스 연결 문자열
+    - `DEEPSEEK_API_KEY`: DeepSeek LLM API 키
     - `TAVILY_API_KEY`: 웹 검색용 API 키
 
 자세한 내용은 `docs/CONVENTIONS.md`를 참조하십시오.
@@ -65,13 +66,18 @@ class EnvSettings(BaseSettings):
     DATABASE_CONN_MAX_AGE: int = 60
 
     # AI 클라이언트 설정
-    GEMINI_API_KEY: Optional[SecretStr] = None
+    DEEPSEEK_API_KEY: Optional[SecretStr] = None
+    DEEPSEEK_MODEL: str = "deepseek-v4-flash"
+    DEEPSEEK_BASE_URL: str = "https://api.deepseek.com"
+    DEEPSEEK_TIMEOUT_SECONDS: int = 45
+    DEEPSEEK_MAX_RETRIES: int = 3
+    DEEPSEEK_THINKING_ENABLED: bool = False
     TAVILY_API_KEY: Optional[SecretStr] = None
     EXA_API_KEY: Optional[SecretStr] = None
     
     AI_DISABLE_LLM: bool = False
     AI_DISABLE_EXTERNAL: bool = False
-    AI_DEFAULT_MODEL: str = "gemini-2.5-flash"
+    AI_DEFAULT_MODEL: str = "deepseek-v4-flash"
     AI_TIMEOUT: int = 30
     AI_MAX_RETRIES: int = 3
     
@@ -355,7 +361,12 @@ if env.REDIS_URL:
 # -----------------------------------------------------------------------------
 # AI 관련 설정 (전역 변수로 노출)
 # -----------------------------------------------------------------------------
-GEMINI_API_KEY = env.GEMINI_API_KEY.get_secret_value() if env.GEMINI_API_KEY else ""
+DEEPSEEK_API_KEY = env.DEEPSEEK_API_KEY.get_secret_value() if env.DEEPSEEK_API_KEY else ""
+DEEPSEEK_MODEL = env.DEEPSEEK_MODEL
+DEEPSEEK_BASE_URL = env.DEEPSEEK_BASE_URL
+DEEPSEEK_TIMEOUT_SECONDS = env.DEEPSEEK_TIMEOUT_SECONDS
+DEEPSEEK_MAX_RETRIES = env.DEEPSEEK_MAX_RETRIES
+DEEPSEEK_THINKING_ENABLED = env.DEEPSEEK_THINKING_ENABLED
 TAVILY_API_KEY = env.TAVILY_API_KEY.get_secret_value() if env.TAVILY_API_KEY else ""
 EXA_API_KEY = env.EXA_API_KEY.get_secret_value() if env.EXA_API_KEY else ""
 

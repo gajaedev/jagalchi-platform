@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.hashing import stable_hash_json
 from jagalchi_ai.ai_core.common.nlp.text_utils import extractive_summary
 from jagalchi_ai.ai_core.config.model_router import ModelRouter
@@ -30,7 +30,7 @@ class RecordCoachService:
         snapshot_store: Optional[SnapshotStore] = None,
         retriever: Optional[HybridRetriever] = None,
         model_router: Optional[ModelRouter] = None,
-        llm_client: Optional[GeminiClient] = None,
+        llm_client: Optional[DeepSeekClient] = None,
     ) -> None:
         """
         @param snapshot_store 스냅샷 캐시 저장소.
@@ -42,7 +42,7 @@ class RecordCoachService:
         self.snapshot_store = snapshot_store or SnapshotStore()
         self.model_router = model_router or ModelRouter()
         self.retriever = retriever or build_default_retriever()
-        self.llm_client = llm_client or GeminiClient()
+        self.llm_client = llm_client or DeepSeekClient()
 
     def get_feedback(
         self,
@@ -255,7 +255,7 @@ def _compose_rewrite(
     scores: Dict[str, int],
     compose_level: str,
     router: ModelRouter,
-    llm_client: GeminiClient,
+    llm_client: DeepSeekClient,
 ) -> Dict[str, object]:
     """
     @param record 학습 기록 객체.

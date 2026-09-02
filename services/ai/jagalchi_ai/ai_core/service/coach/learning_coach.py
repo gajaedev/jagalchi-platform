@@ -38,7 +38,7 @@ from typing import Any, Dict, List, Optional
 # -----------------------------------------------------------------------------
 # 로컬 모듈 임포트
 # -----------------------------------------------------------------------------
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.nlp.text_utils import extractive_summary
 from jagalchi_ai.ai_core.repository.semantic_cache import SemanticCache
 from jagalchi_ai.ai_core.service.coach.behavior_model import BehaviorModel
@@ -82,7 +82,7 @@ class LearningCoachService:
         - ResourceRecommendationService: 관련 학습 자료 추천
         - ProgressTrackingService: 사용자 진행 상황 추적
         - SemanticCache: 유사 질문 캐싱
-        - GeminiClient: LLM 기반 답변 생성
+        - DeepSeekClient: LLM 기반 답변 생성
         - BehaviorModel: 사용자 행동 분석 (Fogg B=MAP 모델)
         - SimpleWorkflow: 상태 기반 워크플로우 관리
 
@@ -91,7 +91,7 @@ class LearningCoachService:
         _resource_recommender: 자료 추천 서비스
         _progress_tracker: 진행 상황 추적 서비스
         _cache: 시맨틱 캐시
-        _llm_client: LLM 클라이언트 (Gemini)
+        _llm_client: LLM 클라이언트 (DeepSeek)
         _behavior_model: 행동 모델 분석기
         _workflow: 워크플로우 관리자
 
@@ -101,8 +101,8 @@ class LearningCoachService:
         >>> result = coach.answer("user_1", "React란 무엇인가요?")
 
         >>> # 커스텀 컴포넌트 사용
-        >>> from jagalchi_ai.ai_core.client import GeminiClient
-        >>> coach = LearningCoachService(llm_client=GeminiClient())
+        >>> from jagalchi_ai.ai_core.client import DeepSeekClient
+        >>> coach = LearningCoachService(llm_client=DeepSeekClient())
         >>> result = coach.answer("user_1", "에러가 발생해요", compose_level="full")
     """
 
@@ -116,7 +116,7 @@ class LearningCoachService:
         resource_recommender: Optional[ResourceRecommendationService] = None,
         progress_tracker: Optional[ProgressTrackingService] = None,
         cache: Optional[SemanticCache] = None,
-        llm_client: Optional[GeminiClient] = None,
+        llm_client: Optional[DeepSeekClient] = None,
         behavior_model: Optional[BehaviorModel] = None,
         workflow: Optional[SimpleWorkflow] = None,
     ) -> None:
@@ -146,7 +146,7 @@ class LearningCoachService:
         @param {Optional[ResourceRecommendationService]} resource_recommender - 자료 추천 서비스.
         @param {Optional[ProgressTrackingService]} progress_tracker - 진행 상황 추적 서비스.
         @param {Optional[SemanticCache]} cache - 시맨틱 캐시.
-        @param {Optional[GeminiClient]} llm_client - LLM 클라이언트.
+        @param {Optional[DeepSeekClient]} llm_client - LLM 클라이언트.
         @param {Optional[BehaviorModel]} behavior_model - 행동 모델 분석기.
         @param {Optional[SimpleWorkflow]} workflow - 워크플로우 관리자.
         @returns {None} 기본 의존성을 초기화합니다.
@@ -157,7 +157,7 @@ class LearningCoachService:
         self._resource_recommender = resource_recommender or ResourceRecommendationService()
         self._progress_tracker = progress_tracker or ProgressTrackingService()
         self._cache = cache or SemanticCache()
-        self._llm_client = llm_client or GeminiClient()
+        self._llm_client = llm_client or DeepSeekClient()
         self._behavior_model = behavior_model or BehaviorModel()
         self._workflow = workflow or SimpleWorkflow()
 
@@ -424,7 +424,7 @@ def _build_coach_prompt(
     """
     LLM에 전달할 학습 코치 프롬프트를 생성합니다.
 
-    이 프롬프트는 Gemini 모델이 사용자의 학습 수준에 맞게
+    이 프롬프트는 DeepSeek 모델이 사용자의 학습 수준에 맞게
     친근하고 실용적인 답변을 생성하도록 안내합니다.
 
     Args:

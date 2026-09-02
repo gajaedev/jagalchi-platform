@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Dict, List, Optional
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.nlp.text_utils import extractive_summary
 from jagalchi_ai.ai_core.domain.document import Document
 from jagalchi_ai.ai_core.domain.reel_result import ReelResult
@@ -16,14 +16,14 @@ _LICENSE_WHITELIST = {"MIT", "Apache-2.0", "BSD", "GPL", "MPL"}
 class ReelPipeline:
     """REEL 기반 메타데이터 추출 파이프라인."""
 
-    def __init__(self, llm_client: Optional[GeminiClient] = None) -> None:
+    def __init__(self, llm_client: Optional[DeepSeekClient] = None) -> None:
         """
         REEL 파이프라인을 초기화합니다.
 
-        @param {Optional[GeminiClient]} llm_client - LLM 클라이언트.
+        @param {Optional[DeepSeekClient]} llm_client - LLM 클라이언트.
         @returns {None} 내부 클라이언트를 설정합니다.
         """
-        self._llm_client = llm_client or GeminiClient()
+        self._llm_client = llm_client or DeepSeekClient()
 
     def extract(self, sources: List[Dict[str, str]]) -> ReelResult:
         """

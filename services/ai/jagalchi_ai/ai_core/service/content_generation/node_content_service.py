@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.models import InitData, NodeResource
 from jagalchi_ai.ai_core.repository.mock_data import ROADMAPS
 from jagalchi_ai.ai_core.service.recommendation.resource_recommender import ResourceRecommendationService
@@ -13,7 +13,7 @@ class NodeContentService:
     """노드 콘텐츠 생성 및 관리 서비스."""
 
     def __init__(self):
-        self._llm_client = GeminiClient()
+        self._llm_client = DeepSeekClient()
         self._resource_recommender = ResourceRecommendationService()
 
     def generate_nodes_from_init(self, init_data_id: str) -> Dict[str, object]:

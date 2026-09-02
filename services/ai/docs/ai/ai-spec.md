@@ -39,7 +39,7 @@
 - `service/trust/reliability_service`: EigenTrust 기반 신뢰 점수
 - `service/trust/counterfactual`: IPS 오프라인 평가
 - `service/trust/cove_verifier`: CoVe 검증 보조
-- `client/gemini_client`: Gemini LLM 호출(선택)
+- `client/deepseek_client`: DeepSeek LLM 호출(선택)
 - `client/tavily_client`: Tavily 검색 클라이언트(신뢰 소스 확보)
 - `client/exa_client`: Exa 검색 클라이언트(신뢰 소스 확보)
 - `service/retrieval/web_search_service`: Tavily/Exa 검색 스냅샷/캐시 서비스

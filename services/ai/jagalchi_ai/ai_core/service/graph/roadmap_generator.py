@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, List, Optional
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.hashing import stable_hash_json
 from jagalchi_ai.ai_core.common.nlp.text_utils import extractive_summary, tokenize
 from jagalchi_ai.ai_core.repository.snapshot_store import SnapshotStore
@@ -16,19 +16,19 @@ class RoadmapGeneratorService:
         self,
         graph_rag: Optional[GraphRAGService] = None,
         snapshot_store: Optional[SnapshotStore] = None,
-        llm_client: Optional[GeminiClient] = None,
+        llm_client: Optional[DeepSeekClient] = None,
     ) -> None:
         """
         로드맵 생성에 필요한 의존성을 초기화합니다.
 
         @param {Optional[GraphRAGService]} graph_rag - 그래프 RAG 서비스.
         @param {Optional[SnapshotStore]} snapshot_store - 스냅샷 저장소.
-        @param {Optional[GeminiClient]} llm_client - LLM 클라이언트.
+        @param {Optional[DeepSeekClient]} llm_client - LLM 클라이언트.
         @returns {None} 내부 상태를 구성합니다.
         """
         self._graph_rag = graph_rag or GraphRAGService()
         self._snapshot_store = snapshot_store or SnapshotStore()
-        self._llm_client = llm_client or GeminiClient()
+        self._llm_client = llm_client or DeepSeekClient()
 
     def generate(
         self,

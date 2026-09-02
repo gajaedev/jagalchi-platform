@@ -5,12 +5,16 @@ Jagalchi 학습 플랫폼의 AI 기능을 위한 Python/Django 기반 모듈입�
 ## 구성
 - `jagalchi_ai/ai_core/`: Spring Boot 스타일 레이어드 구조(controller/service/repository/domain/common)
 - `docs/ai/ai-spec.md`: 기능 스펙 및 파이프라인 문서
-- `jagalchi_ai/ai_core/controller/verify_gemini.py`: Gemini 연결 확인 스크립트
+- `jagalchi_ai/ai_core/controller/verify_deepseek.py`: DeepSeek 연결 확인 스크립트
 - `jagalchi_ai/ai_core/controller/verify_tavily.py`: Tavily 검색 확인 스크립트
 - `jagalchi_ai/ai_core/controller/verify_exa.py`: Exa 검색 확인 스크립트
 
 ## 환경 변수
-- `GEMINI_API_KEY`: Google AI Studio 키 (로컬은 `.env` 사용)
+- `DEEPSEEK_API_KEY`: DeepSeek API 키 (로컬은 `.env` 사용)
+- `DEEPSEEK_MODEL`: 기본 `deepseek-v4-flash`; 복잡한 추론은 `deepseek-v4-pro`
+- `DEEPSEEK_BASE_URL`: 기본 `https://api.deepseek.com`
+- `DEEPSEEK_TIMEOUT_SECONDS`, `DEEPSEEK_MAX_RETRIES`: 요청 제한 및 재시도 설정
+- `DEEPSEEK_THINKING_ENABLED`: 기본 `false`; 명시적으로 필요한 작업에만 활성화
 - `TAVILY_API_KEY`: Tavily 검색 키 (로컬은 `.env` 사용)
 - `EXA_API_KEY`: Exa 검색 키 (로컬은 `.env` 사용)
 - `AI_DISABLE_EXTERNAL`: 외부 API 호출 비활성화(`true`일 때)
@@ -67,10 +71,10 @@ curl -H "Authorization: Bearer $AI_AUTH_DEV_TOKEN_EDIT" \
 - Swagger UI: `http://localhost:8000/api/docs/`
 - Redoc: `http://localhost:8000/api/redoc/`
 
-## Gemini 연결 확인(선택)
+## DeepSeek 연결 확인(선택)
 ```bash
-export GEMINI_API_KEY=your-key
-python -m jagalchi_ai.ai_core.controller.verify_gemini
+export DEEPSEEK_API_KEY=your-key
+python -m jagalchi_ai.ai_core.controller.verify_deepseek
 ```
 
 ## Tavily 검색 확인(선택)

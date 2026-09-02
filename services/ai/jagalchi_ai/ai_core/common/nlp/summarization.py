@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from typing import Dict, List, Optional
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.nlp.text_utils import extract_sentences, tokenize
 
 
@@ -26,7 +26,7 @@ def textrank_sentences(text: str, top_n: int = 2) -> List[str]:
     return [sentences[idx] for idx in selected]
 
 
-def hybrid_summary(text: str, llm_client: Optional[GeminiClient] = None, top_n: int = 2) -> str:
+def hybrid_summary(text: str, llm_client: Optional[DeepSeekClient] = None, top_n: int = 2) -> str:
     """
     @param text 요약 대상 원문.
     @param llm_client LLM 클라이언트(있으면 문장화 보정).
@@ -44,7 +44,7 @@ def hybrid_summary(text: str, llm_client: Optional[GeminiClient] = None, top_n: 
     return response.strip() or extractive
 
 
-def map_reduce_summary(texts: List[str], llm_client: Optional[GeminiClient] = None) -> str:
+def map_reduce_summary(texts: List[str], llm_client: Optional[DeepSeekClient] = None) -> str:
     """
     @param texts 요약 대상 텍스트 리스트.
     @param llm_client LLM 클라이언트(있으면 최종 보정).

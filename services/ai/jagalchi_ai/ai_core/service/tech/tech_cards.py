@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from jagalchi_ai.ai_core.client import GeminiClient
+from jagalchi_ai.ai_core.client import DeepSeekClient
 from jagalchi_ai.ai_core.common.hashing import stable_hash_json
 from jagalchi_ai.ai_core.common.nlp.summarization import map_reduce_summary
 from jagalchi_ai.ai_core.common.nlp.text_utils import cheap_embed, extractive_summary
@@ -37,21 +37,21 @@ class TechCardService:
         self,
         snapshot_store: Optional[SnapshotStore] = None,
         web_search: Optional[WebSearchService] = None,
-        llm_client: Optional[GeminiClient] = None,
+        llm_client: Optional[DeepSeekClient] = None,
     ) -> None:
         """
         기술 카드 생성에 필요한 의존성을 초기화합니다.
 
         @param {Optional[SnapshotStore]} snapshot_store - 스냅샷 저장소.
         @param {Optional[WebSearchService]} web_search - 웹 검색 서비스.
-        @param {Optional[GeminiClient]} llm_client - LLM 클라이언트.
+        @param {Optional[DeepSeekClient]} llm_client - LLM 클라이언트.
         @returns {None} 내부 서비스 구성을 완료합니다.
         """
         self.snapshot_store = snapshot_store or SnapshotStore()
         self._reel = ReelPipeline()
         self._doc_watcher = DocWatcher()
         self._web_search = web_search or WebSearchService()
-        self._llm_client = llm_client or GeminiClient()
+        self._llm_client = llm_client or DeepSeekClient()
 
     def get_or_create(self, tech_slug: str, prompt_version: str = "tech_card_v1") -> Dict[str, object]:
         """

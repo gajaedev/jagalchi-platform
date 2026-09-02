@@ -35,7 +35,7 @@ graph TB
     end
 
     subgraph External["외부 AI 서비스"]
-        GEMINI["Google Gemini"]
+        DEEPSEEK["DeepSeek API"]
         TAVILY["Tavily Search"]
         EXA["Exa Search"]
     end
@@ -61,7 +61,7 @@ graph TB
 jagalchi_ai/
 ├── ai_core/
 │   ├── client/                    # 외부 API 클라이언트
-│   │   ├── gemini_client.py       # Google Gemini API
+│   │   ├── deepseek_client.py      # DeepSeek Chat Completions API
 │   │   ├── tavily_client.py       # Tavily 웹 검색
 │   │   └── exa_client.py          # Exa 시맨틱 검색
 │   │
@@ -99,7 +99,7 @@ GET /api/health/
     "status": "ok",
     "version": "1.0.0",
     "services": {
-        "gemini": true,
+        "deepseek": true,
         "tavily": true,
         "exa": true,
         "graph_rag": true,
@@ -431,7 +431,7 @@ GET /api/ai/demo
 
 | 클라이언트 | API | 용도 |
 |-----------|-----|------|
-| `GeminiClient` | Google Gemini | LLM 텍스트 생성 |
+| `DeepSeekClient` | DeepSeek | LLM 텍스트 및 JSON 생성 |
 | `TavilySearchClient` | Tavily | 범용 웹 검색 |
 | `ExaSearchClient` | Exa | 시맨틱 검색 |
 
@@ -441,7 +441,8 @@ GET /api/ai/demo
 
 ```bash
 # .env 파일
-GEMINI_API_KEY=your_gemini_api_key
+DEEPSEEK_API_KEY=your_deepseek_api_key
+DEEPSEEK_MODEL=deepseek-v4-flash
 TAVILY_API_KEY=your_tavily_api_key
 EXA_API_KEY=your_exa_api_key
 ```
