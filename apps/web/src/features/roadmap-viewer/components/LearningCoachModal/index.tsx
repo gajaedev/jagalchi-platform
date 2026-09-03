@@ -4,8 +4,8 @@ import { memo, useState } from 'react';
 
 import { BookOpen, Lightbulb, MessageSquare, Target, TrendingUp } from 'lucide-react';
 
-import { getLearningCoach, getRecordCoach } from '@/api/ai';
-import type { RecordCoachResponse, LearningCoachResponse } from '@/api/ai';
+import { runAiJob } from '@/api/ai-jobs';
+import type { LearningCoachResponse, RecordCoachResponse } from '@/api/ai-jobs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -248,11 +248,14 @@ export const LearningCoachModal = memo(function LearningCoachModal({
   const handleRequestFeedback = async () => {
     setIsLoading(true);
     try {
-      const response = await getRecordCoach({
-        roadmap_id: roadmapId,
-        node_id: selectedNodeId ?? '',
-        compose_level: 'quick',
-      });
+      const response = await runAiJob(
+        'feedback',
+        {
+          node_id: selectedNodeId ?? '',
+          compose_level: 'quick',
+        },
+        roadmapId,
+      );
       setFeedbackData(response);
       setErrorMessage('');
     } catch {
@@ -266,10 +269,11 @@ export const LearningCoachModal = memo(function LearningCoachModal({
     if (!question.trim()) return;
     setIsLoading(true);
     try {
-      const response = await getLearningCoach({
-        question: question.trim(),
-        compose_level: 'quick',
-      });
+      const response = await runAiJob(
+        'coaching',
+        { question: question.trim(), compose_level: 'quick' },
+        roadmapId,
+      );
       setCoachData(response);
       setErrorMessage('');
     } catch {
