@@ -7,7 +7,7 @@ Jagalchi Client 의 프로덕션 배포 가이드. 운영 타깃은 **Vercel** �
 | 변수                            | 필수 | Production                            | Preview / Staging              | Development                        |
 | ------------------------------- | ---- | ------------------------------------- | ------------------------------ | ---------------------------------- |
 | `NEXT_PUBLIC_API_URL`           | ✅   | `/api` (Vercel same-origin proxy)     | `/api`                         | `/api` 또는 `http://localhost:8080` |
-| `NEXT_PUBLIC_WS_URL`            | ✅   | `https://api.jagalchi.dev/ws/roadmap` | staging                        | `http://localhost:8082/ws/roadmap` |
+| `NEXT_PUBLIC_REALTIME_URL`      | ✅   | `https://api.jagalchi.dev`            | staging HTTPS origin           | `http://localhost:8082`            |
 | `NEXT_PUBLIC_SITE_URL`          | ✅   | `https://jagalchi.dev`                | `https://staging.jagalchi.dev` | `http://localhost:3000`            |
 | `NEXT_PUBLIC_ENV`               | ✅   | `production`                          | `staging` / `preview`          | `development`                      |
 | `NEXT_PUBLIC_API_MOCKING`       | ⚠️   | **반드시 `false`**                    | `false`                        | `true` 가능                        |

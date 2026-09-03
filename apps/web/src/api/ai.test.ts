@@ -13,15 +13,11 @@ import {
   getGraphRag,
   getInitData,
   getInitDataList,
-  getLearningCoach,
   getLearningPattern,
-  getNodeDescription,
   getNodeGeneration,
   getNodeResourceRecommendation,
-  getRecordCoach,
   getRelatedRoadmaps,
   getRoadmapRecommendation,
-  getResourceRecommendation,
   getTechCards,
   getTechFingerprint,
   getWebSearch,
@@ -71,25 +67,6 @@ describe('getAiRedoc', () => {
   it('calls GET /ai/redoc/', () => {
     getAiRedoc();
     expect(apiClient.get).toHaveBeenCalledWith('/ai/redoc/');
-  });
-});
-
-describe('getLearningCoach', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('calls GET /ai/learning-coach with required question', () => {
-    getLearningCoach({ question: 'how to learn react?' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/ai/learning-coach?');
-    expect(call).toContain('question=how+to+learn+react%3F');
-  });
-
-  it('includes optional user_id when provided', () => {
-    getLearningCoach({ question: 'q', user_id: 'u-1' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('user_id=u-1');
   });
 });
 
@@ -200,26 +177,6 @@ describe('getCommentDuplicates', () => {
   });
 });
 
-describe('getResourceRecommendation', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('calls GET /ai/resource-recommendation with required query', () => {
-    getResourceRecommendation({ query: 'react tutorial' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/ai/resource-recommendation?');
-    expect(call).toContain('query=react+tutorial');
-  });
-
-  it('includes optional params when provided', () => {
-    getResourceRecommendation({ query: 'react', top_k: 3, lang: 'ko_first' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('top_k=3');
-    expect(call).toContain('lang=ko_first');
-  });
-});
-
 describe('getWebSearch', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -305,25 +262,6 @@ describe('getNodeGeneration', () => {
   });
 });
 
-describe('getNodeDescription', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('calls GET /ai/node-description with required node_title', () => {
-    getNodeDescription({ node_title: 'React Hooks' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/ai/node-description?');
-    expect(call).toContain('node_title=React+Hooks');
-  });
-
-  it('includes optional context when provided', () => {
-    getNodeDescription({ node_title: 'Hooks', context: 'frontend roadmap' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('context=frontend+roadmap');
-  });
-});
-
 describe('getNodeResourceRecommendation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -385,25 +323,6 @@ describe('getAiDemo', () => {
     expect(call).toContain('/ai/demo?');
     expect(call).toContain('roadmap_id=r1');
     expect(call).toContain('user_id=u1');
-  });
-});
-
-describe('getRecordCoach', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('calls GET /ai/record-coach with required roadmap_id', () => {
-    getRecordCoach({ roadmap_id: 'rm-1' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('/ai/record-coach?');
-    expect(call).toContain('roadmap_id=rm-1');
-  });
-
-  it('includes optional node_id when provided', () => {
-    getRecordCoach({ roadmap_id: 'rm-1', node_id: 'nd-2' });
-    const call = vi.mocked(apiClient.get).mock.calls[0][0] as string;
-    expect(call).toContain('node_id=nd-2');
   });
 });
 

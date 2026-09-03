@@ -4,14 +4,14 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Upload, X } from 'lucide-react';
 
-import { getNodeDescription } from '@/api/ai';
+import { runAiJob } from '@/api/ai-jobs';
 import {
   ATTACHMENT_UPLOAD_CONSTRAINTS,
   AttachmentUploadError,
-  uploadAttachment,
   validateAttachmentFile,
 } from '@/api/upload';
 import type { AttachmentUploadErrorCode } from '@/api/upload';
+import { uploadRoadmapAttachment } from '@/api/uploads';
 import { Button } from '@/components/ui/button';
 import { EDITOR_MESSAGES } from '@/constants/messages';
 
@@ -28,6 +28,7 @@ import type { JagalchiNodeType, NodeColorVariant } from '../../../types/editor.t
 
 interface NodePropertiesPanelProps {
   node: JagalchiNodeType;
+  roadmapId: string;
 }
 
 /**
@@ -43,6 +44,7 @@ interface NodePropertiesPanelProps {
  */
 export const NodePropertiesPanel = memo(function NodePropertiesPanel({
   node,
+  roadmapId,
 }: NodePropertiesPanelProps) {
   const { updateNode } = useUpdateNode(node.id);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -90,7 +92,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
     setIsDescLoading(true);
     setDescError('');
     try {
-      const response = await getNodeDescription({ node_title: node.data.label });
+      const response = await runAiJob('node_explanation', { node_title: node.data.label });
       updateNode({ description: response.description });
     } catch {
       setDescError(EDITOR_MESSAGES.AI_DESC_ERROR);
@@ -158,11 +160,11 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
       setAttachmentUploadError('');
 
       try {
-        const response = await uploadAttachment(file, {
+        const response = await uploadRoadmapAttachment(file, roadmapId, {
           signal: controller.signal,
           onProgress: setAttachmentUploadProgress,
         });
-        handleResourceChange(emptyIndex, response.url);
+        handleResourceChange(emptyIndex, response.resourceUrl);
       } catch (error) {
         if (error instanceof AttachmentUploadError) {
           setAttachmentUploadError(getAttachmentUploadErrorMessage(error.code));
@@ -176,7 +178,7 @@ export const NodePropertiesPanel = memo(function NodePropertiesPanel({
         setIsUploadingAttachment(false);
       }
     },
-    [getAttachmentUploadErrorMessage, handleResourceChange, node.data.resources],
+    [getAttachmentUploadErrorMessage, handleResourceChange, node.data.resources, roadmapId],
   );
 
   // Ensure we have exactly 3 resource slots

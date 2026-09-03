@@ -2,7 +2,10 @@ import type { RoadmapNode } from '@/features/roadmap-editor/types/editor.types';
 
 import { apiClient } from './client';
 
+import type { RealtimeTicket } from '@jagalchi/api-client';
 import type { Edge } from '@xyflow/react';
+
+export const issueRealtimeTicket = () => apiClient.post<RealtimeTicket>('/realtime/tickets');
 
 export interface RoadmapGraph {
   schemaVersion: 1;

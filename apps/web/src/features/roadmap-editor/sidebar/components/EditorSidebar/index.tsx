@@ -28,7 +28,11 @@ import type {
 
 const sidebarSurface = 'border-border bg-card relative h-full w-[240px] border-l shadow-md';
 
-export const EditorSidebar = memo(function EditorSidebar() {
+interface EditorSidebarProps {
+  roadmapId?: string;
+}
+
+export const EditorSidebar = memo(function EditorSidebar({ roadmapId = '' }: EditorSidebarProps) {
   const selectedNode = useAtomValue(singleSelectedNodeAtom);
   const selectedEdge = useAtomValue(singleSelectedEdgeAtom);
   const selectedNodeIds = useAtomValue(selectedNodeIdsAtom);
@@ -76,7 +80,7 @@ export const EditorSidebar = memo(function EditorSidebar() {
       return (
         <aside className={sidebarSurface}>
           {collapseButton}
-          <NodePropertiesPanel node={selectedNode as JagalchiNodeType} />
+          <NodePropertiesPanel node={selectedNode as JagalchiNodeType} roadmapId={roadmapId} />
         </aside>
       );
     }

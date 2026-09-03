@@ -2,17 +2,11 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import * as aiApi from '@/api/ai';
+import * as aiJobs from '@/api/ai-jobs';
 
 import { ResourceRecommendationModal } from '.';
 
-vi.mock('@/api/ai', async (importOriginal) => {
-  const actual = await importOriginal<typeof aiApi>();
-  return {
-    ...actual,
-    getResourceRecommendation: vi.fn(),
-  };
-});
+vi.mock('@/api/ai-jobs', () => ({ runAiJob: vi.fn() }));
 
 const mockItems = [
   {
@@ -85,7 +79,7 @@ describe('ResourceRecommendationModal', () => {
   });
 
   it('shows loading state when recommending', async () => {
-    vi.mocked(aiApi.getResourceRecommendation).mockReturnValue(new Promise(() => {}));
+    vi.mocked(aiJobs.runAiJob).mockReturnValue(new Promise(() => {}));
     const user = userEvent.setup();
     renderModal();
 
@@ -96,7 +90,7 @@ describe('ResourceRecommendationModal', () => {
   });
 
   it('shows resources after recommendation', async () => {
-    vi.mocked(aiApi.getResourceRecommendation).mockResolvedValue({
+    vi.mocked(aiJobs.runAiJob).mockResolvedValue({
       query: 'React',
       generated_at: '',
       items: mockItems,
@@ -108,6 +102,11 @@ describe('ResourceRecommendationModal', () => {
 
     const recommendButton = screen.getByText('추천받기');
     await user.click(recommendButton);
+
+    expect(aiJobs.runAiJob).toHaveBeenCalledWith('resource_recommendation', {
+      query: 'React',
+      top_k: 5,
+    });
 
     await waitFor(
       () => {
@@ -122,7 +121,7 @@ describe('ResourceRecommendationModal', () => {
   });
 
   it('shows close button after resources are loaded', async () => {
-    vi.mocked(aiApi.getResourceRecommendation).mockResolvedValue({
+    vi.mocked(aiJobs.runAiJob).mockResolvedValue({
       query: 'React',
       generated_at: '',
       items: mockItems,
@@ -144,7 +143,7 @@ describe('ResourceRecommendationModal', () => {
   });
 
   it('calls onClose when close button is clicked', async () => {
-    vi.mocked(aiApi.getResourceRecommendation).mockResolvedValue({
+    vi.mocked(aiJobs.runAiJob).mockResolvedValue({
       query: 'React',
       generated_at: '',
       items: mockItems,

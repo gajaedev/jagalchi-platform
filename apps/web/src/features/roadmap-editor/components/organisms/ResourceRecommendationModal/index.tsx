@@ -4,8 +4,8 @@ import { memo, useState } from 'react';
 
 import { ExternalLink } from 'lucide-react';
 
-import type { ResourceItem } from '@/api/ai';
-import { getResourceRecommendation } from '@/api/ai';
+import { runAiJob } from '@/api/ai-jobs';
+import type { ResourceItem } from '@/api/ai-jobs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -43,7 +43,7 @@ export const ResourceRecommendationModal = memo(function ResourceRecommendationM
     setErrorMessage('');
     try {
       const query = nodeName || EDITOR_MESSAGES.DEFAULT_RESOURCE_QUERY;
-      const response = await getResourceRecommendation({ query, top_k: 5 });
+      const response = await runAiJob('resource_recommendation', { query, top_k: 5 });
       setResources(response.items);
     } catch {
       setErrorMessage(EDITOR_MESSAGES.AI_RESOURCE_MODAL_ERROR);

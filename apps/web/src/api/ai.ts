@@ -31,76 +31,6 @@ interface DemoParams {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type DemoResponse = Record<string, any>;
 
-// === Learning Coach Types ===
-
-interface RecordCoachScores {
-  evidence_level: number;
-  structure_score: number;
-  specificity_score: number;
-  reproducibility_score: number;
-  quality_score: number;
-}
-
-interface RecordCoachNextAction {
-  effort: string;
-  task: string;
-}
-
-interface RecordCoachRewriteSuggestions {
-  portfolio_bullets: string[];
-  improved_memo: string;
-}
-
-interface RecordCoachResponse {
-  record_id: string;
-  model_version: string;
-  prompt_version: string;
-  created_at: string;
-  scores: RecordCoachScores;
-  strengths: string[];
-  gaps: string[];
-  rewrite_suggestions: RecordCoachRewriteSuggestions;
-  code_feedback: unknown[];
-  next_actions: RecordCoachNextAction[];
-  followup_questions: string[];
-  retrieval_evidence: RetrievalEvidence[];
-}
-
-interface RecordCoachParams {
-  roadmap_id: string;
-  node_id?: string;
-  compose_level?: 'quick' | 'full';
-}
-
-interface LearningCoachBehaviorSummary {
-  motivation: number;
-  ability: number;
-  prompt_hour: number;
-  dropout_risk: number;
-}
-
-interface LearningCoachResponse {
-  user_id: string;
-  question: string;
-  intent: string;
-  toolchain: string[];
-  plan: string[];
-  answer: string;
-  retrieval_evidence: RetrievalEvidence[];
-  behavior_summary: LearningCoachBehaviorSummary;
-  model_version: string;
-  prompt_version: string;
-  created_at: string;
-  cache_hit: boolean;
-}
-
-interface LearningCoachParams {
-  question: string;
-  /** 서버가 인증 토큰에서 추론 가능 — 생략 시 현재 로그인 사용자 */
-  user_id?: string;
-  compose_level?: 'quick' | 'full';
-}
-
 interface LearningPatternPatterns {
   active_days: number;
   avg_session_gap_days: number;
@@ -352,13 +282,6 @@ interface ResourceRecommendationResponse {
   retrieval_evidence: RetrievalEvidence[];
 }
 
-interface ResourceRecommendationParams {
-  query: string;
-  top_k?: number;
-  recency_days?: number;
-  lang?: 'ko_first' | 'ko_only' | 'global';
-}
-
 interface WebSearchResult {
   title: string;
   url: string;
@@ -443,17 +366,6 @@ interface InitDataUpdateRequest {
 
 // === Node Content Types ===
 
-interface NodeDescriptionResponse {
-  node_title: string;
-  description: string;
-  generated_at: string;
-}
-
-interface NodeDescriptionParams {
-  node_title: string;
-  context?: string;
-}
-
 interface NodeResourceRecommendationParams {
   node_id: string;
   roadmap_id?: string;
@@ -506,26 +418,6 @@ export const getAiDemo = (params: DemoParams = {}) => {
 
   const qs = searchParams.toString();
   return apiClient.get<DemoResponse>(`/ai/demo${qs ? `?${qs}` : ''}`);
-};
-
-/** GET /ai/record-coach */
-export const getRecordCoach = (params: RecordCoachParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('roadmap_id', params.roadmap_id);
-  if (params.node_id) searchParams.set('node_id', params.node_id);
-  if (params.compose_level) searchParams.set('compose_level', params.compose_level);
-
-  return apiClient.get<RecordCoachResponse>(`/ai/record-coach?${searchParams.toString()}`);
-};
-
-/** GET /ai/learning-coach */
-export const getLearningCoach = (params: LearningCoachParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('question', params.question);
-  if (params.user_id) searchParams.set('user_id', params.user_id);
-  if (params.compose_level) searchParams.set('compose_level', params.compose_level);
-
-  return apiClient.get<LearningCoachResponse>(`/ai/learning-coach?${searchParams.toString()}`);
 };
 
 /** GET /ai/learning-pattern */
@@ -593,20 +485,6 @@ export const getCommentDuplicates = (params: CommentDuplicatesParams) => {
   );
 };
 
-/** GET /ai/resource-recommendation */
-export const getResourceRecommendation = (params: ResourceRecommendationParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('query', params.query);
-  if (params.top_k !== undefined) searchParams.set('top_k', String(params.top_k));
-  if (params.recency_days !== undefined)
-    searchParams.set('recency_days', String(params.recency_days));
-  if (params.lang) searchParams.set('lang', params.lang);
-
-  return apiClient.get<ResourceRecommendationResponse>(
-    `/ai/resource-recommendation?${searchParams.toString()}`,
-  );
-};
-
 /** GET /ai/web-search */
 export const getWebSearch = (params: WebSearchParams) => {
   const searchParams = new URLSearchParams();
@@ -657,15 +535,6 @@ export const getNodeGeneration = (initDataId: string) =>
     `/ai/node-generation?init_data_id=${encodeURIComponent(initDataId)}`,
   );
 
-/** GET /ai/node-description */
-export const getNodeDescription = (params: NodeDescriptionParams) => {
-  const searchParams = new URLSearchParams();
-  searchParams.set('node_title', params.node_title);
-  if (params.context) searchParams.set('context', params.context);
-
-  return apiClient.get<NodeDescriptionResponse>(`/ai/node-description?${searchParams.toString()}`);
-};
-
 /** GET /ai/node-resource-recommendation */
 export const getNodeResourceRecommendation = (params: NodeResourceRecommendationParams) => {
   const searchParams = new URLSearchParams();
@@ -688,14 +557,6 @@ export type {
   HealthResponse,
   DemoParams,
   DemoResponse,
-  RecordCoachScores,
-  RecordCoachNextAction,
-  RecordCoachRewriteSuggestions,
-  RecordCoachResponse,
-  RecordCoachParams,
-  LearningCoachBehaviorSummary,
-  LearningCoachResponse,
-  LearningCoachParams,
   LearningPatternPatterns,
   LearningPatternResponse,
   LearningPatternParams,
@@ -730,7 +591,6 @@ export type {
   CommentDuplicatesParams,
   ResourceItem,
   ResourceRecommendationResponse,
-  ResourceRecommendationParams,
   WebSearchResult,
   WebSearchResponse,
   WebSearchParams,
@@ -743,8 +603,6 @@ export type {
   InitDataListParams,
   InitDataCreateRequest,
   InitDataUpdateRequest,
-  NodeDescriptionResponse,
-  NodeDescriptionParams,
   NodeResourceRecommendationParams,
   NodeResourceSaveRequest,
   NodeResourceSaveResponse,

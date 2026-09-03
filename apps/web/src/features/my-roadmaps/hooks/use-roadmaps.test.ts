@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { accessTokenAtom } from '@/lib/auth-atoms';
+import { sessionPresentAtom } from '@/lib/auth-atoms';
 import { createTestWrapper } from '@/test-utils';
 
 vi.mock('@/api/roadmap-domain', () => ({
@@ -19,7 +19,7 @@ vi.mock('@/api/roadmap-domain', () => ({
 import { listOwnedRoadmaps } from '@/api/roadmap-domain';
 import { useRoadmaps } from './use-roadmaps';
 
-const wrapper = () => createTestWrapper([[accessTokenAtom, 'access-token']] as const);
+const wrapper = () => createTestWrapper([[sessionPresentAtom, true]] as const);
 
 describe('useRoadmaps', () => {
   it('returns loading state initially', () => {

@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
   description: '선택한 AI 티켓 팩과 결제 조건을 확인하세요.',
 };
 
-export default async function TicketCheckoutPage({
+async function TicketCheckoutContent({
   searchParams,
 }: {
   searchParams: Promise<{ pack?: string | string[] }>;
@@ -68,5 +70,17 @@ export default async function TicketCheckoutPage({
         </section>
       </div>
     </AppShell>
+  );
+}
+
+export default function TicketCheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ pack?: string | string[] }>;
+}) {
+  return (
+    <Suspense fallback={<p className="p-8 text-center">결제 정보를 준비하고 있어요…</p>}>
+      <TicketCheckoutContent searchParams={searchParams} />
+    </Suspense>
   );
 }
