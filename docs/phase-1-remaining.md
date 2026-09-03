@@ -48,10 +48,26 @@ Major Phase 1 구현은 사용자 요청에 따라 여기서 일시 정지한다
 
 - [x] 실제 DeepSeek 키를 mode-600 외부 env에 주입한다. (`~/.config/jagalchi/jagalchi-local-live.env`)
 - [x] `local` 모드에서 fixture URL/GitHub facts → live DeepSeek → 인용된 제안 3개 → 유효한 plan을 통과한다. (`.evidence/local-acceptance-local-20260903T095602Z-*.json`, 9 gates, `liveDeepSeek: true`)
-- [ ] 네 worktree 변경을 검토 가능한 commit으로 나눈다. Commit 권한을 받기 전에는 수행하지 않는다.
-- [ ] 생성된 commit SHA를 consumer와 Infra lock에 고정한 뒤 clean checkout bootstrap을 재검증한다.
+- [x] 네 worktree 변경을 검토 가능한 commit으로 나눈다. (2026-09-03 완료, push됨)
+- [x] 생성된 commit SHA를 consumer와 Infra lock에 고정한 뒤 clean checkout bootstrap을 재검증한다. (lock `revisions` 블록에 platform/api/ai/infra SHA 핀 추가; validator가 HEAD 대조, `JAGALCHI_DEV_HEAD=true`로 우회; bootstrap이 lock SHA로 detach checkout. `/tmp/jagalchi-clean-bootstrap`에서 fresh clone → bootstrap OK → 빈 볼륨 local acceptance OK(9 gates, live DeepSeek). receipt `.evidence/local-acceptance-local-20260903T110355Z-*.json`)
 
 실제 GitHub App/PR, production TLS/object storage, 배포, 백업/롤백, cross-browser, 모바일 실기기 E2E는 Major Phase 3~4 범위이며 Phase 1 완료 조건으로 계산하지 않는다.
+
+## 2026-09-03 커밋·핀 완료 기록
+
+4개 저장소의 `codex/arch-modernization-*` 브랜치에 논리 커밋으로 분할해 push했다. 원격 HEAD가 lock의 `revisions`와 일치:
+
+| 저장소 | 브랜치 | HEAD |
+| --- | --- | --- |
+| platform | codex/arch-modernization-platform | 01a323d8 |
+| api | codex/arch-modernization-api | 6d9fa7f1 |
+| ai | codex/arch-modernization-ai | 6e618a35 |
+| infra | codex/arch-modernization-infra | a47c9912 |
+
+- platform 10커밋(api-client 계약 → workspace → web consumer → mobile → CI → docs → Phase 2 prep 3종), api 16커밋(계약 → 마이그레이션 → verification → job-sources → workflow → project-runs → career-v1 → seed → wiring → 수선), ai 9커밋(deps → config → contracts → ai-v1 → auth → legacy → tests → CI → docs), infra 8커밋(production spine → 로컬 러너 6종 → revision 핀).
+- infra lock의 `revisions` 블록이 platform/api/ai/infra의 reviewed SHA를 기록. `validate-local-lock.py`가 소스 HEAD와 대조하고 `JAGALCHI_DEV_HEAD=true`면 우회. `local-bootstrap.sh`가 clone 후 lock SHA로 detach checkout.
+- clean bootstrap 재검증: `/tmp/jagalchi-clean-bootstrap`에 infra를 원격 브랜치로 fresh clone → `local-bootstrap.sh --clone-missing`(나머지 3개를 lock SHA로 수령, pnpm/venv install) OK → `local-acceptance.sh --reset`(빈 볼륨, local/live DeepSeek) 9 gates OK.
+- infra 자기 참조는 브랜치 HEAD 커밋이 lock을 담고, validator는 platform/api/ai만 대조하는 구조라 모순 없음.
 
 ## 2026-09-03 live DeepSeek 연동 중 발견·수정 사항
 
@@ -72,7 +88,7 @@ Major Phase 1 구현은 사용자 요청에 따라 여기서 일시 정지한다
 | AI | `/Users/justn/.herdr/worktrees/jagalchi-ai/arch-modernization` |
 | Infra | `/Users/justn/.herdr/worktrees/jagalchi-infra/arch-modernization` |
 
-권장 재개 순서는 2026-09-03에 모두 완료했다. live DeepSeek(`local` 모드) acceptance도 통과했고, 남은 작업은 commit/ref pin(커밋 권한 승인 후)뿐이다.
+권장 재개 순서는 2026-09-03에 모두 완료했다. live DeepSeek `local` 모드 acceptance, commit/ref pin, clean checkout bootstrap 재검증까지 끝났다. **Major Phase 1 완료.**
 
 ## 이미 확보한 증거
 
